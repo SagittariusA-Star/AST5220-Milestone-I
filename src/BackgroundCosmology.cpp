@@ -20,9 +20,8 @@ TCMB(TCMB)
 {
 
 	H0 		= Constants.H0_over_h * h; // s^-1 Hubble constant 
-	OmegaR 	= pow(M_PI, 3) / 15 * pow(Constants.k_b * TCMB, 4) / (pow(Constants.hbar, 3))
+	OmegaR 	= pow(M_PI, 3) / 15 * pow(Constants.k_b * TCMB, 4) / (pow(Constants.hbar, 3)
     	       * pow(Constants.c, 5)) * 8 * M_PI * Constants.G / (3 * H0 * H0);       // Radiation desnity parameter today
-	std::cout << OmegaR << " " << H0 << std::endl;
 }
 
 //====================================================
@@ -68,25 +67,17 @@ Utils::EndTiming("Eta");
 // Get methods
 //====================================================
 
-double BackgroundCosmology::H_of_a(double a) const{
-  // Hubble parameter H as a function of the scale factor a
-
-  double H = H0 * sqrt( (OmegaB + OmegaCDM) * pow(a, -3)
-                      + OmegaR * pow(a, -4)
-                      + OmegaLambda );
-  return H;
-}
-
-
 double BackgroundCosmology::H_of_x(double x) const{
   	// Hubble parameter as a function of the log-scale factor x
-  	double H = BackgroundCosmology::H_of_a(exp(x));
+  	double H = H0 * sqrt( (OmegaB + OmegaCDM) * exp(-3 * x)
+                      + OmegaR * exp(-4 * x)
+                      + OmegaLambda );
   	return H;
 }
 
 double BackgroundCosmology::Hp_of_x(double x) const{
 	// Expansion rate as a function of the log-scale factor
-  	double H = BackgroundCosmology::H_of_a(exp(x)) * exp(x);
+  	double H = BackgroundCosmology::H_of_x(x) * exp(x);
   	return H;
 }
 
@@ -206,7 +197,7 @@ void BackgroundCosmology::output(const std::string filename) const{
   const int    n_pts =  npts;
   
   Vector x_array = Utils::linspace(x_min, x_max, n_pts);
-
+ 
   std::ofstream fp(filename.c_str());
   auto print_data = [&] (const double x) {
     fp << x                  << " ";

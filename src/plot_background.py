@@ -76,18 +76,22 @@ ax[0, 1].set_ylabel(r"$aH$ [$\mathrm{km}\mathrm{s}^{-1} \mathrm{Mpc}^{-1}$]")
 
 # Plotting Hubble parameter
 ax[1, 0].semilogy(x, Hp_of_x / np.exp(x), label=r"$H(x)$")
+ax[1, 0].scatter(0, 70, color = "r")
 ax[1, 0].legend()
 ax[1, 0].set_xlabel(r"$x = \log (a)$")
 ax[1, 0].set_ylabel(r"$H(x)$ [$\mathrm{km}\mathrm{s}^{-1} \mathrm{Mpc}^{-1}$]")
 
-ax[1, 1].loglog(redshift(x[:-1]), Hp_of_x[:-1] / np.exp(x[:-1]), label=r"$H(a)$")
+ax[1, 1].loglog(redshift(x[np.where(x < 0)]),
+                Hp_of_x[np.where(x < 0)] / np.exp(x[np.where(x < 0)]),
+                label=r"$H(a)$")
+ax[1, 0].scatter(0, 70, color = "r")
 ax[1, 1].legend()
 ax[1, 1].set_xlabel(r"$z$")
 
 ax[1, 1].set_ylabel(r"$H(z)$ [$\mathrm{km}\mathrm{s}^{-1} \mathrm{Mpc}^{-1}$]")
 
 ax2 = ax[1, 1].twiny()  
-ax[1, 1].set_xlim(np.max(redshift(x[:-1])), np.min(redshift(x[:-1])))
+ax[1, 1].set_xlim(np.max(redshift(x[np.where(x < 0)])), np.min(redshift(x[np.where(x < 0)])))
 
 ax2.set_xticks(np.linspace(1e-8, 1, 6))
 ax2.set_xlabel(r'$a$', color = "r")
@@ -95,7 +99,7 @@ plt.tick_params(axis = "x", labelcolor = "r")
 ax2.set_xlim(1, 1e-8)
 ax2.grid(True, color = "r")
 fig.tight_layout()
-
+fig.savefig("../doc/Figures/Eta_&_H_of_x.pdf", dpi=1000)
 plt.show()
 
 fonts = {
@@ -128,7 +132,7 @@ ax1.axvspan(x[np.where(OmegaLambda >= Omega_sum - OmegaLambda)][0], np.max(x), a
 
 
 fig1.tight_layout()
-#fig.savefig("../Figures/eta_of_x.pdf", dpi=1000)
+fig1.savefig("../doc/Figures/Omegas_of_x.pdf", dpi=1000)
 
 plt.show()
 
