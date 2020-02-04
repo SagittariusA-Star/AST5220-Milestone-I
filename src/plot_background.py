@@ -37,6 +37,70 @@ def log_scale_factor(z):
     """ 
     return - np.log(1 + z) 
 
+def eta_r(Hp):
+    """
+    Conformal time for radiation domminated era
+    ----------------------
+    Parameters:
+        Hp: array of float
+            Scaled Hubble parameter aH, 
+            astropy units time
+    Returns:
+        eta : array or float
+            Conformal time in astopy 
+            units distance
+    ----------------------
+    """ 
+    eta = const.c / Hp
+    return eta
+
+def eta_m(Hp, eta_matter, Hp_matter):
+    """
+    Conformal time for matter domminated era
+    ----------------------
+    Parameters:
+        Hp: array of float
+            Scaled Hubble parameter aH, 
+            astropy units time
+        eta_matter: float
+            Conformal time in astropy units distance
+            when matter density parameter Omega_m = 
+            OmegaB + Omega_CDM is close to unity.
+        Hp_matter: float
+            Scaled Hubble parameter when matter domminates,
+            i.e. Omega_m is close to unity.
+    Returns:
+        eta : array or float
+            Conformal time in astopy 
+            units distance
+    ----------------------
+    """ 
+    eta = eta_matter + 2 * const.c*(1 / Hp - 1 / Hp_matter)
+    return eta
+
+def eta_L(Hp, eta_L, Hp_L):
+    """
+    Conformal time for dark energy domminated era
+    ----------------------
+    Parameters:
+        Hp: array of float
+            Scaled Hubble parameter aH, 
+            astropy units time
+        eta_L: float
+            Conformal time in astropy units distance
+            when matter density parameter OmegaLambda
+            is close to unity.
+        Hp_L: float
+            Scaled Hubble parameter when dark energy domminates,
+            i.e. Omega_Lambda is close to unity.
+    Returns:
+        eta : array or float
+            Conformal time in astopy 
+            units distance
+    ----------------------
+    """ 
+    eta = eta_L + const.c*(1 / Hp_L - 1 / Hp)
+    return eta
 
 fonts = {
     "font.family": "serif",
@@ -54,16 +118,25 @@ data = np.loadtxt("cosmology.txt")
 x = data[:, 0]
 eta_of_x = (data[:, 1] * u.m).to(u.Gpc)
 Hp_of_x = (data[:, 2] / u.s).to(u.km / (u.s * u.Mpc))
-dHpdx_of_x = (data[:, 3] / u.s).to(u.km / (u.s * u.Mpc)) 
 OmegaB      = data[:, 4]
 OmegaCDM    = data[:, 5]
 OmegaLambda = data[:, 6]
 OmegaR      = data[:, 7]
 Omega_sum = OmegaB + OmegaCDM + OmegaLambda + OmegaR
+Omega_m = OmegaCDM + OmegaB
+
+eta_radiation = (eta_r(Hp_of_x)).to(u.Gpc)
+eta_matter    = (eta_m(Hp_of_x, eta_of_x[np.where(Omega_m == np.max(Omega_m))][-1],
+                Hp_of_x[np.where(Omega_m == np.max(Omega_m))][-1])).to(u.Gpc)
+eta_Lambda    = (eta_L(Hp_of_x, eta_of_x[np.where(OmegaLambda == np.max(OmegaLambda))][-1],
+                Hp_of_x[np.where(OmegaLambda == np.max(OmegaLambda))][-1])).to(u.Gpc)
 
 # Plotting conformal time
 fig, ax = plt.subplots(2, 2, figsize=[7.1014, 7.1014 / 1.618])
 ax[0, 0].plot(x, eta_of_x, label=r"$\eta(x)$")
+ax[0, 0].plot(x, eta_radiation, "r--", label=r"$\eta_r(x)$")
+ax[0, 0].plot(x, eta_matter, "g:", label=r"$\eta_m(x)$")
+ax[0, 0].plot(x, eta_Lambda, "m-.", label=r"$\eta_\Lambda(x)$")
 ax[0, 0].legend()
 ax[0, 0].set_xlabel(r"$x = \log (a)$")
 ax[0, 0].set_ylabel(r"$\eta$ [Gpc]")
@@ -90,14 +163,14 @@ ax[1, 1].set_xlabel(r"$z$")
 
 ax[1, 1].set_ylabel(r"$H(z)$ [$\mathrm{km}\mathrm{s}^{-1} \mathrm{Mpc}^{-1}$]")
 
-ax2 = ax[1, 1].twiny()  
+# ax2 = ax[1, 1].twiny()  
 ax[1, 1].set_xlim(np.max(redshift(x[np.where(x < 0)])), np.min(redshift(x[np.where(x < 0)])))
 
-ax2.set_xticks(np.linspace(1e-8, 1, 6))
-ax2.set_xlabel(r'$a$', color = "r")
-plt.tick_params(axis = "x", labelcolor = "r")  
-ax2.set_xlim(1, 1e-8)
-ax2.grid(True, color = "r")
+# ax2.set_xticks(np.linspace(1e-8, 1, 6))
+# ax2.set_xlabel(r'$a$', color = "r")
+#plt.tick_params(axis = "x", labelcolor = "r")  
+# ax2.set_xlim(1, 1e-8)
+# ax2.grid(True, color = "r")
 fig.tight_layout()
 fig.savefig("../doc/Figures/Eta_&_H_of_x.pdf", dpi=1000)
 plt.show()

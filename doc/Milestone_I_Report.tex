@@ -19,7 +19,14 @@
 \author{Nils-Ole Stutzer}
 
 \begin{abstract}
-
+    We have simulated the large scale evolution of the universe. The expansion
+    rate of the universe was computed, by the Friedmann equation, the particle
+    horison scale (the conforal time) was computed. Using these and/or combined with the
+    matter-energy density parameters made it  possible to estimate in which each
+    matter-energy component domminated the universe's evolution at any given
+    time. The matter-radiation equality was found to be at log-scale factor
+    $x\sim -7$ and the matter-dark energy equality at $x\sim 0$. The behavior of
+    the computed quantities was consistant with known approximations and known results.
 \end{abstract}
 
 \section{Introduction} \label{sec:Intro}
@@ -82,6 +89,17 @@ component $x$. The critical density $\rho_c\equiv \frac{3H^2}{8\pi G}$, is the
 density needed in order to have a flat universe, and is today equal to
 $\rho_{c,0}\equiv\frac{3H_0^2}{8\pi G}$.  
 
+In order to know wheter the conformal time is computet right, one can compare it
+to the analytical approximations for each epoch of domminance. These are 
+\begin{align}
+    \eta_r(a) &= \frac{c}{aH} = \frac{c}{\mathcal{H}(a)}\\
+    \eta_m(a) &= \eta(a_*) + 2c\left(\frac{1}{\mathcal{H}(a)} - \frac{1}{\mathcal{H}(a_*)}\right)\\
+    \eta_\Lambda(a) &= \eta(\tilde{a}) + c\left(\frac{1}{\mathcal{H}(\tilde{a})} - \frac{1}{\mathcal{H}(a)}\right),
+\end{align}
+for the conformal time in the epoch of domminance for radiation, matter (baryons
++ CDM) and dark matter respectively. Here $a_*$ and $\tilde{a}$ denote the scale
+factor when $\Omega_m \approx 1$ and $\Omega_\Lambda \approx 1$ respectively.
+
 In order to know how much each component of the matter-energy content of the
 universe contributes to the total energy content, we can compute the
 matter-energy density of each component. This is done when solving the
@@ -132,12 +150,11 @@ we must recover $H = H_0$ or else it would not make sence. Thus the density
 parameters today sum to 1, and for any other time one can simply sum the above
 density parameters and check wheter they sum to unity.
 The values of the density parameters today are well known from cosmological
-surveyes like Planck, and we will here use the values provided by (CALLIN 2006)
-here. These can be found in Table \ref{tab:params}
+surveyes like Planck, and we will here use the values provided by \cite{callin:2006}. These can be found in Table \ref{tab:params}
 
 \begin{deluxetable}{rc}
 	%\tablewidth{0pt}
-	\tablecaption{Table showing the energy density parameter values at the current time. \label{tab:params}}
+	\tablecaption{Table showing the energy density parameter values at the current time \cite{callin:2006}. \label{tab:params}}
 	%\tablecomments{}
 	
 	\tablecolumns{2}
@@ -172,6 +189,17 @@ scale factors $a$ to log-scale factors $a = e^x$. Next, one can compute the
 density parameters from their definition given in the previous subsection, by
 simply also exchanging the scale factor with an exponential of the log-scale
 factor. 
+\begin{figure*}
+    \includegraphics[scale=1]{Figures/Eta_&_H_of_x.pdf}
+    \caption{\textbf{Upper left:} The figure shows the conformal time $\eta$(horizon scale) in Gpc as a function of the log-scale factor $x$. Overplotted are the analytical approximations for each era of dommination. \textbf{Upper right:} The figure shows the scaled Hubble parameter (expansion rate $\dot{a}$) as a function of the log-scale factor $x$. \textbf{Lower pannels:} Here the Hubble parameter $H$ is shown as a function of the log-scale facor $x$ (\textbf{left pannel}) and as a function of the scale factor $a$ and the redshift $z$ (\textbf{right pannel}), in addithon to a red dot illustrating the Hubble parameters value today. Note that the Hubble parameter as a function of the redshift is only plotted from early times until today, while the remaining plots go a bit further.}
+    \label{fig:Eta}
+\end{figure*}
+
+\begin{figure*}
+    \includegraphics[scale=1]{Figures/Omegas_of_x.pdf}
+    \caption{The figure shows the matter-energy density parameters of each component of the total matter-energy content of the universe. Also shown is the sum of all density parameters. To illustrate which component dominates the energy content of the universe at each time, we have colored the radiation domminated era yellow, the matter domminated era blue and the era domminated by dark energy by purple.}
+    \label{fig:Omegas}
+\end{figure*}
 
 Further, we want to compute the conformal time (particle horizon scale). This is
 done by simply solving the ODE given in equation (\ref{eq:conf_time}) using the
@@ -179,7 +207,7 @@ done by simply solving the ODE given in equation (\ref{eq:conf_time}) using the
 conditions $\eta(x) = 0$, as the horizon was very small at early times. We
 cannot use $a = 0$ here, though, as this results in a singularity. We thus use
 $a = 10^{-8}$, corresponding to $x \approx -18.42$, to represent the scale at
-early times. We let the siumulation run until $x = 2$ so as to see what happens
+early times. We let the simulation run until $x = 2$ so as to see what happens
 beyond the current age. We solve the ODE using 1000 points and save them to a
 file together will the corresponding other quantities (the $\Omega$'s, $H$ etc.)
 After solving for $\eta(x)$ we have a discrete set of conformal times and
@@ -202,7 +230,11 @@ and scaled Hubble parameters as functions of $x$ ($z$ and $a$) can be seen in
 Figure \ref{fig:Eta}. As one can see the horizon scale stayes very small for a
 long while, from early times until $x \approx -7$, then starting to grow
 exponentially and finally starting to flatten out towards the end of the
-simulated period.
+simulated period at around $x\sim 0$. Also we have overplotted the analytical approximations for
+conformal time in each of the epochs of domminance to check whether our solution
+to the conformal time makes sence. See Appendix for derivation of the
+approximations. We see that the approximations overlap the conformal time
+resonalbly well withing their respective intervals of valitity. 
 (DISKUTER)
 
 The expansion rate quantified by the scaled Hubble parameter $\mathcal{H}(x) =
@@ -211,7 +243,7 @@ in which era of the universe we are in. At early times, when the universe was
 radiation domminated the scaled Hubble parameter $\mathcal{H} \propto a^{-1}$.
 When matter (baryons and CDM) eventually started dominating, the expansion rate
 scaled differently; $\mathcal{H}\propto a^{-0.5}$, having a somewhat shallower
-slope compared to the expansion rate at radiation domminance. This transion
+slope compared to the expansion rate at radiation domminance. This transition
 seems to happen at $x\sim -7$, coinsiding roughly with the sudden growth of
 $\eta$, as seen for the change in slope of $\mathcal{H}$. Finally we see the
 transition from a decelerating universe, to an accelerating one. The expanding
@@ -229,24 +261,70 @@ pannel of Figure \ref{fig:Eta} tells the same story as the lower left one,
 however, it is nice to see the redshift (scale factor) dependence of the Hubble
 parameter directly.
 
-\begin{figure*}
-    \includegraphics[scale=1]{Figures/Eta_&_H_of_x.pdf}
-    \caption{\textbf{Upper left:} The figure shows the conformal time $\eta$(horizon scale) in Gpc as a function of the log-scale factor $x$. \textbf{Upper right:} The figure shows the scaled Hubble parameter (expansion rate $\dot{a}$) as a function of the log-scale factor $x$. \textbf{Lower pannels:} Here the Hubble parameter $H$ is shown as a function of the log-scale facor $x$ (\textbf{left pannel}) and as a function of the scale factor $a$ and the redshift $z$ (\textbf{right pannel}), in addithon to a red dot illustrating the Hubble parameters value today. Note that the Hubble parameter as a function of the redshift is only plotted from early times until today, while the remaining plots go a bit further.}
-    \label{fig:Eta}
-\end{figure*}
+The evolution of the density parameters is shown in Figure \ref{fig:Omegas} and effectively
+illustrates at which point each of the components domminate. We see as expected
+that at any given time the density parameters sum to unity. At early times the
+universe was domminated by radiation as seen by the fact that $\Omega_r \approx
+1$. This epoch is marked by a yellow background. Then when the matter starts to
+domminate, i.e. $\Omega_B + \Omega_{CDM} \approx 1$, we see a gradually
+decelerating radiation contribution. This is marked by a blue background. The
+epoch accelerating expansion of the universe when dark energy domminates is
+marked by a purple background. Note that the transitions between one to another
+epoch of domminance is not sharp, but rather a smooth transition, something
+which is not illustrated here. Also noteworthy is that the approximate time
+(scale) of transition between each era seems to coinside well with the time of
+transition earlier discussed. All in all we seem to recover results cosistant
+with known science and approximations. 
 
-
-
-\begin{figure*}
-    \includegraphics[scale=1]{Figures/Omegas_of_x.pdf}
-    \caption{The figure shows the matter-energy density parameters of each component of the total matter-energy content of the universe. Also shown is the sum of all density parameters. To illustrate which component dominates the energy content of the universe at each time, we have colored the radiation domminated era yellow, the matter domminated era blue and the era domminated by dark energy by purple.}
-    \label{fig:Omegas}
-\end{figure*}
 
 \section{Conclusion} \label{sec:Conclusion}
+We have simulated the large scale motion of the universe as a whole, and seen
+how the expansion rate and particle horizon scale of the universe is affected by
+the different matter-energy contributions contained within the universe. Also
+the evolution of the matter-energy contribution of each component was simulated.
+The results of the simulations where found to be consistant with known
+approximations and known results, therefore justifying the conclusion that the
+results are significant.
+
 
 \bibliography{ref}
 \bibliographystyle{aasjournal}
-\end{document}
 
-% End of file `sample62.tex'.
+\section{Appendix}
+When within the epoch of radiation domminance we can from the Friedmann equation
+see that the Hubble parameter
+\begin{align}
+    H^2 = H_0^2 \frac{\Omega_{r,0}}{a^4}.
+\end{align}
+The conformal time then becomes simplified making it 
+\begin{align}
+    \eta_r(a) = \int_0^a \frac{c da}{a^2 H(a)} \approx \int_0^a\frac{c da}{a^2 H_0 \sqrt{\Omega_r}}a^2 = \frac{ca}{H_0\sqrt{\Omega_r}} = \frac{c}{aH} = \frac{c}{\mathcal{H}(a)}. 
+\end{align}
+This expression is valid for $\Omega_r(a) \approx 1$. At scales $a_*$ where $\Omega_m(a_*)\approx
+1$, where $\Omega_m = \Omega_B + \Omega_{CDM}$ we have a similar approximation
+\begin{align}
+    \eta_m(a) &= \eta(a_*) + \int_{a_*}^a \frac{cda}{a^2H} \approx \eta(a_*) + \int_{a_*}^a \frac{cda}{a^2H_0\sqrt{\Omega_m}}a^{3/2} = \eta(a_*) + \int_{a_*}^a \frac{da}{\sqrt{a}} \\
+    &= \eta(a_*) + 2c\left(\frac{1}{aH} - \frac{1}{a_*H(a_*)}\right) = \eta(a_*) + 2c\left(\frac{1}{\mathcal{H}(a)} - \frac{1}{\mathcal{H}(a_*)}\right).
+\end{align}
+Here $\eta(a_*)$ is the conformal time when matter dommination starts. Note that
+since we looked at the matter domminated era, we could use the Friedmann
+equation on the form 
+\begin{align}
+    H^2 = H_0^2 \frac{\Omega_m}{a^3}.
+\end{align}
+Finally we can also consider the case where the matter-energy is domminated by
+dark energy at $\tilde{a}$ so that $\Omega_\Lambda(\tilde{a})\approx 1$. Then we
+can write 
+\begin{align}
+    H^2 = H_0 \Omega_\Lambda, 
+\end{align}
+enabeling us to write 
+\begin{align}
+    \eta_\Lambda(a) &= \eta(\tilde{a}) + \int_{\tilde{a}}^a\frac{cda}{aH} = \eta(\tilde{a}) + \frac{c}{H_0\sqrt{\Omega_\Lambda}}\int_{\tilde{a}}^a\frac{da}{a^2} \\
+    &= \eta(\tilde{a}) + c\left(\frac{1}{\mathcal{H}(\tilde{a})} - \frac{1}{\mathcal{H}(a)}\right).
+\end{align}
+Here we let $\eta(\tilde{a})$ denote the conformal time when the dark energy
+domminated era started. These three expressions can now be used to check whether
+the full computed conformal time is resonalble.
+
+\end{document}
