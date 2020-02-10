@@ -140,12 +140,20 @@ ax[0, 0].plot(x, eta_Lambda, "m-.", label=r"$\eta_\Lambda(x)$")
 ax[0, 0].legend()
 ax[0, 0].set_xlabel(r"$x = \log (a)$")
 ax[0, 0].set_ylabel(r"$\eta$ [Gpc]")
+ax[0, 0].axvspan(np.min(x), x[np.where(OmegaB + OmegaCDM >= OmegaLambda + OmegaR)][0], alpha=0.3, color='orange')
+ax[0, 0].axvspan(x[np.where(OmegaB + OmegaCDM >= OmegaLambda + OmegaR)][0], x[np.where(OmegaLambda >= Omega_sum - OmegaLambda)][0], alpha=0.3, color='cyan')
+ax[0, 0].axvspan(x[np.where(OmegaLambda >= Omega_sum - OmegaLambda)][0], np.max(x), alpha=0.3, color='purple')
+
+
 
 # Plotting Hubble parameter
 ax[0, 1].semilogy(x, Hp_of_x, label=r"$aH(x)$")
 ax[0, 1].legend()
 ax[0, 1].set_xlabel(r"$x = \log (a)$")
 ax[0, 1].set_ylabel(r"$aH$ [$\mathrm{km}\mathrm{s}^{-1} \mathrm{Mpc}^{-1}$]")
+ax[0, 1].axvspan(np.min(x), x[np.where(OmegaB + OmegaCDM >= OmegaLambda + OmegaR)][0], alpha=0.3, color='orange')
+ax[0, 1].axvspan(x[np.where(OmegaB + OmegaCDM >= OmegaLambda + OmegaR)][0], x[np.where(OmegaLambda >= Omega_sum - OmegaLambda)][0], alpha=0.3, color='cyan')
+ax[0, 1].axvspan(x[np.where(OmegaLambda >= Omega_sum - OmegaLambda)][0], np.max(x), alpha=0.3, color='purple')
 
 # Plotting Hubble parameter
 ax[1, 0].semilogy(x, Hp_of_x / np.exp(x), label=r"$H(x)$")
@@ -153,18 +161,28 @@ ax[1, 0].scatter(0, 70, color = "r")
 ax[1, 0].legend()
 ax[1, 0].set_xlabel(r"$x = \log (a)$")
 ax[1, 0].set_ylabel(r"$H(x)$ [$\mathrm{km}\mathrm{s}^{-1} \mathrm{Mpc}^{-1}$]")
+ax[1, 0].axvspan(np.min(x), x[np.where(OmegaB + OmegaCDM >= OmegaLambda + OmegaR)][0], alpha=0.3, color='orange')
+ax[1, 0].axvspan(x[np.where(OmegaB + OmegaCDM >= OmegaLambda + OmegaR)][0], x[np.where(OmegaLambda >= Omega_sum - OmegaLambda)][0], alpha=0.3, color='cyan')
+ax[1, 0].axvspan(x[np.where(OmegaLambda >= Omega_sum - OmegaLambda)][0], np.max(x), alpha=0.3, color='purple')
+ax[1, 0].scatter(0, 70, color = "r")
+
+
 
 ax[1, 1].loglog(redshift(x[np.where(x < 0)]),
                 Hp_of_x[np.where(x < 0)] / np.exp(x[np.where(x < 0)]),
                 label=r"$H(a)$")
-ax[1, 0].scatter(0, 70, color = "r")
 ax[1, 1].legend()
 ax[1, 1].set_xlabel(r"$z$")
 
 ax[1, 1].set_ylabel(r"$H(z)$ [$\mathrm{km}\mathrm{s}^{-1} \mathrm{Mpc}^{-1}$]")
 
 # ax2 = ax[1, 1].twiny()  
-ax[1, 1].set_xlim(np.max(redshift(x[np.where(x < 0)])), np.min(redshift(x[np.where(x < 0)])))
+
+ax[1, 1].axvspan(np.max(redshift(x)), redshift(x)[np.where(OmegaB + OmegaCDM >= OmegaLambda + OmegaR)][0], alpha=0.3, color='orange')
+ax[1, 1].axvspan(redshift(x)[np.where(OmegaB + OmegaCDM >= OmegaLambda + OmegaR)][0], redshift(x)[np.where(OmegaLambda >= Omega_sum - OmegaLambda)][0], alpha=0.3, color='cyan')
+ax[1, 1].axvspan(redshift(x)[np.where(OmegaLambda >= Omega_sum - OmegaLambda)][0], np.min(redshift(x)), alpha=0.3, color='purple')
+
+
 
 # ax2.set_xticks(np.linspace(1e-8, 1, 6))
 # ax2.set_xlabel(r'$a$', color = "r")
