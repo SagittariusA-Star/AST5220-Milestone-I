@@ -6,9 +6,6 @@ from astropy import units as u
 
 plt.style.use('bmh')
 
-
-
-
 def redshift(x):
     """
     Redshift as a function of log-scale factor
