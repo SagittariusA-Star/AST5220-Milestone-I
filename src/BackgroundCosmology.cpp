@@ -84,9 +84,9 @@ double BackgroundCosmology::Hp_of_x(double x) const{
 double BackgroundCosmology::alpha(double x) const{
   	// Factor used for dHpdx_of_x and ddHpddx_of_x
   
-  	return ( (OmegaB + OmegaCDM) * exp(-x)
-          	+ 2 * OmegaR * exp(-2 * x)
-          	- 2 * OmegaLambda * exp(2 * x) );
+  	return ( - (OmegaB + OmegaCDM) * exp(-x)
+          	- 2 * OmegaR * exp(-2 * x)
+          	+ 2 * OmegaLambda * exp(2 * x) );
 }
 
 double BackgroundCosmology::beta(double x) const{
@@ -99,13 +99,13 @@ double BackgroundCosmology::beta(double x) const{
 
 double BackgroundCosmology::dHpdx_of_x(double x) const{
 	// Derivative of Hubble parameter wrt and as a function of the log-scale factor
-  	return -0.5 * H0 * H0 * alpha(x) / Hp_of_x(x);
+  	return 0.5 * H0 * H0 * alpha(x) / Hp_of_x(x);
 }
 
 double BackgroundCosmology::ddHpddx_of_x(double x) const{
 	// Double derivative of Hubble parameter wrt and as a function of the log
 	// scale factor
-  	return 0.5 + H0 * H0 * beta(x) / Hp_of_x(x)
+  	return 0.5 * H0 * H0 * beta(x) / Hp_of_x(x)
          	- 0.25 * pow(H0, 4) * alpha(x) * alpha(x) / pow(Hp_of_x(x), 3);
 }
 
@@ -203,11 +203,12 @@ void BackgroundCosmology::output(const std::string filename) const{
     fp << x                  << " ";
     fp << eta_of_x(x)        << " ";
     fp << Hp_of_x(x)         << " ";
-    fp << dHpdx_of_x(x)      << " ";
     fp << get_OmegaB(x)      << " ";
     fp << get_OmegaCDM(x)    << " ";
     fp << get_OmegaLambda(x) << " ";
     fp << get_OmegaR(x)      << " ";
+    fp << dHpdx_of_x(x)      << " ";
+    fp << ddHpddx_of_x(x)      << " ";
     fp <<"\n";
     //fp << get_OmegaNu(x)     << " ";
     //fp << get_OmegaK(x)      << " ";
