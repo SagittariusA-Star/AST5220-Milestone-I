@@ -130,7 +130,7 @@ Omega_m = OmegaCDM + OmegaB
 
 dHpdx_of_x = (data[:, 7] / u.s).to(u.km / (u.s * u.Mpc))
 ddHpddx_of_x = (data[:, 8] / u.s).to(u.km / (u.s * u.Mpc))
-print(np.max(ddHpddx_of_x / Hp_of_x))
+
 eta_radiation = (eta_r(Hp_of_x)).to(u.Gpc)
 eta_matter = (
     eta_m(
