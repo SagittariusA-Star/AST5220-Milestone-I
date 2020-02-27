@@ -4,6 +4,7 @@
 #include <cmath>
 #include <iostream>
 #include <fstream>
+#include <stdio.h>
 #include "Utils.h"
 #include "BackgroundCosmology.h"
 
@@ -17,7 +18,16 @@ class RecombinationHistory{
     
     // Helium fraction
     double Yp;
- 
+      
+    // Dimensionless Hubble constant
+    const double h         = cosmo -> get_h();
+
+    // Hubble constant today
+    const double H0        = Constants.H0_over_h * h;
+    
+    // Critical density today
+    const double rho_crit0 = 3 * H0 * H0 / (8 * M_PI * Constants.G);
+    
     // The start and end points for recombination arrays (can be modified)
     const double x_start  = Constants.x_start;
     const double x_end    = Constants.x_end;
@@ -27,6 +37,9 @@ class RecombinationHistory{
   
     // Xe for when to switch between Saha and Peebles
     const double Xe_saha_limit = 0.99;
+
+    // Temperature in energy
+    double kBT(double x) const;
 
     //===============================================================
     // [1] Computation of Xe (Saha and Peebles equation)
@@ -50,6 +63,7 @@ class RecombinationHistory{
 
     // Splines contained in this class
     Spline log_Xe_of_x_spline{"Xe"};
+    Spline log_ne_of_x_spline{"Xe"};
     Spline tau_of_x_spline{"tau"}; 
     Spline g_tilde_of_x_spline{"g"};  
 

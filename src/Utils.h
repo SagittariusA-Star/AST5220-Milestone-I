@@ -43,13 +43,16 @@ extern struct ConstantsAndUnits {
   const double xhi0        = 24.587387 * eV;			        // Ionization energy for neutral Helium
   const double xhi1        = 4.0 * epsilon_0;		          // Ionization energy for singly ionized Helium
   
+  // CMB temperature today
+  const double TCMB = 2.7255 * K; // Kelvin
+
   // Min and max k-value
   const double k_min = 0.00005 / Mpc;
   const double k_max = 0.3     / Mpc;
   
   // Min and max x-value
   const double x_start = log(1e-8);
-  const double x_end   = 5.0;
+  const double x_end   = 0.0;
 
   // Number of points used to generate scale factor array
   const double npts = 1e3;
