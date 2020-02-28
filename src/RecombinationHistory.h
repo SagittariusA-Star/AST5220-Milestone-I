@@ -65,7 +65,11 @@ class RecombinationHistory{
     Spline log_Xe_of_x_spline{"Xe"};
     Spline log_ne_of_x_spline{"Xe"};
     Spline tau_of_x_spline{"tau"}; 
+    Spline dtaudx_of_x_spline{"tau"}; 
+    Spline ddtaudxdx_of_x_spline{"tau"}; 
     Spline g_tilde_of_x_spline{"g"};  
+    Spline dgdx_tilde_of_x_spline{"g"};  
+    Spline ddgdxdx_tilde_of_x_spline{"g"};  
 
   public:
 

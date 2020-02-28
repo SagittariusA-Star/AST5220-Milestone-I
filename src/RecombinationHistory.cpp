@@ -96,12 +96,13 @@ void RecombinationHistory::solve_number_density_electrons(){
       Vector Xe_ic{Xe_arr[i-1]};
       Vector x_current{x_array[i-1], x_array[i]};
       ODESolver ode;
-      ode.solve(dXedx, x_current, Xe_ic);
+      ode.solve(dXedx, x_current, Xe_ic, gsl_odeiv2_step_rkf45);
       
       auto all_data = ode.get_data();
 
       Xe_arr[i] = all_data[1][0];
       ne_arr[i] = nH_current * Xe_arr[i];
+      
     }
   }
 
@@ -153,11 +154,11 @@ std::pair<double,double> RecombinationHistory::electron_fraction_from_saha_equat
   //=============================================================================
   //...
   //...
-  double Tb = kBT(x);
+  double Tb    = kBT(x);
   Xe_fraction  = 1 / nH * (m_e * Tb) / (2 * M_PI * hbar * hbar)
                         * sqrt((m_e * Tb) / (2 * M_PI * hbar * hbar))
                         * exp(-epsilon_0 / Tb);
-  if (Xe_fraction > 1e9 ){
+  if (Xe_fraction > 1e10 ){
     Xe = 1;
   }
   
@@ -240,7 +241,7 @@ void RecombinationHistory::solve_for_optical_depth_tau(){
   Utils::StartTiming("opticaldepth");
 
   // Set up x-arrays to integrate over. We split into three regions as we need extra points in reionisation
-  const int npts = 1000;
+  const int npts = 10000;
   Vector x_array = Utils::linspace(x_start, x_end, npts);
 
   // The ODE system dtau/dx, dtau_noreion/dx and dtau_baryon/dx
@@ -258,7 +259,6 @@ void RecombinationHistory::solve_for_optical_depth_tau(){
     double H = cosmo -> H_of_x(x);
     // Set the derivative for photon optical depth
     dtaudx[0] = - ne * Constants.sigma_T * Constants.c / H;
-
     return GSL_SUCCESS;
   };
 
@@ -269,24 +269,32 @@ void RecombinationHistory::solve_for_optical_depth_tau(){
   //...
   
   // Solving ODE for tau(x)
-  double tau_init = 1e3;
+  double tau_init = 1e5;
   Vector tau_ic{tau_init};
 
   ODESolver ode_tau;
+  //double hstart = 1e-15, abserr = 1e-20, relerr = 1e-20;
+  //ode_tau.set_accuracy(hstart, abserr, relerr);
 
   ode_tau.solve(dtaudx, x_array, tau_ic, gsl_odeiv2_step_rkf45);
 
   auto all_data_tau = ode_tau.get_data();
   Vector tau_values(npts);
-  double H;
+  Vector dtaudx_values(npts);
+  Vector ddtaudxdx_values(npts);
+  double _dtaudx;
+  double _tau;
+  
   // Filling array with tau values
   for (int i = 0; i < all_data_tau.size(); i++){
       tau_values[i] = all_data_tau[i][0] - all_data_tau[npts - 1][0];
+      dtaudx(x_array[i], &tau_values[i], &_dtaudx);
+      dtaudx_values[i] = _dtaudx;
   }
 
   // Createing a spline of eta(x)
   tau_of_x_spline.create(x_array, tau_values, "Spline of tau(x)"); 
-
+  dtaudx_of_x_spline.create(x_array, dtaudx_values, "Spline of dtaudx(x)"); 
 
   //=============================================================================
   // TODO: Compute visibility functions and spline everything
@@ -295,11 +303,9 @@ void RecombinationHistory::solve_for_optical_depth_tau(){
   //...
 
   Vector g_tilde_values(npts);
-  double _tau;
-  double _dtaudx;
   for (int i = 0; i < npts; i++){
       _tau    = tau_of_x_spline(x_array[i]);
-      _dtaudx = tau_of_x_spline.deriv_x(x_array[i]);
+      _dtaudx = dtaudx_of_x_spline(x_array[i]);
       g_tilde_values[i] = - _dtaudx * exp(- _tau);
   }
   g_tilde_of_x_spline.create(x_array, g_tilde_values, "Spline of g_tilde(x)");
@@ -323,7 +329,8 @@ double RecombinationHistory::dtaudx_of_x(double x) const{
   //...
   //...
 
-  return tau_of_x_spline.deriv_x(x);
+  //return tau_of_x_spline.deriv_x(x);
+  return dtaudx_of_x_spline(x);
 }
 
 double RecombinationHistory::ddtauddx_of_x(double x) const{
@@ -333,7 +340,8 @@ double RecombinationHistory::ddtauddx_of_x(double x) const{
   //=============================================================================
   //...
   //...
-  return tau_of_x_spline.deriv_xx(x);
+  //return tau_of_x_spline.deriv_xx(x);
+  return dtaudx_of_x_spline.deriv_x(x);
 }
 
 double RecombinationHistory::g_tilde_of_x(double x) const{

@@ -54,6 +54,7 @@ ax[1, 0].set_xlim(-12, 0)
 ax[1, 0].set_yscale("log")
 
 ax[1, 1].plot(x, g_tilde, label=r"$\tilde{g}(x)$")
+ax[1, 1].set_xlim(-12, 0)
 
 
 ax[1, 1].legend()

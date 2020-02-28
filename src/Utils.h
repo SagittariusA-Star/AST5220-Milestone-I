@@ -52,7 +52,7 @@ extern struct ConstantsAndUnits {
   
   // Min and max x-value
   const double x_start = log(1e-8);
-  const double x_end   = 0.0;
+  const double x_end   = 0;
 
   // Number of points used to generate scale factor array
   const double npts = 1e3;
