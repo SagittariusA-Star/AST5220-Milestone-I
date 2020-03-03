@@ -41,6 +41,9 @@ class RecombinationHistory{
     // Temperature in energy
     double kBT(double x) const;
 
+    // Hydrogen (baryon) density
+    double get_nH(double x) const;
+    
     //===============================================================
     // [1] Computation of Xe (Saha and Peebles equation)
     //===============================================================
