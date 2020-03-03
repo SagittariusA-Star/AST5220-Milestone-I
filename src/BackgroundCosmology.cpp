@@ -7,21 +7,20 @@
 BackgroundCosmology::BackgroundCosmology(
 double h, 
 double OmegaB, 
-double OmegaCDM, 
-double OmegaLambda,
+double OmegaCDM,
 double Neff, 
 double TCMB) :
 h(h),
 OmegaB(OmegaB),
 OmegaCDM(OmegaCDM),
-OmegaLambda(OmegaLambda),
 Neff(Neff), 
 TCMB(TCMB)
 {
 
 	H0 		= Constants.H0_over_h * h; // s^-1 Hubble constant 
 	OmegaR 	= pow(M_PI, 3) / 15 * pow(Constants.k_b * TCMB, 4) / (pow(Constants.hbar, 3)
-    	       * pow(Constants.c, 5)) * 8 * M_PI * Constants.G / (3 * H0 * H0);       // Radiation desnity parameter today
+    	       * pow(Constants.c, 5)) * 8 * M_PI * Constants.G / (3 * H0 * H0);       // Radiation density parameter today
+	OmegaLambda = 1 - OmegaB - OmegaR - OmegaCDM;
 }
 
 //====================================================

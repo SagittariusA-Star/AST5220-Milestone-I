@@ -56,7 +56,7 @@ void RecombinationHistory::solve_number_density_electrons(){
     // Electron fraction and number density
     const double Xe_current = Xe_ne_data.first;
     const double ne_current = Xe_ne_data.second;
-    nH_current              = rho_crit0 * OmegaB / Constants.m_H * exp(-3 * x_array[i]);
+
     // Are we still in the Saha regime?
     if(Xe_current < Xe_saha_limit)
       saha_regime = false;      
@@ -92,17 +92,36 @@ void RecombinationHistory::solve_number_density_electrons(){
       //...
       //...
 
-      
+      /*
       Vector Xe_ic{Xe_arr[i-1]};
       Vector x_current{x_array[i-1], x_array[i]};
       ODESolver ode;
-      ode.solve(dXedx, x_current, Xe_ic, gsl_odeiv2_step_rkf45);
+      ode.solve(dXedx, x_current, Xe_ic);
       
       auto all_data = ode.get_data();
 
-      Xe_arr[i] = all_data[1][0];
-      ne_arr[i] = nH_current * Xe_arr[i];
+      nH_current  = rho_crit0 * OmegaB / Constants.m_H * exp(-3 * x_array[i]);
+      Xe_arr[i]   = all_data[1][0];
+      ne_arr[i]   = nH_current * Xe_arr[i];
+      */
+
+      Vector Xe_ic{Xe_current};
+      Vector x_current(npts_rec_arrays - i);
+      for (int j = 0; j < npts_rec_arrays - i; j++){
+        x_current[j] = x_array[j + i];
+      }
+
+      ODESolver ode;
+      ode.solve(dXedx, x_current, Xe_ic);
       
+      auto all_data = ode.get_data();
+      for (int j = 0; j < npts_rec_arrays - i; j++){
+        
+        nH_current  = rho_crit0 * OmegaB / Constants.m_H * exp(-3 * x_array[j + i]);
+        Xe_arr[j + i]   = all_data[j][0];
+        ne_arr[j + i]   = nH_current * Xe_arr[j + i];
+      }
+      break;  
     }
   }
 
@@ -146,7 +165,7 @@ std::pair<double,double> RecombinationHistory::electron_fraction_from_saha_equat
   // Electron fraction and number density
   double Xe = 0.0;
   double ne = 0.0;
-  double nH = OmegaB * rho_crit0 / (Constants.m_H * exp(3 * x)) ;
+  double nH = OmegaB * rho_crit0 / (Constants.m_H) * exp(- 3 * x) ;
   double Xe_fraction;
 
   //=============================================================================
@@ -158,12 +177,12 @@ std::pair<double,double> RecombinationHistory::electron_fraction_from_saha_equat
   Xe_fraction  = 1 / nH * (m_e * Tb) / (2 * M_PI * hbar * hbar)
                         * sqrt((m_e * Tb) / (2 * M_PI * hbar * hbar))
                         * exp(-epsilon_0 / Tb);
-  if (Xe_fraction > 1e10 ){
-    Xe = 1;
+  if (4.0 / Xe_fraction < 1e-9 ){
+    Xe = 1.0;
   }
   
   else {
-    Xe = 0.5 * (- Xe_fraction + sqrt(Xe_fraction * Xe_fraction + 4 * Xe_fraction));
+    Xe = 0.5 * Xe_fraction * (-1 + sqrt(1 + 4.0/Xe_fraction));//0.5 * (- Xe_fraction + sqrt(Xe_fraction * Xe_fraction + 4 * Xe_fraction));
   }
 
   ne = Xe * nH;
@@ -183,7 +202,6 @@ int RecombinationHistory::rhs_peebles_ode(double x, const double *Xe, double *dX
 
   // Current value of a and X_e
   const double X_e         = Xe[0];
-  const double a           = exp(x);
 
   // Physical constants in SI units
   const double k_b         = Constants.k_b;
@@ -208,13 +226,13 @@ int RecombinationHistory::rhs_peebles_ode(double x, const double *Xe, double *dX
   const double alpha  = sqrt(3 * m_e * m_e * c * c * sigma_T 
                                / (8 * M_PI * hbar * hbar));
   */
-  double nH           = OmegaB * rho_crit0 / (Constants.m_H * exp(3 * x));
+  double nH           = OmegaB * rho_crit0 / (Constants.m_H) * exp(-3 * x);
   double phi_2        = 0.448 * log(epsilon_0 / Tb);
-  double alpha_2      = 8 / sqrt(3 * M_PI) * sigma_T * c
+  double alpha_2      = 8.0 / sqrt(3 * M_PI) * sigma_T * c
                           * sqrt(epsilon_0 / Tb) * phi_2;
   double beta_2       = alpha_2 * (m_e * Tb / (2 * M_PI * hbar * hbar))
                                 * sqrt(m_e * Tb / (2 * M_PI * hbar * hbar))
-                                * exp(-epsilon_0 / (3 * Tb));
+                                * exp(-epsilon_0 / (4 * Tb));
   double beta         = alpha_2 * (m_e * Tb / (2 * M_PI * hbar * hbar))
                                 * sqrt(m_e * Tb / (2 * M_PI * hbar * hbar))
                                 * exp(-epsilon_0 / Tb);
@@ -241,7 +259,7 @@ void RecombinationHistory::solve_for_optical_depth_tau(){
   Utils::StartTiming("opticaldepth");
 
   // Set up x-arrays to integrate over. We split into three regions as we need extra points in reionisation
-  const int npts = 10000;
+  const int npts = 4000;
   Vector x_array = Utils::linspace(x_start, x_end, npts);
 
   // The ODE system dtau/dx, dtau_noreion/dx and dtau_baryon/dx
@@ -256,7 +274,7 @@ void RecombinationHistory::solve_for_optical_depth_tau(){
     // Electron density from spline
     double ne = ne_of_x(x);
     // Hubble parameter from BackgroundComplogy class
-    double H = cosmo -> H_of_x(x);
+    double H  = cosmo -> H_of_x(x);
     // Set the derivative for photon optical depth
     dtaudx[0] = - ne * Constants.sigma_T * Constants.c / H;
     return GSL_SUCCESS;
@@ -269,14 +287,14 @@ void RecombinationHistory::solve_for_optical_depth_tau(){
   //...
   
   // Solving ODE for tau(x)
-  double tau_init = 1e5;
+  double tau_init = 1e3;
   Vector tau_ic{tau_init};
 
   ODESolver ode_tau;
-  //double hstart = 1e-15, abserr = 1e-20, relerr = 1e-20;
+  //double hstart = 1e-5, abserr = 1e-10, relerr = 1e-10;
   //ode_tau.set_accuracy(hstart, abserr, relerr);
 
-  ode_tau.solve(dtaudx, x_array, tau_ic, gsl_odeiv2_step_rkf45);
+  ode_tau.solve(dtaudx, x_array, tau_ic, gsl_odeiv2_step_rk4);
 
   auto all_data_tau = ode_tau.get_data();
   Vector tau_values(npts);
@@ -287,11 +305,11 @@ void RecombinationHistory::solve_for_optical_depth_tau(){
   
   // Filling array with tau values
   for (int i = 0; i < all_data_tau.size(); i++){
-      tau_values[i] = all_data_tau[i][0] - all_data_tau[npts - 1][0];
       dtaudx(x_array[i], &tau_values[i], &_dtaudx);
-      dtaudx_values[i] = _dtaudx;
+      tau_values[i]     = all_data_tau[i][0] - all_data_tau[npts - 1][0];
+      dtaudx_values[i]  = _dtaudx;
   }
-
+  std::cout << x_array[npts - 1] << std::endl;
   // Createing a spline of eta(x)
   tau_of_x_spline.create(x_array, tau_values, "Spline of tau(x)"); 
   dtaudx_of_x_spline.create(x_array, dtaudx_values, "Spline of dtaudx(x)"); 
@@ -304,9 +322,7 @@ void RecombinationHistory::solve_for_optical_depth_tau(){
 
   Vector g_tilde_values(npts);
   for (int i = 0; i < npts; i++){
-      _tau    = tau_of_x_spline(x_array[i]);
-      _dtaudx = dtaudx_of_x_spline(x_array[i]);
-      g_tilde_values[i] = - _dtaudx * exp(- _tau);
+      g_tilde_values[i] = - dtaudx_values[i] * exp(- tau_values[i]);
   }
   g_tilde_of_x_spline.create(x_array, g_tilde_values, "Spline of g_tilde(x)");
   Utils::EndTiming("opticaldepth");
@@ -411,7 +427,7 @@ void RecombinationHistory::info() const{
 //====================================================
 void RecombinationHistory::output(const std::string filename) const{
   std::ofstream fp(filename.c_str());
-  const int npts       = 5000;
+  const int npts       = 10000;
   const double x_min   = x_start;
   const double x_max   = x_end;
 

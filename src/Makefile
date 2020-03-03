@@ -63,3 +63,9 @@ cmb: $(OBJS)
 clean:
 	rm -rf $(TARGETS) *.o
 
+runcmb:
+	./cmb
+
+plotrecombo:
+	python3 plot_recombination.py
+

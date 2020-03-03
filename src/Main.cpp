@@ -27,7 +27,7 @@ int main(int argc, char **argv){
   double OmegaLambda = 0.5;
   double Neff        = 3.046;
   double TCMB        = 2.7255;
-
+  
 
   // Recombination parameters
   double Yp          = 0.0;
@@ -37,7 +37,7 @@ int main(int argc, char **argv){
   //=========================================================================
 
   // Set up and solve the background
-  BackgroundCosmology cosmo(h, OmegaB, OmegaCDM, OmegaLambda, Neff, TCMB);
+  BackgroundCosmology cosmo(h, OmegaB, OmegaCDM, Neff, TCMB);
   cosmo.solve();
   cosmo.info();
   

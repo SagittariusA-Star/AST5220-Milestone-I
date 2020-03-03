@@ -23,7 +23,7 @@ class RecombinationHistory{
     const double h         = cosmo -> get_h();
 
     // Hubble constant today
-    const double H0        = Constants.H0_over_h * h;
+    const double H0        = cosmo -> get_H0();//Constants.H0_over_h * h;
     
     // Critical density today
     const double rho_crit0 = 3 * H0 * H0 / (8 * M_PI * Constants.G);
@@ -33,7 +33,7 @@ class RecombinationHistory{
     const double x_end    = Constants.x_end;
     
     // Numbers of points of Xe,ne array (modify as you see fit)
-    const int npts_rec_arrays = 4000;
+    const int npts_rec_arrays = 10000;
   
     // Xe for when to switch between Saha and Peebles
     const double Xe_saha_limit = 0.99;
@@ -65,8 +65,7 @@ class RecombinationHistory{
     Spline log_Xe_of_x_spline{"Xe"};
     Spline log_ne_of_x_spline{"Xe"};
     Spline tau_of_x_spline{"tau"}; 
-    Spline dtaudx_of_x_spline{"tau"}; 
-    Spline ddtaudxdx_of_x_spline{"tau"}; 
+    Spline dtaudx_of_x_spline{"dtaudx"}; 
     Spline g_tilde_of_x_spline{"g"};  
     Spline dgdx_tilde_of_x_spline{"g"};  
     Spline ddgdxdx_tilde_of_x_spline{"g"};  
