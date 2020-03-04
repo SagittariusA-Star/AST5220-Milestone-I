@@ -83,7 +83,7 @@ void RecombinationHistory::solve_number_density_electrons(){
         Xe_arr[k + i]   = all_ode_data[k][0];
         ne_arr[k + i]   = nH_current * Xe_arr[k + i];
       }
-      // Exiting loop
+      // Exiting loop after filling remaining elements
       break;  
     }
   }
@@ -129,7 +129,7 @@ std::pair<double,double> RecombinationHistory::electron_fraction_from_saha_equat
   }
   
   else {
-    Xe = 0.5 * Xe_fraction * (-1 + sqrt(1 + 4.0/Xe_fraction));//0.5 * (- Xe_fraction + sqrt(Xe_fraction * Xe_fraction + 4 * Xe_fraction));
+    Xe = 0.5 * Xe_fraction * (-1 + sqrt(1 + 4.0/Xe_fraction));
   }
 
   ne = Xe * nH;
@@ -158,7 +158,6 @@ int RecombinationHistory::rhs_peebles_ode(double x, const double *Xe, double *dX
 
   // Physical constants in SI units
   const double k_b         = Constants.k_b;
-  const double G           = Constants.G;
   const double c           = Constants.c;
   const double m_e         = Constants.m_e;
   const double hbar        = Constants.hbar;
@@ -171,21 +170,27 @@ int RecombinationHistory::rhs_peebles_ode(double x, const double *Xe, double *dX
   double Tb           = kBT(x);
   
   double nH           = get_nH(x);
+
   double phi_2        = 0.448 * log(epsilon_0 / Tb);
+  
   double alpha_2      = 8.0 / sqrt(3 * M_PI) * sigma_T * c
                           * sqrt(epsilon_0 / Tb) * phi_2;
+  
   double beta_2       = alpha_2 * (m_e * Tb / (2 * M_PI * hbar * hbar))
                                 * sqrt(m_e * Tb / (2 * M_PI * hbar * hbar))
                                 * exp(-epsilon_0 / (4 * Tb));
+  
   double beta         = alpha_2 * (m_e * Tb / (2 * M_PI * hbar * hbar))
                                 * sqrt(m_e * Tb / (2 * M_PI * hbar * hbar))
                                 * exp(-epsilon_0 / Tb);
   double n1s          = (1 - X_e) * nH; 
+  
   double lambda_alpha = H * (3 * epsilon_0) * (3 * epsilon_0) * (3 * epsilon_0)
                             / (64 * M_PI * M_PI * n1s * hbar * hbar * hbar * c * c * c);
+  
   double Cr           = (lambda_2s1s + lambda_alpha) / (lambda_2s1s + lambda_alpha + beta_2); 
   
-  dXedx[0] = Cr / H * ( beta * (1 - X_e) - nH * alpha_2 * X_e * X_e);
+  dXedx[0] = Cr / H * (beta * (1 - X_e) - nH * alpha_2 * X_e * X_e);
 
   return GSL_SUCCESS;
 }
