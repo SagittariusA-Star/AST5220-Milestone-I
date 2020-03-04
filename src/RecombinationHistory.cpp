@@ -70,16 +70,18 @@ void RecombinationHistory::solve_number_density_electrons(){
       Vector Xe_ic{Xe_current};
 
       // Making array of remaining x values
-      Vector x_current = Utils::linspace(x_array[i], x_end, npts_rec_arrays - i);
+      Vector x_peebles = Utils::linspace(x_array[i], x_end, npts_rec_arrays - i);
 
       // Solving ODE for remaining x values
-      peebles_Xe_ode.solve(dXedx, x_current, Xe_ic, gsl_odeiv2_step_rkf45);
+      peebles_Xe_ode.solve(dXedx, x_peebles, Xe_ic, gsl_odeiv2_step_rkf45);
       
+      // Extracting solution from ODEsolver
       auto all_ode_data = peebles_Xe_ode.get_data();
 
       // Updating Xe and ne values
       for (int k = 0; k < npts_rec_arrays - i; k++){
-        nH_current  = get_nH(x_array[k + i]);
+        nH_current      = get_nH(x_array[k + i]);
+        
         Xe_arr[k + i]   = all_ode_data[k][0];
         ne_arr[k + i]   = nH_current * Xe_arr[k + i];
       }
@@ -88,7 +90,7 @@ void RecombinationHistory::solve_number_density_electrons(){
     }
   }
 
-  // Generating log spline for Xe and ne
+  // Generating log spline for log of Xe and ne arrays
   Vector log_Xe = log(Xe_arr);
   Vector log_ne = log(ne_arr);
 
@@ -105,33 +107,42 @@ std::pair<double,double> RecombinationHistory::electron_fraction_from_saha_equat
  
    // Physical constants
   const double k_b         = Constants.k_b;
-  const double G           = Constants.G;
   const double m_e         = Constants.m_e;
   const double hbar        = Constants.hbar;
   const double m_H         = Constants.m_H;
   const double epsilon_0   = Constants.epsilon_0;
   const double H0_over_h   = Constants.H0_over_h;
 
-  // Electron fraction and number density
-  double Xe = 0.0;
-  double ne = 0.0;
+  // Electron fraction and density
+  double Xe;
+  double ne;
+
+  // Baryon density
   double nH = get_nH(x);
+
+  // Electron fraction
   double Xe_fraction;
 
+  // Temperature times Boltzmann constant
   double Tb    = kBT(x);
-  Xe_fraction  = 1 / nH * (m_e * Tb) / (2 * M_PI * hbar * hbar)
-                        * sqrt((m_e * Tb) / (2 * M_PI * hbar * hbar))
-                        * exp(-epsilon_0 / Tb);
+
+  // Computing Saha r.h.s.
+  Xe_fraction  = 1.0 / nH * (m_e * Tb) / (2 * M_PI * hbar * hbar)
+                          * sqrt((m_e * Tb) / (2 * M_PI * hbar * hbar))
+                          * exp(-epsilon_0 / Tb);
                         
-  // If the Xe fraction is too large Xe = 1, to avoide "huge" - "huge" = 0
+  // If the Xe fraction is too large Xe = 1, to avoide "huge" - "huge" = 0.
+  // Else setting it to regular value given by Saha eq. r.h.s.
+
   if (4.0 / Xe_fraction < 1e-9 ){
     Xe = 1.0;
   }
-  
+
   else {
     Xe = 0.5 * Xe_fraction * (-1 + sqrt(1 + 4.0/Xe_fraction));
   }
 
+  // Computing electron density corresponding to computed electron fraction
   ne = Xe * nH;
 
   return std::pair<double,double>(Xe, ne);
@@ -165,12 +176,17 @@ int RecombinationHistory::rhs_peebles_ode(double x, const double *Xe, double *dX
   const double sigma_T     = Constants.sigma_T;
   const double lambda_2s1s = Constants.lambda_2s1s;
   const double epsilon_0   = Constants.epsilon_0;
-
+  
+  // Hubble parameter
   double H            = cosmo -> H_of_x(x);        
+  
+  // Temprature times Boltzmann constant
   double Tb           = kBT(x);
   
+  // Hydrogen density
   double nH           = get_nH(x);
 
+  // Computing reaction rates
   double phi_2        = 0.448 * log(epsilon_0 / Tb);
   
   double alpha_2      = 8.0 / sqrt(3 * M_PI) * sigma_T * c
@@ -190,6 +206,7 @@ int RecombinationHistory::rhs_peebles_ode(double x, const double *Xe, double *dX
   
   double Cr           = (lambda_2s1s + lambda_alpha) / (lambda_2s1s + lambda_alpha + beta_2); 
   
+  // Change in electron fraction (Peebles eq. r.h.s.)
   dXedx[0] = Cr / H * (beta * (1 - X_e) - nH * alpha_2 * X_e * X_e);
 
   return GSL_SUCCESS;
@@ -203,8 +220,11 @@ int RecombinationHistory::rhs_peebles_ode(double x, const double *Xe, double *dX
 void RecombinationHistory::solve_for_optical_depth_tau(){
   Utils::StartTiming("opticaldepth");
 
-  // Set up x-arrays to integrate over. We split into three regions as we need extra points in reionisation
+  // Number of points to solve optical depth and g_tilde for
+
   const int npts = 4000;
+  
+  // Setting up array of x values to solve over
   Vector x_array = Utils::linspace(x_start, x_end, npts);
 
   // The ODE system dtau/dx, dtau_noreion/dx and dtau_baryon/dx
@@ -212,42 +232,56 @@ void RecombinationHistory::solve_for_optical_depth_tau(){
 
     // Electron density from spline
     double ne = ne_of_x(x);
+
     // Hubble parameter from BackgroundComplogy class
     double H  = cosmo -> H_of_x(x);
+    
     // Set the derivative for photon optical depth
     dtaudx[0] = - ne * Constants.sigma_T * Constants.c / H;
     return GSL_SUCCESS;
   };
 
   // Solving ODE for tau(x)
+  
+  // Arbritrary initial conditions for tau(x)
   double tau_init = 1e3;
   Vector tau_ic{tau_init};
 
+  // Setting up ODE for optical depth
   ODESolver ode_tau;
-  ode_tau.solve(dtaudx, x_array, tau_ic, gsl_odeiv2_step_rkf45);
 
+  // Solving ODE and extracting solution array from ODEsolver
+  ode_tau.solve(dtaudx, x_array, tau_ic, gsl_odeiv2_step_rkf45);
   auto all_data_tau = ode_tau.get_data();
+  
+  // Setting up arrays to store tau, dtaudx and ddtaudxdx data in
   Vector tau_values(npts);
   Vector dtaudx_values(npts);
   Vector ddtaudxdx_values(npts);
+
+  // Variable to temporary store tau derivative for each iteration
   double _dtaudx;
-  double _tau;
-  
+
   // Filling array with tau values
   for (int i = 0; i < all_data_tau.size(); i++){
+      // Computing derivative for tau and filling array
       dtaudx(x_array[i], &tau_values[i], &_dtaudx);
-      tau_values[i]     = all_data_tau[i][0] - all_data_tau[npts - 1][0];
       dtaudx_values[i]  = _dtaudx;
+      // Correcting for arbritray initial condition by subtracting tau(x = 0); so that tau(x = 0) = 0 
+      tau_values[i]     = all_data_tau[i][0] - all_data_tau[npts - 1][0];
   }
-  std::cout << x_array[npts - 1] << std::endl;
-  // Createing a spline of eta(x)
+
+  // Createing a spline of optical depth and its derivative w.r.t. x
   tau_of_x_spline.create(x_array, tau_values, "Spline of tau(x)"); 
   dtaudx_of_x_spline.create(x_array, dtaudx_values, "Spline of dtaudx(x)"); 
 
+  // Setting up and filling array for storing values of visibility function
   Vector g_tilde_values(npts);
   for (int i = 0; i < npts; i++){
       g_tilde_values[i] = - dtaudx_values[i] * exp(- tau_values[i]);
   }
+
+  // Creating spline for visibility function
   g_tilde_of_x_spline.create(x_array, g_tilde_values, "Spline of g_tilde(x)");
   Utils::EndTiming("opticaldepth");
 }

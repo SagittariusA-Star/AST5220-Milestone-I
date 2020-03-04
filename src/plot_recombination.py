@@ -40,10 +40,12 @@ tau_transparent = tau[np.abs(tau - 1).argmin()]
 x_transparent = x[np.abs(tau - 1).argmin()]
 
 # Printout of interesting information
+print("----------------------------Some interesting quantities------------------------")
 print("Integral of g_tilde: {0}, log rel error: {1}".format(g_integral, log_rel_error))
 print("Maximum of g_tilde: x = {0}, g_tilde = {1}".format(x_rec, g_max))
 print("Optical depth: tau = {0} at x = {1}".format(tau_transparent, x_transparent))
 print("Redshift at recombination: z = {0}".format(z_rec))
+print("-------------------------------------------------------------------------------")
 
 # Generating plots
 fig, ax = plt.subplots(2, 2, figsize=[1.5 * 7.1014, 1.5 * 7.1014 / 1.618])
