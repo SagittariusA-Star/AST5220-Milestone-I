@@ -66,6 +66,9 @@ clean:
 runcmb:
 	./cmb
 
+plotbackground:
+	python3 plot_background.py
+
 plotrecombo:
 	python3 plot_recombination.py
 
