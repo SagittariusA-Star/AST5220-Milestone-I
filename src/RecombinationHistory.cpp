@@ -69,23 +69,19 @@ void RecombinationHistory::solve_number_density_electrons(){
       // Initial condition
       Vector Xe_ic{Xe_current};
 
-      // Filling array of remaining x values
-      Vector x_current(npts_rec_arrays - i);
-      
-      for (int j = 0; j < npts_rec_arrays - i; j++){
-        x_current[j] = x_array[j + i];
-      }
+      // Making array of remaining x values
+      Vector x_current = Utils::linspace(x_array[i], x_end, npts_rec_arrays - i);
 
       // Solving ODE for remaining x values
       peebles_Xe_ode.solve(dXedx, x_current, Xe_ic, gsl_odeiv2_step_rkf45);
       
-      auto all_data = peebles_Xe_ode.get_data();
+      auto all_ode_data = peebles_Xe_ode.get_data();
 
       // Updating Xe and ne values
-      for (int j = 0; j < npts_rec_arrays - i; j++){
-        nH_current  = get_nH(x_array[j + i]);
-        Xe_arr[j + i]   = all_data[j][0];
-        ne_arr[j + i]   = nH_current * Xe_arr[j + i];
+      for (int k = 0; k < npts_rec_arrays - i; k++){
+        nH_current  = get_nH(x_array[k + i]);
+        Xe_arr[k + i]   = all_ode_data[k][0];
+        ne_arr[k + i]   = nH_current * Xe_arr[k + i];
       }
       // Exiting loop
       break;  
