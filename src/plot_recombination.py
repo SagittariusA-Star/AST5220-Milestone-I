@@ -21,7 +21,7 @@ plt.rcParams.update(fonts)
 data = np.loadtxt("recombination.txt")
 x = data[:, 0]
 Xe = data[:, 1]
-ne = data[:, 2]
+ne = data[:, 2] * u.m ** (- 3)
 tau = data[:, 3]
 dtaudx = data[:, 4]
 ddtaudxdx = data[:, 5]

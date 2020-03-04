@@ -66,27 +66,22 @@ void RecombinationHistory::solve_number_density_electrons(){
         return rhs_peebles_ode(x, Xe, dXedx);
       };
 
-      // Initial condition
-      Vector Xe_ic{Xe_current};
+      // Initial condition for Peebles eq. ODE
+      Vector Xe_ic{Xe_arr[i - 1]};
 
-      // Making array of remaining x values
-      Vector x_peebles = Utils::linspace(x_array[i], x_end, npts_rec_arrays - i);
+      // Making array of previous and current x values
+      Vector x_peebles{x_array[i - 1], x_array[i]};
 
-      // Solving ODE for remaining x values
+      // Solving ODE for current x value
       peebles_Xe_ode.solve(dXedx, x_peebles, Xe_ic, gsl_odeiv2_step_rkf45);
       
       // Extracting solution from ODEsolver
       auto all_ode_data = peebles_Xe_ode.get_data();
 
       // Updating Xe and ne values
-      for (int k = 0; k < npts_rec_arrays - i; k++){
-        nH_current      = get_nH(x_array[k + i]);
-        
-        Xe_arr[k + i]   = all_ode_data[k][0];
-        ne_arr[k + i]   = nH_current * Xe_arr[k + i];
-      }
-      // Exiting loop after filling remaining elements
-      break;  
+      nH_current  = get_nH(x_array[i]);
+      Xe_arr[i]   = all_ode_data[1][0];
+      ne_arr[i]   = nH_current * Xe_arr[i];      
     }
   }
 
@@ -139,7 +134,7 @@ std::pair<double,double> RecombinationHistory::electron_fraction_from_saha_equat
   }
 
   else {
-    Xe = 0.5 * Xe_fraction * (-1 + sqrt(1 + 4.0/Xe_fraction));
+    Xe = 0.5 * Xe_fraction * (- 1 + sqrt(1 + 4.0 / Xe_fraction));
   }
 
   // Computing electron density corresponding to computed electron fraction
@@ -199,10 +194,11 @@ int RecombinationHistory::rhs_peebles_ode(double x, const double *Xe, double *dX
   double beta         = alpha_2 * (m_e * Tb / (2 * M_PI * hbar * hbar))
                                 * sqrt(m_e * Tb / (2 * M_PI * hbar * hbar))
                                 * exp(-epsilon_0 / Tb);
+                                
   double n1s          = (1 - X_e) * nH; 
   
   double lambda_alpha = H * (3 * epsilon_0) * (3 * epsilon_0) * (3 * epsilon_0)
-                            / (64 * M_PI * M_PI * n1s * hbar * hbar * hbar * c * c * c);
+                          / (64 * M_PI * M_PI * n1s * hbar * hbar * hbar * c * c * c);
   
   double Cr           = (lambda_2s1s + lambda_alpha) / (lambda_2s1s + lambda_alpha + beta_2); 
   
@@ -222,7 +218,7 @@ void RecombinationHistory::solve_for_optical_depth_tau(){
 
   // Number of points to solve optical depth and g_tilde for
 
-  const int npts = 4000;
+  const int npts = 8000;
   
   // Setting up array of x values to solve over
   Vector x_array = Utils::linspace(x_start, x_end, npts);
