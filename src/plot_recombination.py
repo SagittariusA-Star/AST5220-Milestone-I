@@ -60,28 +60,29 @@ print("Redshift at recombination: z = {0}".format(z_rec))
 print("-------------------------------------------------------------------------------")
 
 # Generating plots
-fig, ax = plt.subplots(2, 2, figsize=[1.5 * 7.1014, 1.5 * 7.1014 / 1.618])
+fig = plt.figure(figsize=[1.5 * 7.1014, 1.5 * 7.1014 / 1.618])
 
 # Plotting electron fraction
-ax[0, 0].plot(x, Xe, label=r"$X_e(x)$")
-ax[0, 0].legend()
-ax[0, 0].set_xlabel(r"$x = \log (a)$")
-ax[0, 0].set_ylabel(r"$X_e \approx n_e / n_H$")
-ax[0, 0].set_yscale("log")
-ax[0, 0].set_xlim(-12, 0)
-ax[0, 0].axvspan(
+ax10 = plt.subplot(221)
+ax10.plot(x, Xe, label=r"$X_e(x)$")
+ax10.legend()
+ax10.set_xlabel(r"$x = \log (a)$")
+ax10.set_ylabel(r"$X_e \approx n_e / n_H$")
+ax10.set_yscale("log")
+ax10.set_xlim(-12, 0)
+ax10.axvspan(
     np.min(x),
     x[np.where(OmegaB + OmegaCDM >= OmegaLambda + OmegaR)][0],
     alpha=0.3,
     color="orange",
 )
-ax[0, 0].axvspan(
+ax10.axvspan(
     x[np.where(OmegaB + OmegaCDM >= OmegaLambda + OmegaR)][0],
     x[np.where(OmegaLambda >= Omega_sum - OmegaLambda)][0],
     alpha=0.3,
     color="cyan",
 )
-ax[0, 0].axvspan(
+ax10.axvspan(
     x[np.where(OmegaLambda >= Omega_sum - OmegaLambda)][0],
     np.max(x),
     alpha=0.3,
@@ -90,25 +91,26 @@ ax[0, 0].axvspan(
 
 
 # Plotting electron density
-ax[0, 1].plot(x, ne, label=r"$n_e(x)$")
-ax[0, 1].legend()
-ax[0, 1].set_xlabel(r"$x = \log (a)$")
-ax[0, 1].set_ylabel(r"$n_e [\mathrm{m^{-3}}]$")
-ax[0, 1].set_yscale("log")
-ax[0, 1].set_xlim(-12, 0)
-ax[0, 1].axvspan(
+ax11 = plt.subplot(222)
+ax11.plot(x, ne, label=r"$n_e(x)$")
+ax11.legend()
+ax11.set_xlabel(r"$x = \log (a)$")
+ax11.set_ylabel(r"$n_e [\mathrm{m^{-3}}]$")
+ax11.set_yscale("log")
+ax11.set_xlim(-12, 0)
+ax11.axvspan(
     np.min(x),
     x[np.where(OmegaB + OmegaCDM >= OmegaLambda + OmegaR)][0],
     alpha=0.3,
     color="orange",
 )
-ax[0, 1].axvspan(
+ax11.axvspan(
     x[np.where(OmegaB + OmegaCDM >= OmegaLambda + OmegaR)][0],
     x[np.where(OmegaLambda >= Omega_sum - OmegaLambda)][0],
     alpha=0.3,
     color="cyan",
 )
-ax[0, 1].axvspan(
+ax11.axvspan(
     x[np.where(OmegaLambda >= Omega_sum - OmegaLambda)][0],
     np.max(x),
     alpha=0.3,
@@ -117,28 +119,29 @@ ax[0, 1].axvspan(
 
 
 # Plotting optical depth
-ax[1, 0].plot(x, tau, label=r"$\tau(x)$")
-ax[1, 0].plot(x, - dtaudx, label=r"$-\tau'(x)$", linestyle = "--")
-ax[1, 0].plot(x, ddtaudxdx, label=r"$\tau''(x)$", linestyle = "-.")
-ax[1, 0].legend()
-ax[1, 0].set_xlabel(r"$x = \log (a)$")
-ax[1, 0].set_ylabel(r"$\tau(x)$")
-ax[1, 0].set_ylim(1e-8, 1e8)
-ax[1, 0].set_xlim(-12, 0)
-ax[1, 0].set_yscale("log")
-ax[1, 0].axvspan(
+ax12 = plt.subplot(212)
+ax12.plot(x, tau, label=r"$\tau(x)$")
+ax12.plot(x, - dtaudx, label=r"$-\tau'(x)$", linestyle = "--")
+ax12.plot(x, ddtaudxdx, label=r"$\tau''(x)$", linestyle = "-.")
+ax12.legend()
+ax12.set_xlabel(r"$x = \log (a)$")
+ax12.set_ylabel(r"$\tau(x)$")
+ax12.set_ylim(1e-8, 1e8)
+ax12.set_xlim(-12, 0)
+ax12.set_yscale("log")
+ax12.axvspan(
     np.min(x),
     x[np.where(OmegaB + OmegaCDM >= OmegaLambda + OmegaR)][0],
     alpha=0.3,
     color="orange",
 )
-ax[1, 0].axvspan(
+ax12.axvspan(
     x[np.where(OmegaB + OmegaCDM >= OmegaLambda + OmegaR)][0],
     x[np.where(OmegaLambda >= Omega_sum - OmegaLambda)][0],
     alpha=0.3,
     color="cyan",
 )
-ax[1, 0].axvspan(
+ax12.axvspan(
     x[np.where(OmegaLambda >= Omega_sum - OmegaLambda)][0],
     np.max(x),
     alpha=0.3,
@@ -228,7 +231,7 @@ ax1[1, 1].plot(x, g_tilde / np.max(g_max), label=r"$\tilde{g}(x)$")
 ax1[1, 1].plot(x, dg_tildedx / np.max(np.max(dg_tildedx)), label=r"$\tilde{g}'(x)$")
 ax1[1, 1].plot(x, ddg_tildeddx / np.max(np.abs(ddg_tildeddx)), label=r"$\tilde{g}''(x)$")
 ax1[1, 1].legend(loc = 1)
-ax1[1, 1].set_xlim(-8, -6)
+ax1[1, 1].set_xlim(-7.5, -5.7)
 ax1[1, 1].set_ylabel(r"Peak normalized")
 ax1[1, 1].set_xlabel(r"$x = \log (a)$")
 ax1[1, 1].axvspan(
