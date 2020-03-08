@@ -29,16 +29,16 @@ Omega_sum   = OmegaB + OmegaCDM + OmegaLambda + OmegaR
 Omega_m     = OmegaCDM + OmegaB
 
 # Loading data from file
-data = np.loadtxt("recombination.txt")
-x = data[:, 0]
-Xe = data[:, 1]
-ne = data[:, 2] * u.m ** (- 3)
-tau = data[:, 3]
-dtaudx = data[:, 4]
-ddtaudxdx = data[:, 5]
-g_tilde = data[:, 6]
-dg_tildedx = data[:, 7]
-ddg_tildeddx = data[:, 8]
+recombo_data = np.loadtxt("recombination.txt")
+x = recombo_data[:, 0]
+Xe = recombo_data[:, 1]
+ne = recombo_data[:, 2] * u.m ** (- 3)
+tau = recombo_data[:, 3]
+dtaudx = recombo_data[:, 4]
+ddtaudxdx = recombo_data[:, 5]
+g_tilde = recombo_data[:, 6]
+dg_tildedx = recombo_data[:, 7]
+ddg_tildeddx = recombo_data[:, 8]
 
 
 # Computing printout data
