@@ -55,7 +55,7 @@ extern struct ConstantsAndUnits {
   const double x_end   = 0.0;
 
   // Number of points used to generate scale factor array
-  const double npts = 1e3;
+  const double npts = 1e4;
   
   // Include polarization and/or neutrinos?
   const bool polarization  = true;
