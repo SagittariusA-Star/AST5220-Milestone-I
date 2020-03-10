@@ -43,7 +43,7 @@ ddg_tildeddx = recombo_data[:, 8]
 
 # Computing printout data
 g_integral      = np.trapz(g_tilde, x = x)
-x_rec           = x[np.argmin(np.abs(Xe - 0.5 * Xe))]
+x_rec           = x[np.argmin(np.abs(Xe - 0.5))]
 a_rec           = np.exp(x_rec)
 z_rec           = 1 / a_rec - 1
 log_rel_error   = np.log10(np.abs(g_integral - 1))
@@ -68,8 +68,9 @@ fig = plt.figure(figsize=[1.5 * 7.1014, 1.5 * 7.1014 / 1.618])
 
 # Plotting electron fraction
 ax10 = plt.subplot(221)
+ax10.scatter(x_rec, Xe[np.where(x == x_rec)], color = "r", label=r"$(x_{rec}, X_{e,rec})$")
 ax10.plot(x, Xe, label=r"$X_e(x)$")
-ax10.scatter(x_rec, Xe[np.where(x == x_rec)], color = "r", label=r"Recomb.")
+ax10.text(-10, Xe[np.where(x == x_rec)], r"$({0:.2f}, {1:.2f})$".format(x_rec, 0.5), color = "r")
 ax10.legend()
 ax10.set_xlabel(r"$x = \log (a)$")
 ax10.set_ylabel(r"$X_e \approx n_e / n_H$")
@@ -160,8 +161,9 @@ fig.savefig("../doc/Figures/Xe_ne_tau.pdf", dpi=1000)
 # Plotting visibility function, derivative and second derivative thereof
 fig1, ax1 = plt.subplots(2, 2 , figsize=[1.5 * 7.1014, 1.5 * 7.1014 / 1.618])
 
+ax1[0, 0].scatter(x_lss, g_max, color = "r", label = r"$(x_{lss}, \tilde{g}_{lss})$")
 ax1[0, 0].plot(x, g_tilde, label=r"$\tilde{g}(x)$")
-ax1[0, 0].scatter(x_lss, g_tilde[np.where(x == x_lss)], color = "r", label = "LSS")
+ax1[0, 0].text(-10, g_max, r"$({0:.2f}, {1:.2f})$".format(x_lss, g_max), color = "r")
 ax1[0, 0].set_xlim(-12, 0)
 ax1[0, 0].legend()
 ax1[0, 0].set_ylabel(r"$\tilde{g}(x)$")
