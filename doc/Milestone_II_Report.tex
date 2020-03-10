@@ -24,10 +24,33 @@
 \end{abstract}
 
 \section{Introduction} \label{sec:Intro}
-\cite{stutzer:2020}
-
+After having simulated the large scale background evolution of the universe in \cite{stutzer:2020}, we now want to compute the optical depth and the visibility function of the universe throughout its evolution. The optical depth and the visibility function are important quantities as, they essentially quantify how far a photon can travel in the universe before getting absorbed (when looking back in time). We make several assumptions, which amongst other things are that extinction through Thomson scattering provides the only extinction process and that the only baryons is hydrogen atoms. Computing the optical depth and visibility function is in principle not that hard, however, only if one is provided the density of free electrons. Thus, most of the work is finding the electron density evolution of the universe and from it the optical depth and visibility function. 
 
 \section{Method} \label{sec:Method}
+The formulas and equations presented here are provided by \cite{winther:2020}, unless otherwise stated.
+\subsection{The Optical Depth}
+As mentioned in the introduction computing the optical depth of the universe is in theory governed by fairly simple relations. When light travels through a medium, a given amount of photons are removed and added to the beam. The amount of photons that are added depend on the emissivity of the medium. We assume here that the gas the light travels through in the universe does have a negligible emissivity. Further more the amount of attenuation is given by the extinction coefficient
+\begin{align}
+    \alpha = n_e\sigma_T,
+\end{align}
+where we assume Thomson scattering on electrons to be the only mechanism to attenuate photons. Here $\sigma_T = \frac{8\pi}{3}\frac{\alpha^2\hbar^2}{m_e^2c^2}$
+and $n_e$ are the Thomson cross section and the free electron density respectively. The optical depth is given by 
+\begin{align}
+    \tau(\eta) = \int_{\eta}^{\eta_0} n_e \sigma_T a d\eta',
+\end{align}
+where $a$ and $\eta$ are the scale factor and the conformal time of the universe.
+We however will for practical reasons choose to solve for $\tau$ by solving the ordinary differential equation (ODE) 
+\begin{align}
+    \dv{\tau}{x} = -\frac{n_e\sigma_T}{H} = -\frac{n_e\sigma_T}{H}c, 
+    \label{eq:tau_ode}
+\end{align}
+where $x = log(a)$ and $H = \frac{\dot{a}}{a}$ are the log-scale factor and the Hubble parameter respectively. We choose this ansatz instead of the integral, so we can use the \texttt{ODEsolver} routine provided by \cite{winther:2020}. We went from natural units to SI units in the last step. The equations provided by \cite{winther:2020} are given in natural units, however we want them to be in SI units, so as to enable solving in C++. We will show the dimensional analysis to go from natural units to SI on the example above, and than just provide the equations in SI units with all the constants from now on. As one can see in eq. (\ref{eq:tau_ode}) the l.h.s. of the equation if dimensionless because $\tau$ and $x$ both are. Thus the r.h.s. must be dimensionless too. We however see that the r.h.s. has dimensional
+\begin{align}
+    \frac{[L]^{-3}[L^{2}]}{[T]^{-1}} = \frac{[T]}{[L]},
+\end{align}
+where $[L]$ and $[T]$ denote dimension length and time respectively. The only physical constant that is reasonable to use here is thus the light speed $c$, with dimension $[L]/[T]$. Thus to go from the expression in natural units to SI units we simply multiply by $c$. Similarly, when having units for instance $\rm{Js}$ or $\rm{K}$ "too much" on one side in natural units, one can correct with the reduced Planck constant or Boltzmann constant to go to SI units. 
+
+
 
 \section{Results/Discussion}\label{sec:Results}
 
