@@ -44,7 +44,7 @@ We however will for practical reasons choose to solve for $\tau$ by solving the 
     \dv{\tau}{x} = -\frac{n_e\sigma_T}{H} = -\frac{n_e\sigma_T}{H}c, 
     \label{eq:tau_ode}
 \end{align}
-where $x = log(a)$ and $H = \frac{\dot{a}}{a}$ are the log-scale factor and the Hubble parameter respectively. We choose this ansatz instead of the integral, so we can use the \texttt{ODEsolver} routine provided by \cite{winther:2020}. We went from natural units to SI units in the last step. The equations provided by \cite{winther:2020} are given in natural units, however we want them to be in SI units, so as to enable solving in C++. We will show the dimensional analysis to go from natural units to SI on the example above, and than just provide the equations in SI units with all the constants from now on. As one can see in eq. (\ref{eq:tau_ode}) the l.h.s. of the equation if dimensionless because $\tau$ and $x$ both are. Thus the r.h.s. must be dimensionless too. We however see that the r.h.s. has dimensional
+where $x = log(a)$ and $H = \frac{\dot{a}}{a}$ are the log-scale factor and the Hubble parameter respectively. We choose this ansatz instead of the integral, so we can use the \texttt{ODEsolver} routine provided by \cite{winther:2020}. We went from natural units to SI units in the last step. The equations provided by \cite{winther:2020} are given in natural units, however we want them to be in SI units, so as to enable solving in C++ using the constants in \texttt{Utils.h} provided by \cite{winther:2020}. We will show the dimensional analysis to go from natural units to SI on the example above, and than just provide the equations in SI units with all the constants from now on. As one can see in eq. (\ref{eq:tau_ode}) the l.h.s. of the equation if dimensionless because $\tau$ and $x$ both are. Thus the r.h.s. must be dimensionless too. We however see that the r.h.s. has dimensional
 \begin{align}
     \frac{[L]^{-3}[L^{2}]}{[T]^{-1}} = \frac{[T]}{[L]},
 \end{align}
@@ -75,6 +75,7 @@ where $[L]$ and $[T]$ denote dimension length and time respectively. The only ph
     and its $x$ value corresponds to the log scale factor of the surface of last scattering. 
     \textbf{Upper right}: Figure showing the un-normalized first order derivative of $\tilde{g}$ w.r.t. and as a function of the log-scale factor. 
     \textbf{Lower left}: Figure showing the un-normalized second order derivative of $\tilde{g}$ w.r.t. and as a function of the log-scale factor.
+    \textbf{Lower Right}: Figure showing the visibility function and its first two derivative together in one plot, where all functions are normalized to their respective extremum value (peak or valley). Also we have zoomed in somewhat to show more details.
     }
     \label{fig:g_tilde}
 \end{figure*}
