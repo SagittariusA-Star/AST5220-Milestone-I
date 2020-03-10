@@ -42,21 +42,25 @@ ddg_tildeddx = recombo_data[:, 8]
 
 
 # Computing printout data
-g_integral = np.trapz(g_tilde, x = x)
-log_rel_error = np.log10(np.abs(g_integral - 1))
-x_rec = x[np.where(g_tilde == g_tilde.max())][0]
-a_rec = np.exp(x_rec)
-z_rec = 1 / a_rec - 1
-g_max = g_tilde.max()
+g_integral      = np.trapz(g_tilde, x = x)
+x_rec           = x[np.argmin(np.abs(Xe - 0.5 * Xe))]
+a_rec           = np.exp(x_rec)
+z_rec           = 1 / a_rec - 1
+log_rel_error   = np.log10(np.abs(g_integral - 1))
+x_lss           = x[np.where(g_tilde == g_tilde.max())][0]
+a_lss           = np.exp(x_lss)
+z_lss           = 1 / a_lss - 1
+g_max           = g_tilde.max()
 tau_transparent = tau[np.abs(tau - 1).argmin()]
-x_transparent = x[np.abs(tau - 1).argmin()]
+x_transparent   = x[np.abs(tau - 1).argmin()]
 
 # Printout of interesting information
 print("----------------------------Some interesting quantities------------------------")
 print("Integral of g_tilde: {0}, log rel error: {1}".format(g_integral, log_rel_error))
-print("Maximum of g_tilde: x = {0}, g_tilde = {1}".format(x_rec, g_max))
+print("Maximum of g_tilde: x = {0}, g_tilde = {1}".format(x_lss, g_max))
 print("Optical depth: tau = {0} at x = {1}".format(tau_transparent, x_transparent))
-print("Redshift at recombination: z = {0}".format(z_rec))
+print("Redshift at last scattering: z = {0}".format(z_lss))
+print("Recombination (Xe = 0.5): x = {0}, z = {1}".format(x_rec, z_rec))
 print("-------------------------------------------------------------------------------")
 
 # Generating plots
@@ -65,6 +69,7 @@ fig = plt.figure(figsize=[1.5 * 7.1014, 1.5 * 7.1014 / 1.618])
 # Plotting electron fraction
 ax10 = plt.subplot(221)
 ax10.plot(x, Xe, label=r"$X_e(x)$")
+ax10.scatter(x_rec, Xe[np.where(x == x_rec)], color = "r", label=r"Recomb.")
 ax10.legend()
 ax10.set_xlabel(r"$x = \log (a)$")
 ax10.set_ylabel(r"$X_e \approx n_e / n_H$")
@@ -149,11 +154,14 @@ ax12.axvspan(
 )
 
 fig.tight_layout()
+fig.savefig("../doc/Figures/Xe_ne_tau.pdf", dpi=1000)
+
 
 # Plotting visibility function, derivative and second derivative thereof
 fig1, ax1 = plt.subplots(2, 2 , figsize=[1.5 * 7.1014, 1.5 * 7.1014 / 1.618])
 
 ax1[0, 0].plot(x, g_tilde, label=r"$\tilde{g}(x)$")
+ax1[0, 0].scatter(x_lss, g_tilde[np.where(x == x_lss)], color = "r", label = "LSS")
 ax1[0, 0].set_xlim(-12, 0)
 ax1[0, 0].legend()
 ax1[0, 0].set_ylabel(r"$\tilde{g}(x)$")
@@ -253,7 +261,6 @@ ax1[1, 1].axvspan(
     color="purple",
 )
 
-
 fig1.tight_layout()
-plt.show()
+fig1.savefig("../doc/Figures/g_tilde.pdf", dpi=1000)
 
