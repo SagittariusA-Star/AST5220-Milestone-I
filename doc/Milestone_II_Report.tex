@@ -61,7 +61,7 @@ where
 \begin{align}
     n_H = n_b \approx \frac{\rho_b}{m_H} = \frac{\Omega_{b0} \rho_{c0}}{m_H a^3},
 \end{align}
-where we have assumed all baryons to be in hydrogen. This should be a reasonable approximation since the hydrogen atoms comprise almost all of the baryons in the universe. Here the baryon density parameter and the critcal density today are given as their regular expressions found in and computed in \cite{stutzer:2020}. The time dependence of the baryon density is solaly in the scale factor $a^{-3} = e^{-3x}$ factor. 
+where we have assumed all baryons to be in hydrogen. This should be a reasonable approximation since the hydrogen atoms comprise almost all of the baryons in the universe. Here the baryon density parameter and the critcal density today are given as their regular expressions found in and computed in \cite{stutzer:2020}. The time dependence of the baryon density is solely in the scale factor dependent $a^{-3} = e^{-3x}$ factor. 
 
 The remaining job to find $n_e$ is to find the electron fraction $X_e$. This turns out to be the hardest part of the total work. We can find $X_e$ through solving the Boltzmann equation for a recombination/ionization reaction of the type $e^{-} + p^{+} \rightleftharpoons H + \gamma$. At early times the energies of the constituent particles were high enough to keep this reaction in equilibrium. As long at the reaction is close to equilibrium Saha's approximation \citep[p. 70]{dodelson:2003} ensures that 
 \begin{align}
@@ -70,14 +70,61 @@ The remaining job to find $n_e$ is to find the electron fraction $X_e$. This tur
 where the $n_i^{(0)}$ denote the equilibrium distribution species $i$. As the universe's charge is net zero, we can safely assume their to be as many free electrons as protons, i.e. $n_e = n_p$. Using this assumption we get the Saha equation for recombination given as 
 \begin{align}
     \frac{X_e^2}{1 - X_e} = \frac{1}{n_b} \left(\frac{m_e
-    T_bk_B}{2\pi\hbar^2}\right)^{3/2} e^{-\epsilon_0/T_bk_B}.
+    T_bk_B}{2\pi\hbar^2}\right)^{3/2} e^{-\epsilon_0/T_bk_B} \equiv R.
+    \label{eq:Saha_eq}
 \end{align}
 Here $m_e$ and $\epsilon_0$ are the electron mass and the ionization energy of hydrogen respectively \citep[]{winther:2020}. The temperature $T_b$ is the baryon temperature, which in principle should be found separately, however we can approximate it to the radiation temperature $T_r$ \citep[]{winther:2020}. It is is thus given as $T_b =
-T_r = T_{\rm CMB} / a = 2.7255 \textrm{K} / a$ 
+T_r = T_{\rm CMB} / a = 2.7255 \textrm{K} / a$.
 
+Because eq. (\ref{eq:Saha_eq}) is a simple quadratic equation its solution is simply 
+$X_e = \frac{1}{2} (-R \pm \sqrt{R^2 + 4R})$, where $R$ stand for the r.h.s. of Saha's equation. Note that only the "+"-solution is physically valid. We will also briefly come back to this solution in sec. \ref{subsec:implementation} to discuss some numerical issues with this solution.
 
+We have, however, not yet found a complete solution, since the Saha equation is only valid if $X_e$ is close to unity. To solve for $X_e$ if $X_e$ falls below some tolerance, which we choose to be $X_e = 0.99$ than we need to use the better approximation to $X_e$ given by the Peebles' equation
+\begin{align}
+    \frac{dX_e}{dx} = \frac{C_r(T_b)}{H} \left[\beta(T_b)(1-X_e) - n_H
+              \alpha^{(2)}(T_b)X_e^2\right].
+    \label{eq:peebles}
+\end{align}
+Here 
+\begin{align}
+    C_r(T_b) &= \frac{\Lambda_{2s\rightarrow1s} +
+              \Lambda_{\alpha}}{\Lambda_{2s\rightarrow1s} + \Lambda_{\alpha} +
+              \beta^{(2)}(T_b)}, \\
+    \Lambda_{2s\rightarrow1s} &= 8.227 \textrm{s}^{-1}\\
+    \Lambda_{\alpha} &= H\frac{(3\epsilon_0)^3}{(8\pi)^2 (\hbar c)^3 n_{1s}}\\
+    n_{1s} &= (1-X_e)n_H \\
+    \beta^{(2)}(T_b) &= \beta(T_b) e^{3\epsilon_0/4T_bk_B} \\
+    \beta(T_b) &= \alpha^{(2)}(T_b) \left(\frac{m_e
+              T_bk_B}{2\pi \hbar^2}\right)^{3/2} e^{-\epsilon_0/T_bk_B} \\
+    \alpha^{(2)}(T_b) &= \frac{8}{\sqrt{3\pi}}
+              \sigma_T c\sqrt{\frac{\epsilon_0}{T_bk_B}}\phi_2(T_b) \\
+    \phi_2(T_b) &= 0.448\ln(\epsilon_0/T_bk_B),
+\end{align}
+are constants describing simple atomic transitions between the ground state of hydrogen (1s) and the second exited state (2s) \citep[]{winther:2020}. Importantly, Peebles equation is also simply a first order approximation for $X_e$. A more thorough handling would be to include different atomic species as well as several more transitions. We will however stick with our two level hydrogen model. Note we have included all the necessary constants to translate the system of equation to the SI system. 
 
+The Peebles' equation is simply another linear ODE which we can simply solve using the \texttt{ODEsolver}-routine by \cite{winther:2020} as discussed in sec. \ref{subsec:implementation}. Now that we have an expression for $X_e$ we can as mentioned earlier easily find $n_e$ and again use the \texttt{ODEsolver}-routine to find the optical depth $tau$.
 
+The only remaining quantity we need to compute is the visibility function 
+\begin{align}
+    \tilde{g}(x) = -\dv{\tau}{x} e^{-\tau},
+\end{align}
+which quantities the probability density for a photon to scatter at a given log-scale factor $x$. It is a true probability density function (PDF), meaning it  integrates to unity over all of the universes history. 
+
+\subsection{Implementation}\label{subsec:implementation}
+As mentioned previously the main goal of this paper is to compute $X_e$ to find $tau(x)$ and $\tilde{g}(x)$. The main strategy is to loop through values of $x$ and at each step compute the solution of Saha's equation. If this solution is at some point below the tolerance $X_e = 0.99$ we switch to Peebles' equation. When in the Peebles regime we set up an ODE with one step for each (outer) loop iteration over $x$. The initial condition for each iteration is the value of $X_e$ in the previous iteration. The ODE is than for each iteration stepped forward from the previous to the current value of $X_e$, which is subsequently added to an array. Alternatively one could have solved all of the Peebles regime in one go, than exit the $x$ loop. However, we found the step wise method to be more intuitive. The solving of the ODE was done with the \texttt{ODEsolver}-routine by \cite{winther:2020}.
+
+In the same loop over $x$ we simultaneously compute $n_e$ as a function of $x$. The resulting solutions for $X_e$ and $n_e$ were than splined using the \texttt{Spline}-routine by \cite{winther:2020}, in order to get a more continuos callable representation of the two quantities.
+
+Importantly there were two numerical subtleties when solving the Saha and Peebles equations. The first was that when solving the quadratic Saha equation, the case when the r.h.s. $R$ of eq. (\ref{eq:Saha_eq}) can result in something of the form $-R + R\sqrt{1 + 4/R} = -R + R = 0$, i.e. $\text{"large" - "large"} = 0$, because a computer lets $1 + \text{"small"} = 1$. Then $X_e = 0$ even though it should be $X_e = 1$. This happens when $R$ becomes large, i.e. at early times. To solve the problem we consider the solution 
+\begin{align}
+    X_e &= \frac{1}{2} (-R + \sqrt{R^2 + 4R}) = \frac{1}{2} (-R + R\sqrt{1 + 4/R})\\
+        &\approx \frac{1}{2} (-R + R(1 + 2/R)) = 1,
+\end{align}
+using a taylor expansion to first order, since $4/R \ll 1$ when $R\gg 1$. This yields the correct result $X_e = 1$ at early times. We thus simply include an \texttt{if}-test to check for this, in which case $X_e = 1$ and else we compute the solution according to the regular formula.
+
+The second subtlety is that in the Peebles equation we have expressions containing exponential functions with positive exponents that can be very large at late times. In particular we have $\exp\left(3\epsilon_0 / 4T_b k_B\right)$ in the expression for $\beta^{(0)}$ which can easily overflow. Fortunalty, there is a relatively easy solution; simply combine the expressions for $\beta^{(0)}$ and $\beta$ directly. This way the exponential factor in $\beta^{(0)}$ becomes $\exp\left(-\epsilon_0 / 4T_b k_B\right)$, which in case of a large fraction $\epsilon_0 / T_b k_B$ will simply underflow and give zero, which is alright in our case.
+
+Now, having solved for the free electron density, finding $\tau$ and subsequently $\tilde{g}$ is easy. We simply set up an ODE for $\tau$ and solve it using the \texttt{ODEsolver}-routine \citep[]{winther:2020}, all in one go. There is, however, one thing we have to handle. Since the \texttt{ODEsolver}-routine cannot solve the ODE backwards with initial condition $\tau(x = 0) = 0$, and $\tau$ at early times is unknown. There is, however, a simple trick; simply use some random initial condition, and find $\tau(x=0)$ (in our case always the last array value of the solution with random initial condition for $\tau$), than subtract $\tau(x = 0)$ from all $\tau(x)$ values. This way we simply move the origin to correct for the wrong initial condition.
 
 
 \section{Results/Discussion}\label{sec:Results}
