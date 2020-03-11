@@ -63,7 +63,21 @@ where
 \end{align}
 where we have assumed all baryons to be in hydrogen. This should be a reasonable approximation since the hydrogen atoms comprise almost all of the baryons in the universe. Here the baryon density parameter and the critcal density today are given as their regular expressions found in and computed in \cite{stutzer:2020}. The time dependence of the baryon density is solaly in the scale factor $a^{-3} = e^{-3x}$ factor. 
 
-The remaining job to find $n_e$ is to find the electron fraction $X_e$. This turns out to be the hardest part of the total work. We can find $X_e$ through solving the Boltzmann equation for a creation/annihilation reaction of the type $e^{+} + e^{-} \rightleftharpoons 2\gamma$, in the early universe. However, the photons can also scatter on free electrons once their energy becomes sufficiently low
+The remaining job to find $n_e$ is to find the electron fraction $X_e$. This turns out to be the hardest part of the total work. We can find $X_e$ through solving the Boltzmann equation for a recombination/ionization reaction of the type $e^{-} + p^{+} \rightleftharpoons H + \gamma$. At early times the energies of the constituent particles were high enough to keep this reaction in equilibrium. As long at the reaction is close to equilibrium Saha's approximation \citep[p. 70]{dodelson:2003} ensures that 
+\begin{align}
+    \frac{n_e n_p}{n_H} = \frac{n_e^{(0)}n_p^{(0)}}{n_H^{(0)}},
+\end{align}
+where the $n_i^{(0)}$ denote the equilibrium distribution species $i$. As the universe's charge is net zero, we can safely assume their to be as many free electrons as protons, i.e. $n_e = n_p$. Using this assumption we get the Saha equation for recombination given as 
+\begin{align}
+    \frac{X_e^2}{1 - X_e} = \frac{1}{n_b} \left(\frac{m_e
+    T_bk_B}{2\pi\hbar^2}\right)^{3/2} e^{-\epsilon_0/T_bk_B}.
+\end{align}
+Here $m_e$ and $\epsilon_0$ are the electron mass and the ionization energy of hydrogen respectively \citep[]{winther:2020}. The temperature $T_b$ is the baryon temperature, which in principle should be found separately, however we can approximate it to the radiation temperature $T_r$ \citep[]{winther:2020}. It is is thus given as $T_b =
+T_r = T_{\rm CMB} / a = 2.7255 \textrm{K} / a$ 
+
+
+
+
 
 
 \section{Results/Discussion}\label{sec:Results}
