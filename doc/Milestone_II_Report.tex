@@ -19,7 +19,8 @@
 \author{Nils-Ole Stutzer}
 
 \begin{abstract}
-    
+    We have simulated the recombination history of the universe under the assumptions of the only (baryonic) matter content of the universe being hydrogen and not having any reionization epoch. We have computed the evolution of the optical depth $\tau(x)$ and the visibility function $\tilde{g}(x)$, as well as their first two derivatives, as functions of the log-scale factor $x$. To do so, we first had to compute the free electron density $n_e$ through finding the free electron fraction $X_e$ by solving the Saha and Peebles equations. Defining recombination to happen when $X_e = 0.5$, we determined the time of recombination to be at $x = -7.16$ corresponding to a redshift $z = 1285.7$. The transition from an opaque to a transparent universe defining the surface of last scattering when $\tau = 1$ or at the peak of $\tilde{g}(x)$ both found to be at $x = -6.99$ or at redshift $z = 1080$.
+
     \textit{The codes for this paper can be found at:} \newline \url{https://github.com/SagittariusA-Star/AST5220-Milestones}
 \end{abstract}
 
@@ -110,6 +111,32 @@ The only remaining quantity we need to compute is the visibility function
 \end{align}
 which quantities the probability density for a photon to scatter at a given log-scale factor $x$. It is a true probability density function (PDF), meaning it  integrates to unity over all of the universes history. 
 
+\begin{figure*}
+    \includegraphics[scale = 0.65]{Figures/Xe_ne_tau.pdf}
+    \caption{\textbf{Upper left}: Figure showing the free electron fraction $X_e$ 
+    as a function of the log-scale factor $x$. \textbf{Upper right}: Figure showing the free electron density $n_e$
+    as a function of the log-scale factor $x$. \textbf{Lower panel}: Figure showing the optical depth $\tau(x)$ of the universe due to 
+    Thomson scattering on free electrons only, as well at the derivative $\tau'(x)$ and second oder derivative $\tau''(x)$ w.r.t 
+    and as functions of the log-scale factor $x$. The surface of last scattering corresponding to $\tau = 1$ is marked by a red dot. \textbf{Note}: The background color in all the plots shows the epoch of dominance
+    for reference. Yellow marked the era of radiation dominance, blue the epoch of matter domination
+    and purple corresponds to the epoch of dark energy. The color domain is found by checking 
+    when the corresponding density parameter is dominant,
+    however, in reality the transitions between each epoch should be smoother than shown.}
+    \label{fig:Xe}
+\end{figure*}
+
+\begin{figure*}
+    \includegraphics[scale = 0.65]{Figures/g_tilde.pdf}
+    \caption{\textbf{Upper left}: Figure showing the un-normalized visibility function $\tilde{g}$ as a function of the log-scale factor $x$.
+    The red dot markes the peak of $\tilde{g}$ 
+    and its $x$ value corresponds to the log scale factor of the surface of last scattering. 
+    \textbf{Upper right}: Figure showing the un-normalized first order derivative of $\tilde{g}$ w.r.t. and as a function of the log-scale factor. 
+    \textbf{Lower left}: Figure showing the un-normalized second order derivative of $\tilde{g}$ w.r.t. and as a function of the log-scale factor.
+    \textbf{Lower Right}: Figure showing the visibility function and its first two derivative together in one plot, where all functions are normalized to their respective extremum value (peak or valley). Also we have zoomed in somewhat to show more details.
+    }
+    \label{fig:g_tilde}
+\end{figure*}
+
 \subsection{Implementation}\label{subsec:implementation}
 As mentioned previously the main goal of this paper is to compute $X_e$ to find $\tau(x)$ and $\tilde{g}(x)$. The main strategy is to loop through values of $x$ and at each step compute the solution of Saha's equation. If this solution is at some point below the tolerance $X_e = 0.99$ we switch to Peebles' equation. When in the Peebles regime we set up an ODE with one step for each (outer) loop iteration over $x$. The initial condition for each iteration is the value of $X_e$ in the previous iteration. The ODE is than for each iteration stepped forward from the previous to the current value of $X_e$, which is subsequently added to an array. Alternatively one could have solved all of the Peebles regime in one go, than exit the $x$ loop. However, we found the step wise method to be more intuitive. The solving of the ODE was done with the \texttt{ODEsolver}-routine by \cite{winther:2020}.
 
@@ -132,45 +159,29 @@ Computing the visibility function $\tilde{g}(x)$ is now just a matter of using t
 
 Finally the results are printed to a data file and subsequently plots are produced using a Python script.
 
-
 \section{Results/Discussion}\label{sec:Results}
 The results produced were computed with the same cosmological parameters used as in \cite{stutzer:2020}, originally given by \cite{callin:2006}. However, we have used some debug parameters given by \cite{winther:2020}; $\Omega_{b0} = 0.05$, $\Omega_{CDM0} = 0.45$, $\Omega_{\Lambda 0} = 0.5$ and $h = 0.7$ in order to cross-check whether our results were consistent with those of \cite{winther:2020}. The quantities found were computed from $x_\text{start} = -13$ until $x_\text{end} = 0$.
 
 In Figure \ref{fig:Xe} one can see the resulting solution of the electron fraction $X_e(x)$, the electron density $n_e(x)$ as well as the optical depth $\tau(x)$ ass well as its derivatives, all as functions of the log-scale factor $x$. 
 
-When looking at the electron fraction $Xe$ we see that it initialy behaves like a constant. This is the phase of the universes history where the temperatures are so high that almost all hydrogen will be instantly ionized, therefore yielding a electron fraction $X_e = 1$, as there is one electron for all protons (ionized hydrogen). Then shortly after matter-radiation equality (see color code in caption) the free electron fraction starts to drop passing $X_e = 0.5$ at $x \approx -7.16$ (see red dot) at which time there is double the amount of hydrogen compared to free electrons. This corresponds to when we have recombination, and corresponds to a redshift $z \approx 1285.7$. By now we are well within the regime of the Peebles solution. Once too far from equilibrium, the Saha solution will simply drop to zero in an exponential fashion. However, we see that $X_e$ drops fast as more and more hydrogen is forming from free electrons and protons. But it does not drop totally down to zero, but instead stabilizes at $X_e \sim 10^{-4}$. This behavior is what we would expect if reionization is not included in our case. 
+When looking at the electron fraction $Xe$ we see that it initialy behaves like a constant. This is the phase of the universes history where the temperatures are so high that almost all hydrogen will be instantly ionized, therefore yielding a electron fraction $X_e = 1$, as there is one electron for all protons (ionized hydrogen). Then shortly after matter-radiation equality (see color code in caption) the free electron fraction starts to drop passing $X_e = 0.5$ at $x \approx -7.16$ (see red dot) at which time there is double the amount of hydrogen compared to free electrons. This corresponds to when we have recombination, and corresponds to a redshift $z \approx 1285.7$. By now we are well within the regime of the Peebles solution. Once too far from equilibrium, the Saha solution will simply drop to zero in an exponential fashion. However, we see that $X_e$ drops fast as more and more hydrogen is forming from free electrons and protons. But it does not drop totally down to zero, but instead stabilizes at $X_e \sim 10^{-4}$. Eventually the temperature drops sufficiently for the equilibrium to be broken, and recombination happen more than ionization reactions. At some point the photons decouple from the reaction and freeze-out, after which they are in permanent equilibrium with themselves as the spatial distance between photons and electrons is to large for ionizations to happen. The remaining electrons and protons then establish a new equilibrium once the graph of $X_e$ flattens out towards $X_e\sim 10^{-4}$.
 
 The free electron density as seen in the left upper panel of Figure \ref{fig:Xe}, also behaves as expected. We see that in the two regimes before and after around recombination, the graph behaves linearly. Since the electron density is proportional to the inverse of the scale factor $a$ cubed, we should see $n_e$ dropping with a linear slope of $-3$ in a log-log (base 10) plot. This is exactly what we see (keep in mind that the $x$-axis is in a natural log-scale). The linear regimes of $n_e$ thus correspond to when $X_e$ is stable at $X_e = 1$ and $X_e\sim 10^{-4}$ initially and at the end, and the bend in $n_e$ correspondingly is due to the fall-off of the electron fraction due to an increasing recombination. 
 
+The optical depth also behaves as one would expect. We see that it starts out very large at $\tau(x = -12) \approx 10^4$ initially. If the optical depth is large, i.e. $\tau \gg 1$ we say that the medium at hand (the stuff in the universe) is optically thick or opaque. Thus initially the universe was very opaque, due to the large free electron density on which photons could (Thomson) scatter. Thus it also makes sense that the optical depth decreases accordingly to the electron density, i.e. almost linearly due to dilution by expanding space. Around $x\sim -7$ we also here see sign of recombination. As successively more electrons and protons bond to form hydrogen, the photons have no free electrons to scatter on and the temperature has dropped so that there are not sufficiently many high energy photons to reionization hydrogen. The transition from an opaque to a transparent universe is defined to be at $\tau = 1$, which happens at $x_{lss} = -6.99$ (see red dot in lower panel of Figure \ref{fig:Xe}). After the period of recombination the optical depth again establishes a linear-like behavior, until the epoch of dark energy begins were it drops to zero very fast. Here the optical depth $\tau \ll 1$ and the universe is thus said to be transparent or optically thin.
 
-\begin{figure*}
-    \includegraphics[scale = 0.65]{Figures/Xe_ne_tau.pdf}
-    \caption{\textbf{Upper left}: Figure showing the free electron fraction $X_e$ 
-    as a function of the log-scale factor $x$. \textbf{Upper right}: Figure showing the free electron density $n_e$
-    as a function of the log-scale factor $x$. \textbf{Lower panel}: Figure showing the optical depth $\tau(x)$ of the universe due to 
-    Thomson scattering on free electrons only, as well at the derivative $\tau'(x)$ and second oder derivative $\tau''(x)$ w.r.t 
-    and as functions of the log-scale factor $x$. \textbf{Note}: The background color in all the plots shows the epoch of dominance
-    for reference. Yellow markes the era of radiation dominance, blue the epoch of matter domination
-    and purple corresponds to the epoch of dark energy. The color domain is found by checking 
-    when the corresponding density parameter is dominant,
-    however, in reality the transitions between each epoch should be smoother than shown.}
-    \label{fig:Xe}
-\end{figure*}
+The shape of the derivatives of $\tau$ resemble that of $\tau$ quite closely. Note especially that the first order derivative of $\tau$ behaves very similar to the electron density due to the direct proportionality. They both are very linear outside the era of recombination, and have a matching behavior in the epoch of reionization. The first derivative of the optical depth can roughly be interpreted as the ratio between the reaction rate of the recombination/ionization reaction to the expansion rate of the universe. Once this ration drops below 1, there are hardly any reactions happening anymore, due to the expansion of space between the reactants. The second order derivative also seems to behave reasonably well.
 
-\begin{figure*}
-    \includegraphics[scale = 0.65]{Figures/g_tilde.pdf}
-    \caption{\textbf{Upper left}: Figure showing the un-normalized visibility function $\tilde{g}$ as a function of the log-scale factor $x$.
-    The red dot markes the peak of $\tilde{g}$ 
-    and its $x$ value corresponds to the log scale factor of the surface of last scattering. 
-    \textbf{Upper right}: Figure showing the un-normalized first order derivative of $\tilde{g}$ w.r.t. and as a function of the log-scale factor. 
-    \textbf{Lower left}: Figure showing the un-normalized second order derivative of $\tilde{g}$ w.r.t. and as a function of the log-scale factor.
-    \textbf{Lower Right}: Figure showing the visibility function and its first two derivative together in one plot, where all functions are normalized to their respective extremum value (peak or valley). Also we have zoomed in somewhat to show more details.
-    }
-    \label{fig:g_tilde}
-\end{figure*}
+Lastly, in Figure \ref{fig:g_tilde} one can see the visibility function and its derivatives both un-normalized and normalized. The visibility function quantifying the probability density of a photon last scattering, is seen to peak at $x = -6.99$ being consistent with our finding of the time of transition between an opaque to a transparent universe at the same value for $x$. There are some small negligible differences when comparing the program print out of $x_{lss}$ due to the finite grid size in x. The value of $x_{lss} = -6.99$ or redshift $z \approx 1080$ is what we would call the surface of last scattering (lss). We can also see in the derivative of the visibility function that its two extrema points are different in height, emphasizing the same thing seen in the visibility function itself; its slope is larger on the left than the right side of the peak. 
+
+In order to check whether $\tilde{g}$ indeed acts like a true PDF, we integrated it numerically and found it to be within about seven digits of unity, justifying calling it a true PDF.
+
+Note also that recombination an the surface of last scattering happen slightly after matter-radiation equality, something which we also expected. However, the color transitions in the plots.
+
+All in all the visibility function and its derivatives seem to behave according to what is expected.
 
 \section{Conclusion} \label{sec:Conclusion}
-
+We have expanded our simulation of the large scale evolution of the universe to include the recombination history of the universe. Our final goal being the calculation of the optical depth and the visibility function of the universe as a function of time, we first had to compute the electron fraction and density. All the computed quantities were found to behave according to our expectations and reflect known physics. Thus we can conclude that our simulations successfully depict the recombination history within the limitations of the initial assumptions made.
 
 \bibliography{ref}
 \bibliographystyle{aasjournal}
