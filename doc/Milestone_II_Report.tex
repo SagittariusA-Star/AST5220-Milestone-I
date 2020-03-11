@@ -24,7 +24,7 @@
 \end{abstract}
 
 \section{Introduction} \label{sec:Intro}
-After having simulated the large scale background evolution of the universe in \cite{stutzer:2020}, we now want to compute the optical depth and the visibility function of the universe throughout its evolution. The optical depth and the visibility function are important quantities as, they essentially quantify how far a photon can travel in the universe before getting absorbed (when looking back in time). We make several assumptions, which amongst other things are that extinction through Thomson scattering provides the only extinction process and that the only baryons is hydrogen atoms. Computing the optical depth and visibility function is in principle not that hard, however, only if one is provided the density of free electrons. Thus, most of the work is finding the electron density evolution of the universe and from it the optical depth and visibility function. 
+After having simulated the large scale background evolution of the universe in \cite{stutzer:2020}, we now want to compute the optical depth and the visibility function of the universe throughout its evolution. The computations made will expand upon the code previously made (\cite{stutzer:2020}). The optical depth and the visibility function are important quantities as, they essentially quantify how far a photon can travel in the universe before getting absorbed (when looking back in time). We make several assumptions, which amongst other things are that extinction through Thomson scattering provides the only extinction process and that the only baryons is hydrogen atoms. Also the epoch of reionization will be neglected, as a simplification. Computing the optical depth and visibility function is in principle not that hard, however, only if one is provided the density of free electrons. Thus, most of the work is finding the electron density evolution of the universe and from it the optical depth and visibility function. 
 
 \section{Method} \label{sec:Method}
 The formulas and equations presented here are provided by \cite{winther:2020}, unless otherwise stated.
@@ -44,12 +44,26 @@ We however will for practical reasons choose to solve for $\tau$ by solving the 
     \dv{\tau}{x} = -\frac{n_e\sigma_T}{H} = -\frac{n_e\sigma_T}{H}c, 
     \label{eq:tau_ode}
 \end{align}
-where $x = log(a)$ and $H = \frac{\dot{a}}{a}$ are the log-scale factor and the Hubble parameter respectively. We choose this ansatz instead of the integral, so we can use the \texttt{ODEsolver} routine provided by \cite{winther:2020}. We went from natural units to SI units in the last step. The equations provided by \cite{winther:2020} are given in natural units, however we want them to be in SI units, so as to enable solving in C++ using the constants in \texttt{Utils.h} provided by \cite{winther:2020}. We will show the dimensional analysis to go from natural units to SI on the example above, and than just provide the equations in SI units with all the constants from now on. As one can see in eq. (\ref{eq:tau_ode}) the l.h.s. of the equation if dimensionless because $\tau$ and $x$ both are. Thus the r.h.s. must be dimensionless too. We however see that the r.h.s. has dimensional
+where $x = log(a)$ and $H = \frac{\dot{a}}{a}$ are the log-scale factor and the Hubble parameter respectively. The Hubble parameter is found by the Friedmann equation through the previously developed code in \cite{stutzer:2020}. We choose this ansatz instead of the integral, so we can use the \texttt{ODEsolver} routine provided by \cite{winther:2020}. We went from natural units to SI units in the last step. The equations provided by \cite{winther:2020} are given in natural units, however we want them to be in SI units, so as to enable solving in C++ using the constants in \texttt{Utils.h} provided by \cite{winther:2020}. We will show the dimensional analysis to go from natural units to SI on the example above, and than just provide the equations in SI units with all the constants from now on. As one can see in eq. (\ref{eq:tau_ode}) the l.h.s. of the equation if dimensionless because $\tau$ and $x$ both are. Thus the r.h.s. must be dimensionless too. We however see that the r.h.s. has units
 \begin{align}
-    \frac{[L]^{-3}[L^{2}]}{[T]^{-1}} = \frac{[T]}{[L]},
+    1 = \frac{[n_e][\sigma_T]}{[H]}[c]^\alpha = \frac{\rm{m}^{-3}[\rm{m}^{2}]}{\rm{s}^{-1}}[c]^\alpha = \frac{\rm{s}}{\rm{m}}[c]^\alpha
 \end{align}
-where $[L]$ and $[T]$ denote dimension length and time respectively. The only physical constant that is reasonable to use here is thus the light speed $c$, with dimension $[L]/[T]$. Thus to go from the expression in natural units to SI units we simply multiply by $c$. Similarly, when having units for instance $\rm{Js}$ or $\rm{K}$ "too much" on one side in natural units, one can correct with the reduced Planck constant or Boltzmann constant to go to SI units. 
+The only physical constant that is reasonable to use here is thus the light speed $c$, with units $\rm{m}/\rm{s}$, thus $\alpha = 1$ in this case. Similarly, when having units for instance $\rm{Js}$ or $\rm{K}$ "too much" on one side in natural units, one can correct with the reduced Planck constant or Boltzmann constant to go to SI units. 
 
+Now, as can be seen from eq. (\ref{eq:tau_ode}), there is one problem however; we need to know the electron density. We will address this problem in the next subsection.
+
+\subsection{The Free Electron Fraction and Density}
+In order to compute the optical depth we need to know the free electron density $n_e$. We can compute this through the free electron fraction $X_e$ and use the baryon, i.e. hydrogen density as a translational factor. We thus get that the electron density as a function of the electron fraction and the hydrogen (baryon) density is 
+\begin{align}
+    n_e = X_e n_H,
+\end{align}
+where 
+\begin{align}
+    n_H = n_b \approx \frac{\rho_b}{m_H} = \frac{\Omega_{b0} \rho_{c0}}{m_H a^3},
+\end{align}
+where we have assumed all baryons to be in hydrogen. This should be a reasonable approximation since the hydrogen atoms comprise almost all of the baryons in the universe. Here the baryon density parameter and the critcal density today are given as their regular expressions found in and computed in \cite{stutzer:2020}. The time dependence of the baryon density is solaly in the scale factor $a^{-3} = e^{-3x}$ factor. 
+
+The remaining job to find $n_e$ is to find the electron fraction $X_e$. This turns out to be the hardest part of the total work. We can find $X_e$ through solving the Boltzmann equation for a creation/annihilation reaction of the type $e^{+} + e^{-} \rightleftharpoons 2\gamma$, in the early universe. However, the photons can also scatter on free electrons once their energy becomes sufficiently low
 
 
 \section{Results/Discussion}\label{sec:Results}
