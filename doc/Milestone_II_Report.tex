@@ -19,43 +19,47 @@
 \author{Nils-Ole Stutzer}
 
 \begin{abstract}
-    We have simulated the recombination history of the universe under the assumptions of the only (baryonic) matter content of the universe being hydrogen and not having any reionization epoch. We have computed the evolution of the optical depth $\tau(x)$ and the visibility function $\tilde{g}(x)$, as well as their first two derivatives, as functions of the log-scale factor $x$. To do so, we first had to compute the free electron density $n_e$ through finding the free electron fraction $X_e$ by solving the Saha and Peebles equations. Defining recombination to happen when $X_e = 0.5$, we determined the time of recombination to be at $x = -7.16$ corresponding to a redshift $z = 1285.7$. The transition from an opaque to a transparent universe defining the surface of last scattering when $\tau = 1$ or at the peak of $\tilde{g}(x)$ both found to be at $x = -6.99$ or at redshift $z = 1080$.
+    We have simulated the recombination history of the universe under the assumption of the only (baryonic) matter content of the universe being hydrogen and neglecting  the reionization epoch. We have computed the evolution of the optical depth $\tau(x)$ and the visibility function $\tilde{g}(x)$, as well as their first two derivatives, as functions of the log-scale factor $x$. To do so, we first had to compute the free electron density $n_e$ through finding the free electron fraction $X_e$ by solving the Saha and Peebles equations. Defining recombination to happen when $X_e = 0.5$, we determined the time of recombination to be at $x = -7.16$ corresponding to a redshift $z = 1285.7$. The Saha only solution did as expected undershoot and recombination occurred somewhat earlier in this model at $x = -7.23$ or $z = 1379.25$. The transition from an opaque to a transparent universe defining the surface of last scattering when $\tau = 1$ or at the peak of $\tilde{g}(x)$ both found to be at $x = -6.99$ or at redshift $z = 1080$. Our results were found to be well behaved and were consistent with results by \cite{callin:2006} and \cite{winther:2020}.
 
     \textit{The codes for this paper can be found at:} \newline \url{https://github.com/SagittariusA-Star/AST5220-Milestones}
 \end{abstract}
 
 \section{Introduction} \label{sec:Intro}
-After having simulated the large scale background evolution of the universe in \cite{stutzer:2020}, we now want to compute the optical depth and the visibility function of the universe throughout its evolution. The computations made will expand upon the code previously made (\cite{stutzer:2020}). The optical depth and the visibility function are important quantities as, they essentially quantify how far a photon can travel in the universe before getting absorbed (when looking back in time). We make several assumptions, which amongst other things are that extinction through Thomson scattering provides the only extinction process and that the only baryons is hydrogen atoms. Also the epoch of reionization will be neglected, as a simplification. Computing the optical depth and visibility function is in principle not that hard, however, only if one is provided the density of free electrons. Thus, most of the work is finding the electron density evolution of the universe and from it the optical depth and visibility function. 
+After having simulated the large scale background evolution of the universe in \cite{stutzer:2020}, we now want to compute the optical depth and the visibility function of the universe throughout its evolution. 
+The computations made will expand upon the code previously made (\cite{stutzer:2020}). The optical depth and the visibility function are important quantities as, they essentially quantify how far a photon can travel in the universe before getting extinct (when looking back in time). From these quantities one can estimate the time of recombination and last scattering, which are important for CMB cosmology. 
+
+We make several assumptions, which amongst other things are that extinction through Thomson scattering provides the only extinction process and that the only baryons is hydrogen atoms. Also the epoch of reionization will be neglected, as a simplification. Computing the optical depth and visibility function is in principle not that hard, however, only if one is provided the density of free electrons. Thus, most of the work will be finding the electron density evolution of the universe and from it the optical depth and visibility function. 
 
 \section{Method} \label{sec:Method}
-The formulas and equations presented here are provided by \cite{winther:2020}, unless otherwise stated.
+The formulas and equations presented here are provided by \cite{winther:2020} and/or \cite{dodelson:2003}, unless otherwise stated.
 \subsection{The Optical Depth}
-As mentioned in the introduction computing the optical depth of the universe is in theory governed by fairly simple relations. When light travels through a medium, a given amount of photons are removed and added to the beam. The amount of photons that are added depend on the emissivity of the medium. We assume here that the gas the light travels through in the universe does have a negligible emissivity. Further more the amount of attenuation is given by the extinction coefficient
+As mentioned in the introduction computing the optical depth of the universe is in theory governed by fairly simple relations. When light travels through a medium, a given amount of photons are removed and added to the beam. The amount of photons that are added depend on the emissivity of the medium. We assume here that the gas the light travels through has a negligible emissivity. Furthermore the amount of attenuation is given by the extinction coefficient
 \begin{align}
     \alpha = n_e\sigma_T,
 \end{align}
 where we assume Thomson scattering on electrons to be the only mechanism to attenuate photons. Here $\sigma_T = \frac{8\pi}{3}\frac{\alpha^2\hbar^2}{m_e^2c^2}$
-and $n_e$ are the Thomson cross section and the free electron density respectively. The optical depth is given by 
+and $n_e$ are the Thomson cross-section and the free electron density respectively. The optical depth is given by 
 \begin{align}
     \tau(\eta) = \int_{\eta}^{\eta_0} n_e \sigma_T a d\eta',
 \end{align}
 where $a$ and $\eta$ are the scale factor and the conformal time of the universe.
-The optical depth corresponds to the factor of $e$ the radiation is damped by when passing through a medium (gas in the universe). Thus an opaque and transparent object are characterized by $\tau \gg 1$ (optically thick) and $\tau \ll 1$ (optically thin) respectively. We place the threshold for transparency at $\tau = 1$.
-We however will for practical reasons choose to solve for $\tau$ by solving the ordinary differential equation (ODE) 
+The optical depth corresponds to the factor of $e$ the radiation is damped by when passing through a medium (gas in the universe). Thus opaque and transparent objects are characterized by $\tau \gg 1$ (optically thick) and $\tau \ll 1$ (optically thin) respectively. We place the threshold for transparency at $\tau = 1$ after which most photons travel freely.
+
+For practical reasons we choose to solve for $\tau$ by solving the ordinary differential equation (ODE) 
 \begin{align}
     \dv{\tau}{x} = -\frac{n_e\sigma_T}{H} = -\frac{n_e\sigma_T}{H}c, 
     \label{eq:tau_ode}
 \end{align}
-where $x = log(a)$ and $H = \frac{\dot{a}}{a}$ are the log-scale factor and the Hubble parameter respectively. The Hubble parameter is found by the Friedmann equation through the previously developed code in \cite{stutzer:2020}. We choose this ansatz instead of the integral, so we can use the \texttt{ODEsolver} routine provided by \cite{winther:2020}. We went from natural units to SI units in the last step. The equations provided by \cite{winther:2020} are given in natural units, however we want them to be in SI units, so as to enable solving in C++ using the constants in \texttt{Utils.h} provided by \cite{winther:2020}. We will show the dimensional analysis to go from natural units to SI on the example above, and than just provide the equations in SI units with all the constants from now on. As one can see in eq. (\ref{eq:tau_ode}) the l.h.s. of the equation if dimensionless because $\tau$ and $x$ both are. Thus the r.h.s. must be dimensionless too. We however see that the r.h.s. has units
+where $x = log(a)$ and $H = \frac{\dot{a}}{a}$ are the log-scale factor and the Hubble parameter respectively. The Hubble parameter is found by the Friedmann equation through the previously developed code in \cite{stutzer:2020}. We choose this ansatz instead of the integral, so we can use the \texttt{ODEsolver} routine provided by \cite{winther:2020}. Note we went from natural units to SI units in the last step in eq. (\ref{eq:tau_ode}). The equations provided by \cite{winther:2020} are given in natural units, however we want them to be in SI units, so as to enable solving in C++ using the constants in \texttt{Utils.h} provided by \cite{winther:2020}. We will show the dimensional analysis to go from natural units to SI on the example above, and than just provide the equations in SI units with all the constants from now on. As one can see in eq. (\ref{eq:tau_ode}) the l.h.s. of the equation if dimensionless because $\tau$ and $x$ both are. Thus the r.h.s. must be dimensionless too. We however see that the r.h.s. has units
 \begin{align}
     1 = \frac{[n_e][\sigma_T]}{[H]}[c]^\alpha = \frac{\rm{m}^{-3}[\rm{m}^{2}]}{\rm{s}^{-1}}[c]^\alpha = \frac{\rm{s}}{\rm{m}}[c]^\alpha
 \end{align}
-The only physical constant that is reasonable to use here is thus the light speed $c$, with units $\rm{m}/\rm{s}$, thus $\alpha = 1$ in this case. Similarly, when having units for instance $\rm{Js}$ or $\rm{K}$ "too much" on one side in natural units, one can correct with the reduced Planck constant or Boltzmann constant to go to SI units. 
+The only physical constant that is reasonable to use here is thus the light speed $c$, with units $\rm{m}/\rm{s}$, thus $\alpha = 1$ in this case. Similarly, when having units for instance $\rm{Js}$ or $\rm{K}$ "too much" on one side in natural units, one can correct with the reduced Planck constant $\hbar$ or Boltzmann constant $k_B$ to go to SI units. 
 
-Now, as can be seen from eq. (\ref{eq:tau_ode}), there is one problem however; we need to know the electron density. We will address this problem in the next subsection.
+Now, as can be seen from eq. (\ref{eq:tau_ode}), there is one problem however; we need to know the electron density. We will address this problem in the following subsection.
 
 \subsection{The Free Electron Fraction and Density}
-In order to compute the optical depth we need to know the free electron density $n_e$. We can compute this through the free electron fraction $X_e$ and use the baryon, i.e. hydrogen density as a translational factor. We thus get that the electron density as a function of the electron fraction and the hydrogen (baryon) density is 
+In order to compute the optical depth we need to know the free electron density $n_e$. We can compute this through the free electron fraction $X_e$ and use the baryon, i.e. hydrogen density, as a translational factor. We thus get that the electron density as a function of the electron fraction and the hydrogen density is 
 \begin{align}
     n_e = X_e n_H,
 \end{align}
@@ -63,13 +67,13 @@ where
 \begin{align}
     n_H = n_b \approx \frac{\rho_b}{m_H} = \frac{\Omega_{b0} \rho_{c0}}{m_H a^3},
 \end{align}
-where we have assumed all baryons to be in hydrogen. This should be a reasonable approximation since the hydrogen atoms comprise almost all of the baryons in the universe. Here the baryon density parameter and the critcal density today are given as their regular expressions found in and computed in \cite{stutzer:2020}. The time dependence of the baryon density is solely in the scale factor dependent $a^{-3} = e^{-3x}$ factor. 
+where we have assumed all baryons to be in hydrogen. This should be a reasonable approximation since the hydrogen atoms are the dominant species of baryons in the universe. Here the baryon density parameter and the critical density today are given as their regular expressions found in and computed in \cite{stutzer:2020}. The time dependence of the baryon density is solely in the scale factor dependent $a^{-3} = e^{-3x}$ factor. 
 
-The remaining job to find $n_e$, through finding $X_e$. This turns out to be the hardest part of the total work. We can find $X_e$ through solving the Boltzmann equation for a recombination/ionization reaction of the type $e^{-} + p^{+} \rightleftharpoons H + \gamma$. The Boltzmann equation, $df/dt = C$, describes the change of the distribution function $f$ of a given particle species that interacts with other species (with interaction term $C$). A thorough treatment of the problem shown in \cite{dodelson:2003}, and we will merely show a rough overview. At early times the energies of the constituent particles were high enough to keep the (ionization/recombination) reaction in equilibrium. As long at the reaction is close to equilibrium Saha's approximation \citep[p. 70]{dodelson:2003} ensures that 
+The remaining work is to find $n_e$, through finding $X_e$. This turns out to be the hardest part of the total work. We can find $X_e$ through solving the Boltzmann equation for a recombination/ionization reaction of the type $e^{-} + p^{+} \rightleftharpoons H + \gamma$. The Boltzmann equation, $df/dt = C$, describes the change of the distribution function $f$ (space$\times$momentum-dimensional distribution) of a given particle species that interacts with other species (with interaction term $C$). A thorough treatment of the problem shown in \cite{dodelson:2003}, and we will merely show a rough overview. At early times the energies of the constituent particles were high enough to keep the (ionization/recombination) reaction in or close to equilibrium. As long at the reaction is close to equilibrium Saha's approximation \citep[p. 70]{dodelson:2003} ensures that 
 \begin{align}
     \frac{n_e n_p}{n_H} = \frac{n_e^{(0)}n_p^{(0)}}{n_H^{(0)}},
 \end{align}
-where the $n_i^{(0)}$ denote the equilibrium distribution species $i$. That is because sufficiently close to the equilibrium the ration between the reactant's densities (on each side of the reaction equation) equals the same ratio at equilibrium. As the universe's charge is net zero, we can safely assume their to be as many free electrons as protons, i.e. $n_e = n_p = n_H$ (assuming that all baryons are protons/hydrogen). The Saha approximation and the given assumptions can be rewritten to get the Saha equation for recombination given as 
+where the $n_i^{(0)}$ denote the equilibrium distribution species $i$. That is because sufficiently close to the equilibrium the ration between the reactant's densities (on each side of the reaction equation) equals the same ratio at equilibrium. As the universe's net charge is zero, we can safely assume their to be as many free electrons as free protons, i.e. $n_e = n_p = n_H$ (assuming that all baryons are protons/hydrogen). The Saha approximation and the given assumptions can be rewritten to get the Saha equation for recombination given as 
 \begin{align}
     \frac{X_e^2}{1 - X_e} = \frac{1}{n_b} \left(\frac{m_e
     T_bk_B}{2\pi\hbar^2}\right)^{3/2} e^{-\epsilon_0/T_bk_B} \equiv R
@@ -82,12 +86,13 @@ T_r = T_{\rm CMB} / a = 2.7255 \textrm{K} / a$.
 Because eq. (\ref{eq:Saha_eq}) is a simple quadratic equation its solution is simply 
 $X_e = \frac{1}{2} (-R \pm \sqrt{R^2 + 4R})$, where $R$ stand for the r.h.s. of Saha's equation. Note that only the "+"-solution is physically valid. We will also briefly come back to this solution in sec. \ref{subsec:implementation} to discuss some numerical issues with this solution.
 
-We have, however, not yet found a complete solution, since the Saha equation is only valid if $X_e$ is close to unity, i.e. close to equilibrium. To solve for $X_e$ if $X_e$ falls below some tolerance, which we choose to be $X_e = 0.99$ than we need to use the better approximation to $X_e$ given by the Peebles' equation
+We have, however, not yet found a complete solution, since the Saha equation is only valid if $X_e$ is close to unity, i.e. close to equilibrium. To solve for $X_e$ if $X_e$ falls below some tolerance, which we choose to be $X_e = 0.99$, we need to use the better approximation to $X_e$ given by the Peebles' equation
 \begin{align}
     \frac{dX_e}{dx} = \frac{C_r(T_b)}{H} \left[\beta(T_b)(1-X_e) - n_H
               \alpha^{(2)}(T_b)X_e^2\right].
     \label{eq:peebles}
 \end{align}
+The two terms of the equation represent "creation" and "distribution" of free electrons respective according to the reaction equation stated earlier. 
 Here 
 \begin{align}
     C_r(T_b) &= \frac{\Lambda_{2s\rightarrow1s} +
@@ -103,9 +108,11 @@ Here
               \sigma_T c\sqrt{\frac{\epsilon_0}{T_bk_B}}\phi_2(T_b) \\
     \phi_2(T_b) &= 0.448\ln(\epsilon_0/T_bk_B),
 \end{align}
-are constants describing simple atomic transitions between the ground state of hydrogen (1s) and the first excited state (2s) \citep[]{winther:2020}. We need to consider at least the first excited state of hydrogen, because a recombination to the ground state would simply again produce an ionizing photon, which in turn would ionize another atom. Thus there would not be a net effect. Thus we need to consider recombination to the fist excited state, which produces a lower-energy photon that is not able to again ionize further atoms \citep[p. 71]{dodelson:2003}. Importantly, Peebles equation is also simply a first order approximation for $X_e$. A more thorough handling would be to include different atomic species as well as several more transitions. We will however stick with our two level hydrogen model. Note we have included all the necessary constants to translate the system of equation to the SI system. 
+are constants describing simple atomic transitions between the ground state of hydrogen (1s) and the first excited state (2s) \citep[]{winther:2020}. We need to consider at least the first excited state of hydrogen, because a recombination to the ground state would simply again produce an ionizing photon, which in turn would ionize another atom. Thus there would not be a net effect. Thus we need to consider recombination to the fist excited state, which produces a lower-energy photon that is not able to again ionize further atoms \citep[p. 71]{dodelson:2003}. Importantly, Peebles equation is also simply a first order approximation for $X_e$. A more thorough handling would be to include different atomic species as well as several more transitions. We will however stick with our two level hydrogen model, as it should be sufficiently accurate for our purposes.
 
-Note that even though Peebles equation is a valid solution of the Boltzmann equation for this reaction, it diverges at early times in our case. One way to see this is that $n_{1s}$ becomes very small (or even zero) when approaching $X_e = 1$ at early times. Since we devide by $n_{1s}$ in $\Lambda_\alpha$ we get a divergence. Thus we must use both Saha and Peebles equations, in their respective era of validity, in order to solve to complete problem.
+For comparison sake we will later compute the full Saha+Peebles solution together with the Saha only solution. Since the Saha only solution is expected to drop exponentially once outside its validity regime, we expect it to predict an earlier recombination time (when $X_e = 0.5$) than the complete solution.
+
+Note that even though Peebles equation is a valid solution of the Boltzmann equation for this reaction, it diverges at early times in our case. One way to see this is that $n_{1s}$ becomes very small (or even zero) when approaching $X_e = 1$ at early times. Since we devide by $n_{1s}$ in $\Lambda_\alpha$ we get a divergence. Thus we must use both Saha and Peebles equations, in their respective era of validity, in order to solve the complete problem.
 
 The Peebles' equation is simply another linear ODE which we can simply solve using the \texttt{ODEsolver}-routine by \cite{winther:2020} as discussed in sec. \ref{subsec:implementation}. Now that we have an expression for $X_e$ we can as mentioned earlier easily find $n_e$ and again use the \texttt{ODEsolver}-routine to find the optical depth $tau$.
 
@@ -115,19 +122,19 @@ The only remaining quantity we need to compute is the visibility function
 \begin{align}
     \tilde{g}(x) = -\dv{\tau}{x} e^{-\tau},
 \end{align}
-which quantities the probability density for a photon to (last) scatter at a given log-scale factor $x$. It is a true probability density function (PDF), meaning it  integrates to unity over all of the universes history. The time of last scattering $x_\text{lss}$ will thus correspond to the peak of $\tilde{g}$ and marks the last-scattering-surface (lss) where photons decouple (hence also called decoupling). 
+which quantities the probability density for a photon to last scatter at a given log-scale factor $x$ before decoupling from matter. It is a true probability density function (PDF), meaning it  integrates to unity over all of the universe's history. The time of last scattering $x_\text{lss}$ will thus correspond to the peak of $\tilde{g}$ and marks the last-scattering-surface (lss) where photons decouple (hence also called decoupling). This point is the point of highest probability density of last scattering and corresponds to where $\tau = 1$. 
 
 \begin{figure*}
     \includegraphics[scale = 0.65]{Figures/Xe_ne_tau.pdf}
     \caption{\textbf{Upper left}: Figure showing the free electron fraction $X_e$ 
-    as a function of the log-scale factor $x$. \textbf{Upper right}: Figure showing the free electron density $n_e$
+    as a function of the log-scale factor $x$ for both the general and the Saha only solution. The times of recombination for the two solutions are marked with dots. \textbf{Upper right}: Figure showing the free electron density $n_e$
     as a function of the log-scale factor $x$. \textbf{Lower panel}: Figure showing the optical depth $\tau(x)$ of the universe due to 
-    Thomson scattering on free electrons only, as well at the derivative $\tau'(x)$ and second oder derivative $\tau''(x)$ w.r.t 
+    Thomson scattering on free electrons only, as well as the derivative $\tau'(x)$ and second oder derivative $\tau''(x)$ w.r.t 
     and as functions of the log-scale factor $x$. The surface of last scattering corresponding to $\tau = 1$ is marked by a red dot. \textbf{Note}: The background color in all the plots shows the epoch of dominance
-    for reference. Yellow marked the era of radiation dominance, blue the epoch of matter domination
+    for reference. Yellow markes the era of radiation dominance, blue the epoch of matter domination
     and purple corresponds to the epoch of dark energy. The color domain is found by checking 
     when the corresponding density parameter is dominant,
-    however, in reality the transitions between each epoch should be smoother than shown.}
+    however, in reality the transitions between each epoch should be smoother than shown here.}
     \label{fig:Xe}
 \end{figure*}
 
@@ -166,7 +173,7 @@ The results produced were computed with the same cosmological parameters used as
 
 In Figure \ref{fig:Xe} one can see the resulting solution of the electron fraction $X_e(x)$, the electron density $n_e(x)$ as well as the optical depth $\tau(x)$ as well as its derivatives, all as functions of the log-scale factor $x$. 
 
-When looking at the electron fraction $Xe$ we see that it initially behaves like a constant. This is the phase of the universes history where the temperatures are so high that almost all hydrogen will be instantly ionized, therefore yielding a electron fraction $X_e = 1$, as there is one electron for all protons (ionized hydrogen). Here we are still very close to equilibrium. Then shortly after matter-radiation equality (see color code in caption) the free electron fraction starts to drop rapidly, eventually passing the point of recombination $X_e = 0.5$ at $x \approx -7.16$ or redshift $z \approx 1285.7$ (see red dot) at which time there is double the amount of hydrogen compared to free electrons. By now we are well within the regime of the Peebles solution. Once too far from equilibrium, the Saha solution will simply drop to zero in an exponential fashion, because we are outside the era where Saha is valid. We indeed see that $X_e$ drops fast as more and more hydrogen is forming from free electrons and protons. But rather than dropping totally to zero $X_e$ eventually stars flattening out at $X_e \sim 10^{-4}$. When the electron fraction flattens out and becomes roughly constant, the electrons are frozen out, because the spatial distance between the reactants becomes too large for recombination reactions to happen. Being mostly neutral as there are now few free electrons, photons rarely scatter, making the universe mostly transparent. This is also seen in the optical depth, which is low well after recombination has happened.
+When looking at the electron fraction $Xe$ we see that it initially behaves like a constant. This is the phase of the universe's history where the temperatures are so high that almost all hydrogen will be instantly ionized, therefore yielding a electron fraction $X_e = 1$, as there is one electron for all protons (ionized hydrogen). Here we are still very close to equilibrium. Then shortly after matter-radiation equality (see color code in caption) the free electron fraction starts to drop rapidly, eventually passing the point of recombination $X_e = 0.5$ at $x \approx -7.16$ or redshift $z \approx 1285.7$ (see red dot) at which time there is double the amount of hydrogen compared to free electrons. For the Saha only solution this occurred at $x = -7.23$ or $z = 1379.25$ (see green dot). Once too far from equilibrium, the Saha solution will simply drop to zero in an exponential fashion, because we are outside the era where Saha is valid, and thus predict an earlier recombination time. We see that the complete solution of $X_e$ drops fast too as more and more hydrogen is forming from free electrons and protons. But rather than dropping totally to zero $X_e$ eventually starts flattening out at $X_e \sim 10^{-4}$. When the electron fraction flattens out and becomes roughly constant, the electrons are frozen out, because the spatial distance between the reactants becomes too large for recombination reactions to happen. Being mostly neutral as there are now few free electrons, photons rarely scatter, making the universe mostly transparent. This is also seen in the optical depth, which is low well after recombination has happened.
 
 The free electron density as seen in the left upper panel of Figure \ref{fig:Xe}, also behaves as expected. We see that in the two regimes before and after around recombination, the graph behaves linearly. Since the electron density is proportional to the inverse of the scale factor $a$ cubed, we should see $n_e$ dropping with a linear slope of $-3$ in a log-log (base 10) plot. This is exactly what we see (keep in mind that the $x$-axis is in a natural log-scale). The linear regimes of $n_e$ thus correspond to when $X_e$ is stable at $X_e = 1$ and $X_e\sim 10^{-4}$ initially and at the end, and the bend in $n_e$ correspondingly is due to the fall-off of the electron fraction due to an increasing recombination. 
 
