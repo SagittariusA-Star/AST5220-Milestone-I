@@ -30,15 +30,16 @@ Omega_m     = OmegaCDM + OmegaB
 
 # Loading data from file
 recombo_data = np.loadtxt("recombination.txt")
-x = recombo_data[:, 0]
-Xe = recombo_data[:, 1]
-ne = recombo_data[:, 2] * u.m ** (- 3)
-tau = recombo_data[:, 3]
-dtaudx = recombo_data[:, 4]
-ddtaudxdx = recombo_data[:, 5]
-g_tilde = recombo_data[:, 6]
-dg_tildedx = recombo_data[:, 7]
-ddg_tildeddx = recombo_data[:, 8]
+x               = recombo_data[:, 0]
+Xe              = recombo_data[:, 1]
+ne              = recombo_data[:, 2] * u.m ** (- 3)
+tau             = recombo_data[:, 3]
+dtaudx          = recombo_data[:, 4]
+ddtaudxdx       = recombo_data[:, 5]
+g_tilde         = recombo_data[:, 6]
+dg_tildedx      = recombo_data[:, 7]
+ddg_tildeddx    = recombo_data[:, 8]
+Saha_Xe         = recombo_data[:, 9]
 
 
 # Computing printout data
@@ -46,6 +47,9 @@ g_integral      = np.trapz(g_tilde, x = x)
 x_rec           = x[np.argmin(np.abs(Xe - 0.5))]
 a_rec           = np.exp(x_rec)
 z_rec           = 1 / a_rec - 1
+Saha_x_rec      = x[np.argmin(np.abs(Saha_Xe - 0.5))]
+Saha_a_rec           = np.exp(Saha_x_rec)
+Saha_z_rec           = 1 / Saha_a_rec - 1
 log_rel_error   = np.log10(np.abs(g_integral - 1))
 x_lss           = x[np.where(g_tilde == g_tilde.max())][0]
 a_lss           = np.exp(x_lss)
@@ -61,6 +65,7 @@ print("Maximum of g_tilde: x = {0}, g_tilde = {1}".format(x_lss, g_max))
 print("Optical depth: tau = {0} at x = {1}".format(tau_transparent, x_transparent))
 print("Redshift at last scattering: z = {0}".format(z_lss))
 print("Recombination (Xe = 0.5): x = {0}, z = {1}".format(x_rec, z_rec))
+print("Recombination Saha (Xe = 0.5): x = {0}, z = {1}".format(Saha_x_rec, Saha_z_rec))
 print("-------------------------------------------------------------------------------")
 
 # Generating plots
@@ -68,14 +73,18 @@ fig = plt.figure(figsize=[1.5 * 7.1014, 1.5 * 7.1014 / 1.618])
 
 # Plotting electron fraction
 ax10 = plt.subplot(221)
-ax10.scatter(x_rec, Xe[np.where(x == x_rec)], color = "r", label=r"$(x_{rec}, X_{e,rec})$")
-ax10.plot(x, Xe, label=r"$X_e(x)$")
+ax10.scatter(x_rec, Xe[np.where(x == x_rec)], color = "r", label=r"$(x_{rec}, X_{e,rec})$", zorder = 3)
+ax10.plot(x, Xe, label=r"$X_e(x)$", zorder = 1)
 ax10.text(-10, Xe[np.where(x == x_rec)], r"$({0:.2f}, {1:.2f})$".format(x_rec, 0.5), color = "r")
-ax10.legend()
+ax10.scatter(Saha_x_rec, Saha_Xe[np.where(x == Saha_x_rec)], color = "g", zorder = 4, label=r"$(x_{rec}, X_{e,rec}^{Saha})$")
+ax10.plot(x, Saha_Xe, label=r"$X_e^{Saha}(x)$", zorder = 2)
+ax10.text(-10, 0.5 * Saha_Xe[np.where(x == Saha_x_rec)], r"$({0:.2f}, {1:.2f})$".format(Saha_x_rec, 0.5), color = "g")
+ax10.legend(fontsize = 16)
 ax10.set_xlabel(r"$x = \log (a)$")
 ax10.set_ylabel(r"$X_e \approx n_e / n_H$")
 ax10.set_yscale("log")
 ax10.set_xlim(-12, 0)
+ax10.set_ylim(1.5e-4, 5)
 ax10.axvspan(
     np.min(x),
     x[np.where(OmegaB + OmegaCDM >= OmegaLambda + OmegaR)][0],
@@ -267,4 +276,4 @@ ax1[1, 1].axvspan(
 
 fig1.tight_layout()
 fig1.savefig("../doc/Figures/g_tilde.pdf", dpi=1000)
-
+plt.show()

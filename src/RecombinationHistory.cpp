@@ -30,10 +30,14 @@ void RecombinationHistory::solve(){
 
 void RecombinationHistory::solve_number_density_electrons(){
   Utils::StartTiming("Xe");
-  
+
+  //Setting up vectors to be filled
   Vector x_array(npts_rec_arrays);
   Vector Xe_arr(npts_rec_arrays);
   Vector ne_arr(npts_rec_arrays);
+
+  // Vector of data for Saha only solution
+  Vector Saha_Xe_arr(npts_rec_arrays);
 
   x_array = Utils::linspace(x_start, x_end, npts_rec_arrays);
   
@@ -49,6 +53,12 @@ void RecombinationHistory::solve_number_density_electrons(){
     const double Xe_current = Xe_ne_data.first;
     const double ne_current = Xe_ne_data.second;
 
+    Saha_Xe_arr[i] = Xe_current;
+
+    // Setting Saha solution to zero if too small
+    if(Xe_current <= 1e-16 || std::isnan(Xe_current))
+      Saha_Xe_arr[i] = 1e-20;
+
     // Are we still in the Saha regime?
     if(Xe_current < Xe_saha_limit)
       saha_regime = false;      
@@ -57,7 +67,7 @@ void RecombinationHistory::solve_number_density_electrons(){
       Xe_arr[i] = Xe_current;
       ne_arr[i] = ne_current;
     } 
-    
+
     else {
 
       // The Peebles ODE equation
@@ -85,11 +95,13 @@ void RecombinationHistory::solve_number_density_electrons(){
     }
   }
 
-  // Generating log spline for log of Xe and ne arrays
+  // Generating log spline for log of Xe and ne arrays (as well as Saha only for Xe)
   Vector log_Xe = log(Xe_arr);
+  Vector Saha_log_Xe = log(Saha_Xe_arr);
   Vector log_ne = log(ne_arr);
-
+  
   log_Xe_of_x_spline.create(x_array, log_Xe, "Spline of log Xe(x)");
+  Saha_log_Xe_of_x_spline.create(x_array, Saha_log_Xe, "Saha Spline of log Xe(x)");
   log_ne_of_x_spline.create(x_array, log_ne, "Spline of log ne(x)");
 
   Utils::EndTiming("Xe");
@@ -322,6 +334,11 @@ double RecombinationHistory::Xe_of_x(double x) const{
   return exp(log_Xe_of_x_spline(x));
 }
 
+double RecombinationHistory::Saha_Xe_of_x(double x) const{
+  // Compute electron fraction as a function of x from Saha equation
+  return exp(Saha_log_Xe_of_x_spline(x));
+}
+
 double RecombinationHistory::ne_of_x(double x) const{
   // Compute electron density as a function of x
   return exp(log_ne_of_x_spline(x));
@@ -362,6 +379,7 @@ void RecombinationHistory::output(const std::string filename) const{
     fp << g_tilde_of_x(x)      << " ";
     fp << dgdx_tilde_of_x(x)   << " ";
     fp << ddgddx_tilde_of_x(x) << " ";
+    fp << Saha_Xe_of_x(x)      << " ";
     fp << "\n";
   };
   std::for_each(x_array.begin(), x_array.end(), print_data);
