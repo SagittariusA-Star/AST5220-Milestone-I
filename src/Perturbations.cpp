@@ -299,6 +299,19 @@ double Perturbations::get_tight_coupling_time(const double k) const{
   //=============================================================================
   // ...
   // ...
+  double npts = 5e3;
+  double tol = (Constants.x_end - Constants.x_start) / npts;
+  double Xe;
+
+  Vector x = Utils::linspace(Constants.x_start, Constants.x_end, npts);
+  double x_tc;
+  double dtaudx = cosmo -> dtaudx(Constants.x_end);
+  double diff1 = std::fabs(std::fabs(dtaudx) - );
+  double diff2 = std::fabs(std::fabs(dtaudx) - );
+  for (int i = 1; i < npts; i++){
+    
+    if 
+  } 
 
   return x_tight_coupling_end;
 }
