@@ -171,7 +171,7 @@ Vector Perturbations::set_ic(const double x, const double k) const{
   double Hp = cosmo -> Hp_of_x(x);
   double dtaudx = rec -> dtaudx_of_x(x);
 
-  double Psi_init = - 1.0 / (3.0 / 2.0);
+  double Psi_init = - 2.0 / 3.0;
   Phi             = - Psi_init;
   delta_cdm       = - 3.0 / 2.0 * Psi_init;
   delta_b         = delta_cdm;
@@ -267,10 +267,10 @@ Vector Perturbations::set_ic_after_tight_coupling(
   Theta[1] = Theta_tc[1];
   Theta[2] = - 20.0 * Constants.c * k / (45.0 * Hp * dtaudx);
   
-  for (int ell = 3; ell < Constants.n_ell_theta; ell++){
+  
+for (int ell = 3; ell < Constants.n_ell_theta; ell++){
     Theta[ell] = - ell / (2 * ell + 1) * Constants.c * k / (Hp * dtaudx) * Theta[ell - 1];
   }
-
   // SET: Photon polarization perturbations (Theta_p_ell)
   if(polarization){
     // ...
@@ -413,6 +413,8 @@ int Perturbations::rhs_tight_coupling_ode(double x, double k, const double *y, d
   const double dtaudx         = rec -> dtaudx_of_x(x);
   const double ddtauddx       = rec -> ddtauddx_of_x(x);
   const double R              = 4 * OmegaR0 / (3 * OmegaB0) * exp(- x);
+  double q;
+
   // SET: Scalar quantities (Phi, delta, v, ...)
   // ...
   // ...
@@ -431,8 +433,13 @@ int Perturbations::rhs_tight_coupling_ode(double x, double k, const double *y, d
   dv_cdmdx     = - v_cdm - ckHp * Psi;
   ddelta_bdx   = ckHp * v_b - 3 * dPhidx;
 
+
+
+  // SET: Photon multipoles (Theta_ell)
+  // ...
+  // ...
   dThetadx[0]  = - ckHp * Theta[1] - dPhidx;
-  double q     = - ((1 - R)  dtaudx + (1 + R) * ddtauddx) * (3 * Theta[1] + v_b)
+  q            = - ((1 - R)  dtaudx + (1 + R) * ddtauddx) * (3 * Theta[1] + v_b)
                 - ckHp * Psi
                 + ckHp * (1 - dHpdx / Hp) * (-Theta[0] + 2 * Theta[2]) 
                 - ckHp * dThetadx[0];
@@ -440,21 +447,6 @@ int Perturbations::rhs_tight_coupling_ode(double x, double k, const double *y, d
   dv_bdx       = (- v_b - ckHp * Psi + R * (q + ckHp * (-Theta[0] + 2 * Theta[2]) - ckHp * Psi))
                   / (1 + R);
   dThetadx[1]  = (q - dv_bdx) / 3.0;
-  dThetadx[2]  =  2.0 / 5.0 * ckHp * Theta[1] 
-                - 3.0 / 5.0 * ckHp * Theta[3] + dtaudx * (Theta[2] 
-                - 1.0 / 10.0 * Theta[2]);
-
-  for (int ell = 3; ell < Constants.n_ell_theta_tc; ell++){   
-    dThetadx[ell] =   ell / (2.0 * ell + 1.0) * ckHp * Theta[ell - 1]
-                    - (ell + 1.0) / (2.0 * ell + 1.0) * ckHp * Theta[ell + 1]
-                    + dtaudx * Theta[ell]; 
-  }
-  
-
-
-  // SET: Photon multipoles (Theta_ell)
-  // ...
-  // ...
 
   // SET: Neutrino mutlipoles (Nu_ell)
   if(neutrinos){
@@ -508,6 +500,24 @@ int Perturbations::rhs_full_ode(double x, double k, const double *y, double *dyd
   // Cosmological parameters and variables
   // double Hp = cosmo->Hp_of_x(x);
   // ...
+  const double H0             = cosmo -> get_H0();
+  const double Hp             = cosmo -> Hp_of_x(x);
+  const double dHpdx          = cosmo -> dHpdx_of_x(x);
+  const double c              = Constants.c; 
+  // Often used combination of constants
+  const double ckHp           = c * k / Hp;
+  const double OmegaR0        = cosmo -> get_OmegaR(0);
+  const double OmegaCDM0      = cosmo -> get_OmegaCDM(0);
+  const double OmegaB0        = cosmo -> get_OmegaB(0);
+  const double OmegaLambda0   = cosmo -> get_OmegaLambda(0);
+  const double dtaudx         = rec -> dtaudx_of_x(x);
+  const double ddtauddx       = rec -> ddtauddx_of_x(x);
+  const double R              = 4 * OmegaR0 / (3 * OmegaB0) * exp(- x);
+  const double eta            = cosmo -> eta_of_x(x);
+  const double ell_max = Constants.n_ell_theta_tc - 1;
+  double q;
+
+
 
   // Recombination variables
   // ...
@@ -520,11 +530,42 @@ int Perturbations::rhs_full_ode(double x, double k, const double *y, double *dyd
   // ...
   // ...
   // ...
+  double Psi = - Phi - 12.0 * H0 * H0 / (c * c * k * k * exp(2 * x)) 
+                     * OmegaR0 * Theta[2];
+  
+  dPhidx = Psi - c * c * k * k / (3 * Hp * Hp) * Phi
+               + H0 * H0 / (2 * Hp * Hp) 
+               * (OmegaCDM0 * exp(-x) * delta_cdm
+               +  OmegaB0 * exp(-x) * delta_b
+               + 4 * OmegaR0 * exp(- 2 * x) * Theta[0]);
+  
+  ddelta_cdmdx = ckHp * v_cdm - 3 * dPhidx;
+  dv_cdmdx     = - v_cdm - ckHp * Psi;
+  ddelta_bdx   = ckHp * v_b - 3 * dPhidx;
+  dv_bdx       = - v_b - ckHp * Psi + R * dtaudx * (3.0 * Theta[1] + v_b);
 
   // SET: Photon multipoles (Theta_ell)
   // ...
   // ...
   // ...
+  dThetadx[0]  = - ckHp * Theta[1] - dPhidx;
+  dThetadx[1]  =  ckHp / 3.0 * Theta[0] 
+                  - 2.0 / 3.0 * ckHp * Theta[2] 
+                  + ckHp / 3.0 * Psi 
+                  + dtaudx * (Theta[1] + v_b / 3.0);
+
+  dThetadx[2]  =  2.0 / 5.0 * ckHp * Theta[1] 
+                - 3.0 / 5.0 * ckHp * Theta[3] + dtaudx * (Theta[2] 
+                - 1.0 / 10.0 * Theta[2]);
+
+  for (int ell = 3; ell < Constants.n_ell_theta_tc - 1; ell++){   
+    dThetadx[ell] =   ell / (2.0 * ell + 1.0) * ckHp * Theta[ell - 1]
+                    - (ell + 1.0) / (2.0 * ell + 1.0) * ckHp * Theta[ell + 1]
+                    + dtaudx * Theta[ell]; 
+  }
+  dThetadx[ell_max] = ckHp * Theta[ell_max - 1]
+                    - (ell_max + 1.0) / (Hp * eta) * c * Theta[ell_max]
+                    + dtaudx * Theta[ell_max];
 
   // SET: Photon polarization multipoles (Theta_p_ell)
   if(polarization){
