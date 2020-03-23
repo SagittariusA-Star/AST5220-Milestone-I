@@ -172,10 +172,10 @@ Vector Perturbations::set_ic(const double x, const double k) const{
   double dtaudx = rec -> dtaudx_of_x(x);
 
   double Psi_init = - 1.0 / (3.0 / 2.0);
-  Phi = - Psi_init;
-  delta_cdm = - 3.0 / 2.0 * Psi_init;
-  delta_b = delta_cdm;
-  v_cdm = - Constants.c * k / (2.0 * Hp) * Psi_init;
+  Phi             = - Psi_init;
+  delta_cdm       = - 3.0 / 2.0 * Psi_init;
+  delta_b         = delta_cdm;
+  v_cdm           = - Constants.c * k / (2.0 * Hp) * Psi_init;
   // SET: Photon temperature perturbations (Theta_ell)
   // ...
   // ...
@@ -266,10 +266,11 @@ Vector Perturbations::set_ic_after_tight_coupling(
   Theta[0] = Theta_tc[0];
   Theta[1] = Theta_tc[1];
   Theta[2] = - 20.0 * Constants.c * k / (45.0 * Hp * dtaudx);
+  
   for (int ell = 3; ell < Constants.n_ell_theta; ell++){
     Theta[ell] = - ell / (2 * ell + 1) * Constants.c * k / (Hp * dtaudx) * Theta[ell - 1];
   }
-  
+
   // SET: Photon polarization perturbations (Theta_p_ell)
   if(polarization){
     // ...
@@ -399,12 +400,13 @@ int Perturbations::rhs_tight_coupling_ode(double x, double k, const double *y, d
   //=============================================================================
   // TODO: fill in the expressions for all the derivatives
   //=============================================================================
-
+  double const H0 = cosmo -> get_H0();
   // SET: Scalar quantities (Phi, delta, v, ...)
   // ...
   // ...
   // ...
-
+  double Psi = - Phi - 12.0 * 
+  dPhidx = Psi 
   // SET: Photon multipoles (Theta_ell)
   // ...
   // ...
