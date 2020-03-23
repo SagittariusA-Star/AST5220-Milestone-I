@@ -400,13 +400,31 @@ int Perturbations::rhs_tight_coupling_ode(double x, double k, const double *y, d
   //=============================================================================
   // TODO: fill in the expressions for all the derivatives
   //=============================================================================
-  double const H0 = cosmo -> get_H0();
+  const double H0       = cosmo -> get_H0();
+  const double Hp       = cosmo -> Hp_of_x(x);
+  const double c        = Constants.c; 
+  const double OmegaR0  = cosmo -> get_OmegaR(0);
+  const double OmegaCDM0  = cosmo -> get_OmegaCDM(0);
+  const double OmegaB0    = cosmo -> get_OmegaB(0);
+  const double OmegaLambda0  = cosmo -> get_OmegaLambda(0);
+  const double dtaudx        = rec -> dtaudx_of_x(x);
+  const double R             = 4 * OmegaR0 / (3 * OmegaB0) * exp(- x);
   // SET: Scalar quantities (Phi, delta, v, ...)
   // ...
   // ...
   // ...
-  double Psi = - Phi - 12.0 * 
-  dPhidx = Psi 
+  double Psi = - Phi - 12.0 * H0 * H0 / (c * c * k * k * exp(2 * x)) 
+                     * OmegaR0 * Theta[2];
+  dPhidx = Psi - c * c * k * k / (3 * Hp * Hp) * Phi
+               + H0 * H0 / (2 * Hp * Hp) 
+               * (OmegaCDM0 * exp(-x) * delta_cdm
+               +  OmegaB0 * exp(-x) * delta_b
+               + 4 * OmegaR0 * exp(- 2 * x) * Theta[0]);
+  
+  ddelta_cdmdx = c * k / Hp * v_cdm - 3 * dPhidx;
+  dv_cdmdx     = - v_cdm - c * k / Hp * Psi;
+  ddelta_bdx   = c * k / Hp * v_b - 3 * dPhidx;
+  dv_bdx       = - v_b - c * k / Hp * Psi + dtaudx * R * (3 * Theta[1] + v_b);
   // SET: Photon multipoles (Theta_ell)
   // ...
   // ...
