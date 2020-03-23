@@ -430,14 +430,25 @@ int Perturbations::rhs_tight_coupling_ode(double x, double k, const double *y, d
   ddelta_cdmdx = ckHp * v_cdm - 3 * dPhidx;
   dv_cdmdx     = - v_cdm - ckHp * Psi;
   ddelta_bdx   = ckHp * v_b - 3 * dPhidx;
-  dv_bdx       = - v_b - ckHp * Psi + dtaudx * R * (3 * Theta[1] + v_b);
 
   dThetadx[0]  = - ckHp * Theta[1] - dPhidx;
-  double q   = - ((1 - R)  dtaudx + (1 + R) * ddtauddx) * (3 * Theta[1] + v_b)
-               - ckHp * Psi
-               + ckHp * (1 - dHpdx / Hp) * (-Theta[0] + 2 * Theta[2]) 
-               - ckHp * dThetadx[0];
-  q         /= (1 + R) * dtaudx + dHpdx / Hp - 1;
+  double q     = - ((1 - R)  dtaudx + (1 + R) * ddtauddx) * (3 * Theta[1] + v_b)
+                - ckHp * Psi
+                + ckHp * (1 - dHpdx / Hp) * (-Theta[0] + 2 * Theta[2]) 
+                - ckHp * dThetadx[0];
+  q           /= (1 + R) * dtaudx + dHpdx / Hp - 1;
+  dv_bdx       = (- v_b - ckHp * Psi + R * (q + ckHp * (-Theta[0] + 2 * Theta[2]) - ckHp * Psi))
+                  / (1 + R);
+  dThetadx[1]  = (q - dv_bdx) / 3.0;
+  dThetadx[2]  =  2.0 / 5.0 * ckHp * Theta[1] 
+                - 3.0 / 5.0 * ckHp * Theta[3] + dtaudx * (Theta[2] 
+                - 1.0 / 10.0 * Theta[2]);
+
+  for (int ell = 3; ell < Constants.n_ell_theta_tc; ell++){   
+    dThetadx[ell] =   ell / (2.0 * ell + 1.0) * ckHp * Theta[ell - 1]
+                    - (ell + 1.0) / (2.0 * ell + 1.0) * ckHp * Theta[ell + 1]
+                    + dtaudx * Theta[ell]; 
+  }
   
 
 
