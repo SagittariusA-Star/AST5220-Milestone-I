@@ -168,10 +168,17 @@ Vector Perturbations::set_ic(const double x, const double k) const{
   // SET: Scalar quantities (Gravitational potential, baryons and CDM)
   // ...
   // ...
-
+  double Hp = cosmo -> Hp_of_x(x);
+  double Psi_init = - 1.0 / (3.0 / 2.0);
+  Phi = - Psi_init;
+  delta_cdm = - 3.0 / 2.0 * Psi_init;
+  delta_b = delta_cdm;
+  v_cdm = - Constants.c * k / (2.0 * Hp) * Psi_init;
   // SET: Photon temperature perturbations (Theta_ell)
   // ...
   // ...
+  Theta[0] = -0.5 * Psi_init;
+  Theta[1] = Constants.c * k / (6.0 * Hp) * Psi_init;
 
   // SET: Neutrino perturbations (N_ell)
   if(neutrinos){
@@ -244,7 +251,11 @@ Vector Perturbations::set_ic_after_tight_coupling(
   // SET: Scalar quantities (Gravitational potental, baryons and CDM)
   // ...
   // ...
-
+  Phi       = Phi_tc;
+  delta_cdm = delta_cdm_tc;
+  delta_b   = delta_b_tc;
+  v_cdm     = v_cdm_tc;
+  v_b       = v_b_tc;
   // SET: Photon temperature perturbations (Theta_ell)
   // ...
   // ...
