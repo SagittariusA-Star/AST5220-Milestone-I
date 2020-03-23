@@ -169,6 +169,8 @@ Vector Perturbations::set_ic(const double x, const double k) const{
   // ...
   // ...
   double Hp = cosmo -> Hp_of_x(x);
+  double dtaudx = rec -> dtaudx_of_x(x);
+
   double Psi_init = - 1.0 / (3.0 / 2.0);
   Phi = - Psi_init;
   delta_cdm = - 3.0 / 2.0 * Psi_init;
@@ -247,6 +249,8 @@ Vector Perturbations::set_ic_after_tight_coupling(
   // ...
   // ...
   // ...
+  double Hp = cosmo -> Hp_of_x(x);
+  double dtaudx = rec -> dtaudx_of_x(x);
 
   // SET: Scalar quantities (Gravitational potental, baryons and CDM)
   // ...
@@ -259,7 +263,13 @@ Vector Perturbations::set_ic_after_tight_coupling(
   // SET: Photon temperature perturbations (Theta_ell)
   // ...
   // ...
-
+  Theta[0] = Theta_tc[0];
+  Theta[1] = Theta_tc[1];
+  Theta[2] = - 20.0 * Constants.c * k / (45.0 * Hp * dtaudx);
+  for (int ell = 3; ell < Constants.n_ell_theta; ell++){
+    Theta[ell] = - ell / (2 * ell + 1) * Constants.c * k / (Hp * dtaudx) * Theta[ell - 1];
+  }
+  
   // SET: Photon polarization perturbations (Theta_p_ell)
   if(polarization){
     // ...

@@ -60,7 +60,7 @@ int main(int argc, char **argv){
   //=========================================================================
   // Module III
   //=========================================================================
-  std::cout << Constants.n_ell_tot_full << std::endl;
+  std::cout << Constants.n_ell_tot_tc << std::endl;
   return 0;
   // Solve the perturbations
   Perturbations pert(&cosmo, &rec);
