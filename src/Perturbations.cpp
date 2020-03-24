@@ -299,20 +299,30 @@ double Perturbations::get_tight_coupling_time(const double k) const{
   //=============================================================================
   // ...
   // ...
-  double npts = 5e3;
-  double tol = (Constants.x_end - Constants.x_start) / npts;
+  double x_transition;
+  double x_rec;
   double Xe;
-
+  double c = Constants.c;
+  double dtaudx;
+  double Hp;
+  int npts = 5e3;
   Vector x = Utils::linspace(Constants.x_start, Constants.x_end, npts);
-  double x_tc;
-  double dtaudx = cosmo -> dtaudx(Constants.x_end);
-  double diff1 = std::fabs(std::fabs(dtaudx) - );
-  double diff2 = std::fabs(std::fabs(dtaudx) - );
-  for (int i = 1; i < npts; i++){
-    
-    if 
-  } 
-
+  for (int i = 0; i < npts; i++){
+    Xe = rec -> Xe_of_x(x[i]);
+    dtaudx = rec -> dtaudx_of_x(x[i]);
+    Hp    = cosmo -> Hp_of_x(x[i]);
+    if (Xe < 0.5){
+      x_tight_coupling_end = x[i];
+      break; 
+    }
+    if (std::fabs(dtaudx) < 10 * std::min(1.0, c * k / Hp)){
+      x_tight_coupling_end = x[i];
+      break;
+    }
+    else {
+      std::cout << "Did not find any x_tight_coupling_end" << std::endl;
+    }
+  }
   return x_tight_coupling_end;
 }
 
@@ -452,7 +462,7 @@ int Perturbations::rhs_tight_coupling_ode(double x, double k, const double *y, d
   // ...
   // ...
   dThetadx[0]  = - ckHp * Theta[1] - dPhidx;
-  q            = - ((1 - R)  dtaudx + (1 + R) * ddtauddx) * (3 * Theta[1] + v_b)
+  q            = - ((1 - R) * dtaudx + (1 + R) * ddtauddx) * (3 * Theta[1] + v_b)
                 - ckHp * Psi
                 + ckHp * (1 - dHpdx / Hp) * (-Theta[0] + 2 * Theta[2]) 
                 - ckHp * dThetadx[0];
@@ -527,7 +537,7 @@ int Perturbations::rhs_full_ode(double x, double k, const double *y, double *dyd
   const double ddtauddx       = rec -> ddtauddx_of_x(x);
   const double R              = 4 * OmegaR0 / (3 * OmegaB0) * exp(- x);
   const double eta            = cosmo -> eta_of_x(x);
-  const double ell_max = Constants.n_ell_theta_tc - 1;
+  const int ell_max           = Constants.n_ell_theta_tc - 1;
   double q;
 
 
@@ -576,6 +586,7 @@ int Perturbations::rhs_full_ode(double x, double k, const double *y, double *dyd
                     - (ell + 1.0) / (2.0 * ell + 1.0) * ckHp * Theta[ell + 1]
                     + dtaudx * Theta[ell]; 
   }
+  
   dThetadx[ell_max] = ckHp * Theta[ell_max - 1]
                     - (ell_max + 1.0) / (Hp * eta) * c * Theta[ell_max]
                     + dtaudx * Theta[ell_max];

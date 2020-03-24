@@ -60,10 +60,12 @@ int main(int argc, char **argv){
   //=========================================================================
   // Module III
   //=========================================================================
+  /*
   std::pair<double,double> xrange (Constants.x_start, Constants.x_end);
   double tol = (Constants.x_end - Constants.x_start) / 5000; 
   double tau1 = Utils::binary_search_for_value(cosmo::tau_of_x_spline, 1.0, xrange, tol);
   std::cout << tau1 << std::endl;
+  */
   return 0;
   // Solve the perturbations
   Perturbations pert(&cosmo, &rec);
