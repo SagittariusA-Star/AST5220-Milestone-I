@@ -38,9 +38,16 @@ void Perturbations::integrate_perturbations(){
   // quadratic or a logarithmic spacing
   //===================================================================
   Vector k_array(n_k);
+  double dk = (Constants.k_max - Constants.k_min) / (n_k - 1.0);
+  Vector x_all = Utils::linspace(x_start, x_end, n_x);
+  Vector x_tc;
+  Vector x_after_tc;
+  double len_tc;
 
   // Loop over all wavenumbers
   for(int ik = 0; ik < n_k; ik++){
+    k_array[ik] = log10(Constants.k_min) + ik * dk;
+    k_array = exp(k_array);
 
     // Progress bar...
     if( (10*ik) / n_k != (10*ik+10) / n_k ) {
@@ -53,7 +60,14 @@ void Perturbations::integrate_perturbations(){
 
     // Find value to integrate to
     double x_end_tight = get_tight_coupling_time(k);
-
+    for (int ix = 0; ix < n_x; ix++){
+      if (x_all[ix] >= x_end_tight){
+        len_tc = ix;
+        x_tc = Utils::linspace(x_start, x_all[ix - 1], ix - 1);
+        x_after_tc = Utils::linspace(x_all[ix], x_end, n_x - ix);
+        break;
+      }
+    }
     //===================================================================
     // TODO: Tight coupling integration
     // Remember to implement the routines:
@@ -299,19 +313,17 @@ double Perturbations::get_tight_coupling_time(const double k) const{
   //=============================================================================
   // ...
   // ...
-  double x_transition;
-  double x_rec;
   double Xe;
   double c = Constants.c;
   double dtaudx;
   double Hp;
   int npts = 5e3;
-  Vector x = Utils::linspace(Constants.x_start, Constants.x_end, npts);
+  Vector x = Utils::linspace(x_start, x_end, npts);
   for (int i = 0; i < npts; i++){
     Xe = rec -> Xe_of_x(x[i]);
     dtaudx = rec -> dtaudx_of_x(x[i]);
     Hp    = cosmo -> Hp_of_x(x[i]);
-    if (Xe < 0.5){
+    if (Xe < 0.8){
       x_tight_coupling_end = x[i];
       break; 
     }
