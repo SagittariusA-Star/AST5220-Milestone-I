@@ -21,7 +21,8 @@ void Perturbations::solve(){
   integrate_perturbations();
 
   // Compute source functions and spline the result
-  compute_source_functions();
+  
+  //compute_source_functions();
 }
 
 //====================================================
@@ -206,7 +207,6 @@ void Perturbations::integrate_perturbations(){
     //===================================================================
     //...
     //...
-
   }
   Utils::StartTiming("integrateperturbation");
 
@@ -216,16 +216,16 @@ void Perturbations::integrate_perturbations(){
   // ...
   // ...
   // ...
-  delta_cdm_spline.create(x_all, k_array, delta_cdm);
+  delta_cdm_spline.create(x_all, k_array, delta_cdm, "delta_cdm spline");
 
-  delta_b_spline.create(x_all, k_array, delta_b);
-  v_cdm_spline.create(x_all, k_array, v_cdm);
-  v_b_spline.create(x_all, k_array, v_b);
-  Phi_spline.create(x_all, k_array, Phi);
-  Psi_spline.create(x_all, k_array, Psi);
+  delta_b_spline.create(x_all, k_array, delta_b, "delta_b spline");
+  v_cdm_spline.create(x_all, k_array, v_cdm, "v_cdm spline");
+  v_b_spline.create(x_all, k_array, v_b, "v_b spline");
+  Phi_spline.create(x_all, k_array, Phi, "Phi spline");
+  Psi_spline.create(x_all, k_array, Psi, "Psi spline");
   for (int ell = 0; ell < Constants.n_ell_theta; ell++){
-    Theta_element_spline.create(x_all, k_array, Thetas[ell]);
-    Theta_spline.push_back(Pi_spline);
+    Theta_element_spline.create(x_all, k_array, Thetas[ell], "Theta elements");
+    Theta_spline.push_back(Theta_element_spline);
   }
 }
 
@@ -596,12 +596,10 @@ int Perturbations::rhs_full_ode(double x, double k, const double *y, double *dyd
   const double OmegaLambda0   = cosmo -> get_OmegaLambda(0);
   const double dtaudx         = rec -> dtaudx_of_x(x);
   const double ddtauddx       = rec -> ddtauddx_of_x(x);
-  const double R              = 4 * OmegaR0 / (3 * OmegaB0) * exp(- x);
+  const double R              = 4.0 * OmegaR0 / (3.0 * OmegaB0) * exp(- x);
   const double eta            = cosmo -> eta_of_x(x);
   const int ell_max           = Constants.n_ell_theta_tc - 1;
   double q;
-
-
 
   // Recombination variables
   // ...
@@ -652,20 +650,6 @@ int Perturbations::rhs_full_ode(double x, double k, const double *y, double *dyd
                     - (ell_max + 1.0) / (Hp * eta) * c * Theta[ell_max]
                     + dtaudx * Theta[ell_max];
 
-  // SET: Photon polarization multipoles (Theta_p_ell)
-  if(polarization){
-    // ...
-    // ...
-    // ...
-  }
-
-  // SET: Neutrino mutlipoles (Nu_ell)
-  if(neutrinos){
-    // ...
-    // ...
-    // ...
-  }
-
   return GSL_SUCCESS;
 }
 
@@ -674,37 +658,39 @@ int Perturbations::rhs_full_ode(double x, double k, const double *y, double *dyd
 //====================================================
 
 double Perturbations::get_delta_cdm(const double x, const double k) const{
-  return delta_cdm_spline(x,k);
+  return delta_cdm_spline(x, k);
 }
 double Perturbations::get_delta_b(const double x, const double k) const{
-  return delta_b_spline(x,k);
+  return delta_b_spline(x, k);
 }
 double Perturbations::get_v_cdm(const double x, const double k) const{
-  return v_cdm_spline(x,k);
+  return v_cdm_spline(x, k);
 }
 double Perturbations::get_v_b(const double x, const double k) const{
-  return v_b_spline(x,k);
+  return v_b_spline(x, k);
 }
 double Perturbations::get_Phi(const double x, const double k) const{
-  return Phi_spline(x,k);
+  std::cout << "hej " << std::endl;
+  double phi = Phi_spline(x, k);
+  return phi;
 }
 double Perturbations::get_Psi(const double x, const double k) const{
-  return Psi_spline(x,k);
+  return Psi_spline(x, k);
 }
 double Perturbations::get_Pi(const double x, const double k) const{
-  return Pi_spline(x,k);
+  return Pi_spline(x, k);
 }
 double Perturbations::get_Source_T(const double x, const double k) const{
-  return ST_spline(x,k);
+  return ST_spline(x, k);
 }
 double Perturbations::get_Source_E(const double x, const double k) const{
-  return SE_spline(x,k);
+  return SE_spline(x, k);
 }
 double Perturbations::get_Theta(const double x, const double k, const int ell) const{
-  return Theta_spline[ell](x,k);
+  return Theta_spline[ell](x, k);
 }
 double Perturbations::get_Theta_p(const double x, const double k, const int ell) const{
-  return Theta_p_spline[ell](x,k);
+  return Theta_p_spline[ell](x, k);
 }
 double Perturbations::get_Nu(const double x, const double k, const int ell) const{
   return Nu_spline[ell](x,k);
@@ -773,18 +759,17 @@ void Perturbations::info() const{
 void Perturbations::output(const double k, const std::string filename) const{
   std::ofstream fp(filename.c_str());
   const int npts = 5000;
-  std::cout << " Hej " << std::endl;
 
   auto x_array = Utils::linspace(x_start, x_end, npts);
   auto print_data = [&] (const double x) {
-    double arg = k * Constants.c * (cosmo->eta_of_x(0.0) - cosmo->eta_of_x(x));
+    double arg = k * Constants.c * (cosmo -> eta_of_x(0.0) - cosmo -> eta_of_x(x));
     fp << x                  << " ";
-    fp << get_Theta(x,k,0)   << " ";
-    fp << get_Theta(x,k,1)   << " ";
-    fp << get_Theta(x,k,2)   << " ";
-    fp << get_Phi(x,k)       << " ";
-    fp << get_Psi(x,k)       << " ";
-    fp << get_Pi(x,k)        << " ";
+    fp << get_Theta(x, k, 0)   << " ";
+    fp << get_Theta(x, k, 1)   << " ";
+    fp << get_Theta(x, k, 2)   << " ";
+    fp << get_Phi(x, k)       << " ";
+    fp << get_Psi(x, k)       << " ";
+    //fp << get_Pi(x, k)        << " ";
     //fp << get_Source_T(x,k)  << " ";
     //fp << get_Source_T(x,k) * Utils::j_ell(5,   arg)           << " ";
     //fp << get_Source_T(x,k) * Utils::j_ell(50,  arg)           << " ";
