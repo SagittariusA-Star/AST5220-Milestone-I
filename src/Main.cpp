@@ -12,13 +12,14 @@ int main(int argc, char **argv){
   //=========================================================================
 
   // Background parameters
+  /*
   double h           = 0.7;
   double OmegaB      = 0.046;
   double OmegaCDM    = 0.224;
   double OmegaLambda = 0.72995;
   double Neff        = 3.046;
   double TCMB        = 2.7255;
-  /*
+  */
   // Debug Background parameters
   double h           = 0.7;
   double OmegaB      = 0.05;
@@ -26,7 +27,6 @@ int main(int argc, char **argv){
   double OmegaLambda = 0.5;
   double Neff        = 3.046;
   double TCMB        = 2.7255;
-  */
   
 
   // Recombination parameters
@@ -61,7 +61,6 @@ int main(int argc, char **argv){
   // Module III
   //=========================================================================
   
-  return 0;
   // Solve the perturbations
   Perturbations pert(&cosmo, &rec);
   pert.solve();
