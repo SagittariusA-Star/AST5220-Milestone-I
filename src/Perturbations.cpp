@@ -291,7 +291,7 @@ for (int ell = 3; ell < Constants.n_ell_theta; ell++){
 //====================================================
 
 double Perturbations::get_tight_coupling_time(const double k) const{
-  double x_tight_coupling_end = 0.0;
+  double x_tight_coupling_end;
 
   //=============================================================================
   // TODO: compute and return x for when tight coupling ends
@@ -318,9 +318,6 @@ double Perturbations::get_tight_coupling_time(const double k) const{
     if (std::fabs(dtaudx) < 10 * std::min(1.0, c * k / Hp)){
       x_tight_coupling_end = x[i];
       break;
-    }
-    else {
-      std::cout << "Did not find any x_tight_coupling_end" << std::endl;
     }
   }
   return x_tight_coupling_end;
