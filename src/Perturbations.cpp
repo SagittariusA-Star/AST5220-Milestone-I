@@ -63,7 +63,7 @@ void Perturbations::integrate_perturbations(){
     for (int ix = 0; ix < n_x; ix++){
       if (x_all[ix] >= x_end_tight){
         len_tc = ix;
-        x_tc = Utils::linspace(x_start, x_all[ix - 1], ix - 1);
+        x_tc = Utils::linspace(x_start, x_all[ix - 1], ix);
         x_after_tc = Utils::linspace(x_all[ix], x_end, n_x - ix);
         break;
       }
