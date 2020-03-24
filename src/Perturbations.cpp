@@ -217,7 +217,6 @@ void Perturbations::integrate_perturbations(){
   // ...
   // ...
   delta_cdm_spline.create(x_all, k_array, delta_cdm, "delta_cdm spline");
-
   delta_b_spline.create(x_all, k_array, delta_b, "delta_b spline");
   v_cdm_spline.create(x_all, k_array, v_cdm, "v_cdm spline");
   v_b_spline.create(x_all, k_array, v_b, "v_b spline");
@@ -227,6 +226,7 @@ void Perturbations::integrate_perturbations(){
     Theta_element_spline.create(x_all, k_array, Thetas[ell], "Theta elements");
     Theta_spline.push_back(Theta_element_spline);
   }
+  std::cout << "hej " << x_all[n_x - 1] << std::endl;
 }
 
 //====================================================
@@ -379,13 +379,13 @@ double Perturbations::get_tight_coupling_time(const double k) const{
   double c = Constants.c;
   double dtaudx;
   double Hp;
-  int npts = 5e3;
-  Vector x = Utils::linspace(x_start, x_end, npts);
-  for (int i = 0; i < npts; i++){
+  int points = 5e3;
+  Vector x = Utils::linspace(x_start, x_end, points);
+  for (int i = 0; i < points; i++){
     Xe = rec -> Xe_of_x(x[i]);
     dtaudx = rec -> dtaudx_of_x(x[i]);
     Hp    = cosmo -> Hp_of_x(x[i]);
-    if (Xe < 0.8){
+    if (Xe < 0.9){
       x_tight_coupling_end = x[i];
       break; 
     }
@@ -670,9 +670,7 @@ double Perturbations::get_v_b(const double x, const double k) const{
   return v_b_spline(x, k);
 }
 double Perturbations::get_Phi(const double x, const double k) const{
-  std::cout << "hej " << std::endl;
-  double phi = Phi_spline(x, k);
-  return phi;
+  return Phi_spline(x, k);
 }
 double Perturbations::get_Psi(const double x, const double k) const{
   return Psi_spline(x, k);

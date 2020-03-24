@@ -72,3 +72,5 @@ plotbackground:
 plotrecombo:
 	python3 plot_recombination.py
 
+plotpertub:
+	python3 plot_pertubations.py
