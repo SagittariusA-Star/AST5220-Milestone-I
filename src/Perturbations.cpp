@@ -224,8 +224,8 @@ void Perturbations::integrate_perturbations(){
   Phi_spline.create(x_all, k_array, Phi);
   Psi_spline.create(x_all, k_array, Psi);
   for (int ell = 0; ell < Constants.n_ell_theta; ell++){
-    std::cout << " Hei " << ell << " " << Theta_spline.size() <<   std::endl;
-    Theta_spline[ell].create(x_all, k_array, Thetas[ell]);
+    Theta_element_spline.create(x_all, k_array, Thetas[ell]);
+    Theta_spline.push_back(Pi_spline);
   }
 }
 
@@ -773,6 +773,8 @@ void Perturbations::info() const{
 void Perturbations::output(const double k, const std::string filename) const{
   std::ofstream fp(filename.c_str());
   const int npts = 5000;
+  std::cout << " Hej " << std::endl;
+
   auto x_array = Utils::linspace(x_start, x_end, npts);
   auto print_data = [&] (const double x) {
     double arg = k * Constants.c * (cosmo->eta_of_x(0.0) - cosmo->eta_of_x(x));
