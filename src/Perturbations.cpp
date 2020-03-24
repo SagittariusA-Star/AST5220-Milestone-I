@@ -47,7 +47,7 @@ void Perturbations::integrate_perturbations(){
   double len_tc;
   Vector x_all = Utils::linspace(x_start, x_end, n_x);
   Vector x_tc;
-  Vector x_full_tc;
+  Vector x_full;
   Vector Psi (n_x * n_k);
   Vector Phi (n_x * n_k);
   Vector delta_cdm (n_x * n_k);
@@ -84,7 +84,7 @@ void Perturbations::integrate_perturbations(){
       if (x_all[ix] >= x_end_tight){
         len_tc = ix;
         x_tc = Utils::linspace(x_start, x_all[ix - 1], ix);
-        x_full_tc = Utils::linspace(x_all[ix], x_end, n_x - ix);
+        x_full = Utils::linspace(x_all[ix], x_end, n_x - ix);
         break;
       }
     }
@@ -160,12 +160,30 @@ void Perturbations::integrate_perturbations(){
     // ...
     // ...
     // Setting up ODE for after tightly coupled regime
-    ODESolver ode_full_tc;
+    ODESolver ode_full;
 
     // Solving ODE and extracting solution array from ODEsolver
-    ode_full_tc.solve(dydx_full, x_full_tc, y_full_ini);
-    auto all_data_full_tc = ode_full_tc.get_data();
-  
+    ode_full.solve(dydx_full, x_full, y_full_ini);
+    auto all_data_full = ode_full.get_data();
+    
+    for (int jx = len_tc; jx < n_x; jx++){
+      Hp = cosmo -> Hp_of_x(x_full[jx]);
+      dtaudx = rec -> dtaudx_of_x(x_full[jx]);
+      Phi[jx + n_x * ik] = all_data_full[jx][Constants.ind_Phi];
+      delta_cdm[jx + n_x * ik] = all_data_full[jx][Constants.ind_deltacdm];
+      delta_b[jx + n_x * ik] = all_data_full[jx][Constants.ind_deltab];
+      v_cdm[jx + n_x * ik] = all_data_full[jx][Constants.ind_vcdm];
+      v_b[jx + n_x * ik] = all_data_full[jx][Constants.ind_vb];
+        
+      for (int ell = 0; ell < Constants.n_ell_theta; ell++){
+          Thetas[ell][jx + n_x * ik] = all_data_full[jx][Constants.ind_start_theta + ell];
+        }
+
+      Psi[jx + n_x * ik] = - Phi[jx + n_x * ik] 
+                           - 12.0 * H0 * H0 / (c * c * k * k * exp(-2 * x_full[jx]))
+                           * OmegaR0 * Thetas[2][jx + n_x * ik];
+    }
+    
     //===================================================================
     // TODO: remember to store the data found from integrating so we can
     // spline it below
