@@ -212,6 +212,15 @@ void Perturbations::integrate_perturbations(){
   // ...
   // ...
   // ...
+  delta_cdm_spline.create(x_all, k_array, delta_cdm);
+  delta_b_spline.create(x_all, k_array, delta_b);
+  v_cdm_spline.create(x_all, k_array, v_cdm);
+  v_b_spline.create(x_all, k_array, v_b);
+  Phi_spline.create(x_all, k_array, Phi);
+  Psi_spline.create(x_all, k_array, Psi);
+  for (int ell = 0; ell < Constants.n_ell_theta; ell++){
+    Theta_spline[ell].create(x_all, k_array, Thetas[ell]);
+  }
 }
 
 //====================================================
