@@ -46,6 +46,7 @@ void Perturbations::integrate_perturbations(){
   double dtaudx;
   double len_tc;
   int x_full_index;
+  Vector y_tight_coupling (Constants.n_ell_tot_tc);
   Vector x_all = Utils::linspace(x_start, x_end, n_x);
   Vector x_tc;
   Vector x_full;
@@ -151,7 +152,8 @@ void Perturbations::integrate_perturbations(){
 
     // Set up initial conditions (y_tight_coupling is the solution at the end of tight coupling)
     // auto y_full_ini = set_ic_after_tight_coupling(y_tight_coupling, x_end_tight, k);
-    auto y_full_ini = set_ic_after_tight_coupling(y_tight_coupling_ini, x_end_tight, k);
+    y_tight_coupling = ode_tc.get_data_by_xindex(len_tc - 1);
+    auto y_full_ini = set_ic_after_tight_coupling(y_tight_coupling, x_end_tight, k);
 
     // The full ODE system
     ODEFunction dydx_full = [&](double x, const double *y, double *dydx){
@@ -226,7 +228,6 @@ void Perturbations::integrate_perturbations(){
     Theta_element_spline.create(x_all, k_array, Thetas[ell], "Theta elements");
     Theta_spline.push_back(Theta_element_spline);
   }
-  std::cout << "hej " << x_all[n_x - 1] << std::endl;
 }
 
 //====================================================
@@ -248,9 +249,7 @@ Vector Perturbations::set_ic(const double x, const double k) const{
   const int n_ell_theta_tc      = Constants.n_ell_theta_tc;
   const int n_ell_neutrinos_tc  = Constants.n_ell_neutrinos_tc;
   const int n_ell_tot_tc        = Constants.n_ell_tot_tc;
-  const bool polarization       = Constants.polarization;
-  const bool neutrinos          = Constants.neutrinos;
-
+  
   // References to the tight coupling quantities
   double &delta_cdm    =  y_tc[Constants.ind_deltacdm_tc];
   double &delta_b      =  y_tc[Constants.ind_deltab_tc];
@@ -268,20 +267,21 @@ Vector Perturbations::set_ic(const double x, const double k) const{
   // SET: Scalar quantities (Gravitational potential, baryons and CDM)
   // ...
   // ...
-  double Hp = cosmo -> Hp_of_x(x);
-  double dtaudx = rec -> dtaudx_of_x(x);
+  double Hp       = cosmo -> Hp_of_x(x);
+  double dtaudx   = rec   -> dtaudx_of_x(x);
+  double c        = Constants.c;
 
   double Psi_init = - 2.0 / 3.0;
   Phi             = - Psi_init;
   delta_cdm       = - 3.0 / 2.0 * Psi_init;
   delta_b         = delta_cdm;
-  v_cdm           = - Constants.c * k / (2.0 * Hp) * Psi_init;
+  v_cdm           = - c * k / (2.0 * Hp) * Psi_init;
   v_b             = v_cdm;
   // SET: Photon temperature perturbations (Theta_ell)
   // ...
   // ...
-  Theta[0] = -0.5 * Psi_init;
-  Theta[1] = Constants.c * k / (6.0 * Hp) * Psi_init;
+  Theta[0] = - 0.5 * Psi_init;
+  Theta[1] = c * k / (6.0 * Hp) * Psi_init;
   return y_tc;
 }
 
@@ -310,7 +310,6 @@ Vector Perturbations::set_ic_after_tight_coupling(
 
   // Number of multipoles we have in the tight coupling regime
   const int n_ell_theta_tc      = Constants.n_ell_theta_tc;
-  const int n_ell_neutrinos_tc  = Constants.n_ell_neutrinos_tc;
 
   // References to the tight coupling quantities
   const double &delta_cdm_tc    =  y_tc[Constants.ind_deltacdm_tc];
@@ -321,12 +320,12 @@ Vector Perturbations::set_ic_after_tight_coupling(
   const double *Theta_tc        = &y_tc[Constants.ind_start_theta_tc];
 
   // References to the quantities we are going to set
-  double &delta_cdm       =  y[Constants.ind_deltacdm_tc];
-  double &delta_b         =  y[Constants.ind_deltab_tc];
-  double &v_cdm           =  y[Constants.ind_vcdm_tc];
-  double &v_b             =  y[Constants.ind_vb_tc];
-  double &Phi             =  y[Constants.ind_Phi_tc];
-  double *Theta           = &y[Constants.ind_start_theta_tc];
+  double &delta_cdm       =  y[Constants.ind_deltacdm];
+  double &delta_b         =  y[Constants.ind_deltab];
+  double &v_cdm           =  y[Constants.ind_vcdm];
+  double &v_b             =  y[Constants.ind_vb];
+  double &Phi             =  y[Constants.ind_Phi];
+  double *Theta           = &y[Constants.ind_start_theta];
 
   //=============================================================================
   // TODO: fill in the initial conditions for the full equation system below
@@ -336,9 +335,9 @@ Vector Perturbations::set_ic_after_tight_coupling(
   // ...
   // ...
   // ...
-  double Hp = cosmo -> Hp_of_x(x);
-  double dtaudx = rec -> dtaudx_of_x(x);
-
+  double Hp     = cosmo -> Hp_of_x(x);
+  double dtaudx = rec   -> dtaudx_of_x(x);
+  double c      = Constants.c;
   // SET: Scalar quantities (Gravitational potental, baryons and CDM)
   // ...
   // ...
@@ -352,11 +351,11 @@ Vector Perturbations::set_ic_after_tight_coupling(
   // ...
   Theta[0] = Theta_tc[0];
   Theta[1] = Theta_tc[1];
-  Theta[2] = - 20.0 * Constants.c * k / (45.0 * Hp * dtaudx);
+  Theta[2] = - 20.0 * c * k / (45.0 * Hp * dtaudx) * Theta[1];
   
   
   for (int ell = 3; ell < Constants.n_ell_theta; ell++){
-    Theta[ell] = - ell / (2.0 * ell + 1.0) * Constants.c * k / (Hp * dtaudx) * Theta[ell - 1];
+    Theta[ell] = - ell / (2.0 * ell + 1.0) * c * k / (Hp * dtaudx) * Theta[ell - 1];
   }
   
   return y;
