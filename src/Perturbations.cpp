@@ -90,6 +90,7 @@ void Perturbations::integrate_perturbations(){
         break;
       }
     }
+
     //===================================================================
     // TODO: Tight coupling integration
     // Remember to implement the routines:
@@ -120,23 +121,24 @@ void Perturbations::integrate_perturbations(){
     auto all_data_tc = ode_tc.get_data();
 
     for (int jx = 0; jx < len_tc; jx++){
-      Hp = cosmo -> Hp_of_x(x_tc[jx]);
-      dtaudx = rec -> dtaudx_of_x(x_tc[jx]);
-      Phi[jx + n_x * ik] = all_data_tc[jx][Constants.ind_Phi_tc];
-      delta_cdm[jx + n_x * ik] = all_data_tc[jx][Constants.ind_deltacdm_tc];
-      delta_b[jx + n_x * ik] = all_data_tc[jx][Constants.ind_deltab_tc];
-      v_cdm[jx + n_x * ik] = all_data_tc[jx][Constants.ind_vcdm_tc];
-      v_b[jx + n_x * ik] = all_data_tc[jx][Constants.ind_vb_tc];
-      Thetas[0][jx + n_x * ik] = all_data_tc[jx][Constants.ind_start_theta_tc];
-      Thetas[1][jx + n_x * ik] = all_data_tc[jx][Constants.ind_start_theta_tc + 1];
-      Thetas[2][jx + n_x * ik] = - 20 * c * k / (45 * Hp * dtaudx) * Thetas[1][jx + n_x * ik];
+      Hp                        = cosmo -> Hp_of_x(x_tc[jx]);
+      dtaudx                    = rec   -> dtaudx_of_x(x_tc[jx]);
+      
+      Phi[jx + n_x * ik]        = all_data_tc[jx][Constants.ind_Phi_tc];
+      delta_cdm[jx + n_x * ik]  = all_data_tc[jx][Constants.ind_deltacdm_tc];
+      delta_b[jx + n_x * ik]    = all_data_tc[jx][Constants.ind_deltab_tc];
+      v_cdm[jx + n_x * ik]      = all_data_tc[jx][Constants.ind_vcdm_tc];
+      v_b[jx + n_x * ik]        = all_data_tc[jx][Constants.ind_vb_tc];
+      Thetas[0][jx + n_x * ik]  = all_data_tc[jx][Constants.ind_start_theta_tc];
+      Thetas[1][jx + n_x * ik]  = all_data_tc[jx][Constants.ind_start_theta_tc + 1];
+      Thetas[2][jx + n_x * ik]  = - 20 * c * k / (45 * Hp * dtaudx) * Thetas[1][jx + n_x * ik];
         
       for (int ell = 3; ell < Constants.n_ell_theta; ell++){
           Thetas[ell][jx + n_x * ik] = - ell / (2.0 * ell + 1.0) * c * k / (Hp * dtaudx) * Thetas[ell - 1][jx + n_x * ik];
         }
 
       Psi[jx + n_x * ik] = - Phi[jx + n_x * ik] 
-                           - 12.0 * H0 * H0 / (c * c * k * k * exp(-2 * x_tc[jx]))
+                           - 12.0 * H0 * H0 / (c * c * k * k * exp(2 * x_tc[jx]))
                            * OmegaR0 * Thetas[2][jx + n_x * ik];
     }
 
@@ -171,20 +173,18 @@ void Perturbations::integrate_perturbations(){
     
     x_full_index = 0;
     for (int jx = len_tc; jx < n_x; jx++){
-      Hp = cosmo -> Hp_of_x(x_full[x_full_index]);
-      dtaudx = rec -> dtaudx_of_x(x_full[x_full_index]);
-      Phi[jx + n_x * ik] = all_data_full[x_full_index][Constants.ind_Phi];
-      delta_cdm[jx + n_x * ik] = all_data_full[x_full_index][Constants.ind_deltacdm];
-      delta_b[jx + n_x * ik] = all_data_full[x_full_index][Constants.ind_deltab];
-      v_cdm[jx + n_x * ik] = all_data_full[x_full_index][Constants.ind_vcdm];
-      v_b[jx + n_x * ik] = all_data_full[x_full_index][Constants.ind_vb];
+      Phi[jx + n_x * ik]        = all_data_full[x_full_index][Constants.ind_Phi];
+      delta_cdm[jx + n_x * ik]  = all_data_full[x_full_index][Constants.ind_deltacdm];
+      delta_b[jx + n_x * ik]    = all_data_full[x_full_index][Constants.ind_deltab];
+      v_cdm[jx + n_x * ik]      = all_data_full[x_full_index][Constants.ind_vcdm];
+      v_b[jx + n_x * ik]        = all_data_full[x_full_index][Constants.ind_vb];
         
       for (int ell = 0; ell < Constants.n_ell_theta; ell++){
           Thetas[ell][jx + n_x * ik] = all_data_full[x_full_index][Constants.ind_start_theta + ell];
         }
 
       Psi[jx + n_x * ik] = - Phi[jx + n_x * ik] 
-                           - 12.0 * H0 * H0 / (c * c * k * k * exp(-2 * x_full[x_full_index]))
+                           - 12.0 * H0 * H0 / (c * c * k * k * exp(2 * x_full[x_full_index]))
                            * OmegaR0 * Thetas[2][jx + n_x * ik];
       x_full_index++;
     }
@@ -385,13 +385,13 @@ double Perturbations::get_tight_coupling_time(const double k) const{
     Xe = rec -> Xe_of_x(x[i]);
     dtaudx = rec -> dtaudx_of_x(x[i]);
     Hp    = cosmo -> Hp_of_x(x[i]);
-    if (Xe < 0.9){
-      x_tight_coupling_end = x[i];
-      break; 
-    }
     if (std::fabs(dtaudx) < 10 * std::min(1.0, c * k / Hp)){
       x_tight_coupling_end = x[i];
       break;
+    }
+    if (Xe < 0.999){
+      x_tight_coupling_end = x[i];
+      break; 
     }
   }
   return x_tight_coupling_end;
