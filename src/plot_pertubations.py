@@ -50,8 +50,10 @@ Theta1 = pertub_data[:, 2]
 Theta2 = pertub_data[:, 3]
 Phi    = pertub_data[:, 4]
 Psi    = pertub_data[:, 5]
-
-
+delta_cdm = pertub_data[:, 6]
+delta_b   = pertub_data[:, 7]
+v_cdm     = pertub_data[:, 8] 
+v_b       = pertub_data[:, 9] 
 
 # Plotting visibility function, derivative and second derivative thereof
 fig, ax = plt.subplots(2, 2 , figsize=[1.5 * 7.1014, 1.5 * 7.1014 / 1.618])
@@ -134,7 +136,7 @@ ax[1, 0].axvspan(
 """
 # Peak normalized visibility function and its derivatives
 ax[1, 1].plot(x, Phi, label=r"$\Phi$")
-ax[1, 1].plot(x, Psi, label=r"$\Psi$")
+#ax[1, 1].plot(x, Psi, label=r"$\Psi$")
 ax[1, 1].legend()
 ax[1, 1].set_xlim(-12, 0)
 ax[1, 1].set_ylabel(r"$\Phi$")
@@ -160,6 +162,17 @@ ax[1, 1].axvspan(
 )
 """
 fig.tight_layout()
+
+plt.figure()
+plt.semilogy(x, delta_cdm, label = r"$\delta_{cdm}$")
+plt.semilogy(x, delta_b, label = r"$\delta_{b}$", linestyle = "--")
+plt.legend(loc = 0)
+
+plt.figure()
+plt.semilogy(x, v_cdm, label = r"$v_{cdm}$")
+plt.semilogy(x, v_b, label = r"$v_{b}$", linestyle = "--")
+plt.legend(loc = 0)
+
 plt.show()
 
 """

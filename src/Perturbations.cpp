@@ -80,7 +80,7 @@ void Perturbations::integrate_perturbations(){
       if (x_all[ix] >= x_end_tight){
         len_tc = ix;
         x_tc = Utils::linspace(x_start, x_all[ix - 1], ix);
-        x_full = Utils::linspace(x_all[ix], x_end, n_x - ix);
+        x_full = Utils::linspace(x_all[ix - 1], x_end, n_x - ix + 1);
         break;
       }
     }
@@ -166,7 +166,7 @@ void Perturbations::integrate_perturbations(){
     auto all_data_full = ode_full.get_data();
     
     x_full_index = 0;
-    for (int jx = len_tc; jx < n_x; jx++){
+    for (int jx = len_tc - 1; jx < n_x; jx++){
       Phi[jx + n_x * ik]        = all_data_full[x_full_index][Constants.ind_Phi];
       delta_cdm[jx + n_x * ik]  = all_data_full[x_full_index][Constants.ind_deltacdm];
       delta_b[jx + n_x * ik]    = all_data_full[x_full_index][Constants.ind_deltab];
@@ -748,6 +748,10 @@ void Perturbations::output(const double k, const std::string filename) const{
     fp << get_Theta(x, k, 2)   << " ";
     fp << get_Phi(x, k)       << " ";
     fp << get_Psi(x, k)       << " ";
+    fp << get_delta_cdm(x, k)       << " ";
+    fp << get_delta_b(x, k)       << " ";
+    fp << get_v_cdm(x, k)       << " ";
+    fp << get_v_b(x, k)       << " ";
     //fp << get_Pi(x, k)        << " ";
     //fp << get_Source_T(x,k)  << " ";
     //fp << get_Source_T(x,k) * Utils::j_ell(5,   arg)           << " ";
