@@ -134,7 +134,7 @@ ax[1, 0].axvspan(
 """
 # Peak normalized visibility function and its derivatives
 ax[1, 1].plot(x, Phi, label=r"$\Phi$")
-#ax[1, 1].plot(x, Psi, label=r"$\Psi$")
+ax[1, 1].plot(x, Psi, label=r"$\Psi$")
 ax[1, 1].legend()
 ax[1, 1].set_xlim(-12, 0)
 ax[1, 1].set_ylabel(r"$\Phi$")
