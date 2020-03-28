@@ -57,9 +57,10 @@ v_b       = pertub_data[:, 9]
 
 # Plotting visibility function, derivative and second derivative thereof
 fig, ax = plt.subplots(2, 2 , figsize=[1.5 * 7.1014, 1.5 * 7.1014 / 1.618])
+fig.suptitle(r"$k = 0.01 \rm{Mpc}^{-1}$")
 
 ax[0, 0].plot(x, Theta0, label=r"$\Theta_0$")
-ax[0, 0].set_xlim(-12, 0)
+ax[0, 0].set_xlim(-17.5, 0)
 ax[0, 0].legend()
 ax[0, 0].set_ylabel(r"$\Theta_0$")
 ax[0, 0].set_xlabel(r"$x = \log (a)$")
@@ -86,7 +87,7 @@ ax[0, 0].axvspan(
 ax[0, 1].plot(x, Theta1, label=r"$\Theta_1$")
 ax[0, 1].set_ylabel(r"$\Theta_1$")
 ax[0, 1].set_xlabel(r"$x = \log (a)$")
-ax[0, 1].set_xlim(-12, 0)
+ax[0, 1].set_xlim(-17.5, 0)
 ax[0, 1].legend()
 """
 ax[0, 1].axvspan(
@@ -111,7 +112,7 @@ ax[0, 1].axvspan(
 
 ax[1, 0].plot(x, Theta2, label=r"$\Theta_2$")
 ax[1, 0].legend()
-ax[1, 0].set_xlim(-12, 0)
+ax[1, 0].set_xlim(-17.5, 0)
 ax[1, 0].set_ylabel(r"$\Theta_2$")
 ax[1, 0].set_xlabel(r"$x = \log (a)$")
 """
@@ -136,9 +137,9 @@ ax[1, 0].axvspan(
 """
 # Peak normalized visibility function and its derivatives
 ax[1, 1].plot(x, Phi, label=r"$\Phi$")
-#ax[1, 1].plot(x, Psi, label=r"$\Psi$")
+ax[1, 1].plot(x, Psi, label=r"$\Psi$")
 ax[1, 1].legend()
-ax[1, 1].set_xlim(-12, 0)
+ax[1, 1].set_xlim(-17.5, 0)
 ax[1, 1].set_ylabel(r"$\Phi$")
 ax[1, 1].set_xlabel(r"$x = \log (a)$")
 """
@@ -162,16 +163,28 @@ ax[1, 1].axvspan(
 )
 """
 fig.tight_layout()
+fig.savefig("../doc/Figures/fig1.pdf", dpi=1000)
 
-plt.figure()
-plt.semilogy(x, delta_cdm, label = r"$\delta_{cdm}$")
-plt.semilogy(x, delta_b, label = r"$\delta_{b}$", linestyle = "--")
-plt.legend(loc = 0)
 
-plt.figure()
-plt.semilogy(x, v_cdm, label = r"$v_{cdm}$")
-plt.semilogy(x, v_b, label = r"$v_{b}$", linestyle = "--")
-plt.legend(loc = 0)
+fig1, ax1 = plt.subplots(1, 2 , figsize=[1.5 * 7.1014, 1.5 * 7.1014 / 1.618])
+fig1.suptitle(r"$k = 0.01 \rm{Mpc}^{-1}$")
+
+ax1[0].plot(x, delta_cdm, label = r"$\delta_{cdm}$")
+ax1[0].plot(x, delta_b, label = r"$\delta_{b}$", linestyle = "--")
+ax1[0].set_xlim(-17.5, 0)
+ax1[0].legend()
+ax1[0].set_ylabel(r"$\delta$")
+ax1[0].set_xlabel(r"$x = \log (a)$")
+ax1[0].set_yscale("log")
+
+ax1[1].plot(x, v_cdm, label = r"$v_{cdm}$")
+ax1[1].plot(x, v_b, label = r"$v_{b}$", linestyle = "--")
+ax1[1].set_xlim(-17.5, 0)
+ax1[1].legend()
+ax1[1].set_ylabel(r"$v$")
+ax1[1].set_xlabel(r"$x = \log (a)$")
+ax1[1].set_yscale("log")
+fig1.savefig("../doc/Figures/fig2.pdf", dpi=1000)
 
 plt.show()
 

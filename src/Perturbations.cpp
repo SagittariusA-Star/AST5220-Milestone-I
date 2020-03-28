@@ -130,7 +130,7 @@ void Perturbations::integrate_perturbations(){
           Thetas[ell][jx + n_x * ik] = - ell / (2.0 * ell + 1.0) * c * k / (Hp * dtaudx) * Thetas[ell - 1][jx + n_x * ik];
         }
 
-      Psi[jx + n_x * ik] = - Phi[jx + n_x * ik] 
+      Psi[jx + n_x * ik] = - Phi[jx + n_x * ik]; 
                            - 12.0 * H0 * H0 / (c * c * k * k * exp(2 * x_tc[jx]))
                            * OmegaR0 * Thetas[2][jx + n_x * ik];
     }
@@ -177,7 +177,7 @@ void Perturbations::integrate_perturbations(){
           Thetas[ell][jx + n_x * ik] = all_data_full[x_full_index][Constants.ind_start_theta + ell];
         }
 
-      Psi[jx + n_x * ik] = - Phi[jx + n_x * ik] 
+      Psi[jx + n_x * ik] = - Phi[jx + n_x * ik]; 
                            - 12.0 * H0 * H0 / (c * c * k * k * exp(2 * x_full[x_full_index]))
                            * OmegaR0 * Thetas[2][jx + n_x * ik];
       x_full_index++;
@@ -220,6 +220,11 @@ void Perturbations::integrate_perturbations(){
     Theta_spline[ell].create(x_all, k_array, Thetas[ell], "Theta ell");
     //Theta_element_spline.create(x_all, k_array, Thetas[ell], "Theta elements");
     //Theta_spline.push_back(Theta_element_spline);
+  }
+  for (int i = 0; i < n_x; i++){
+      std::cout << Psi_spline(x_all[i], k_array[50]) << " " << Psi[i + n_x * 25] << std::endl;
+    for (int j = 0; j < n_k; j++){
+    }
   }
 }
 
