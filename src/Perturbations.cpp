@@ -38,11 +38,11 @@ void Perturbations::integrate_perturbations(){
   // quadratic or a logarithmic spacing
   //===================================================================
   Vector k_array(n_k);
-  double dk = (log10(Constants.k_max) - log10(Constants.k_min)) / (n_k - 1.0);
-  double c = Constants.c;
+  const double dk = (log10(Constants.k_max) - log10(Constants.k_min)) / (n_k - 1.0);
+  const double c = Constants.c;
   double Hp;
-  double H0       = cosmo -> get_H0();
-  double OmegaR0  = cosmo -> get_OmegaR(0);
+  const double H0       = cosmo -> get_H0();
+  const double OmegaR0  = cosmo -> get_OmegaR(0);
   double dtaudx;
   int len_tc;
   int x_full_index;
