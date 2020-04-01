@@ -171,8 +171,14 @@ void example_make_2D_spline(){
 
   //=================================================================
   //=================================================================
+  Vector x_data = Utils::linspace(xmin, xmax, 1e3);
+  for (int i = 0; i < 1e3; i++){
+    std::cout << z_spline(x_data[i], M_PI) << std::endl;
+  }
 
 }
+
+
 
 //================================================
 // Example for how to solve an ODE
@@ -338,4 +344,5 @@ int main(int argc, char **argv){
 
   std::cout << "\n==============================\n\n";
   other_stuff();
+
 }
