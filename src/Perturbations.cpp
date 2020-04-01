@@ -36,7 +36,7 @@ void Perturbations::integrate_perturbations(){
   // TODO: Set up the k-array for the k's we are going to integrate over
   // Start at k_min end at k_max with n_k points with either a
   // quadratic or a logarithmic spacing
-  //===================================================================
+  //=================================================================== 
   Vector k_array(n_k);
   const double dk = (log10(Constants.k_max) - log10(Constants.k_min)) / (n_k - 1.0);
   const double c = Constants.c;
@@ -409,10 +409,18 @@ void Perturbations::compute_source_functions(){
   // ...
   Vector k_array;
   Vector x_array;
+  const double c = Constants.c;
+  double Hp;
+  double dHpdx;
+  double vb;
+  double dvbdx;
+  double g_tilde;
+  double dg_tildedx;
+  double Phi;
+  double Psi;
 
   // Make storage for the source functions (in 1D array to be able to pass it to the spline)
   Vector ST_array(k_array.size() * x_array.size());
-  Vector SE_array(k_array.size() * x_array.size());
 
   // Compute source functions
   for(auto ix = 0; ix < x_array.size(); ix++){
@@ -436,18 +444,11 @@ void Perturbations::compute_source_functions(){
       // Temperatur source
       ST_array[index] = 0.0;
 
-      // Polarization source
-      if(Constants.polarization){
-        SE_array[index] = 0.0;
-      }
     }
   }
 
   // Spline the source functions
   ST_spline.create (x_array, k_array, ST_array, "Source_Temp_x_k");
-  if(Constants.polarization){
-    SE_spline.create (x_array, k_array, SE_array, "Source_Pol_x_k");
-  }
 
   Utils::EndTiming("source");
 }

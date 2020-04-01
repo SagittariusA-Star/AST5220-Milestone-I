@@ -95,7 +95,7 @@ void example_make_2D_spline(){
   // The range and number of points
   const double xmin = 0.0;
   const double xmax = 2.0*M_PI;
-  const int    nx   = 100;
+  const int    nx   = 10;
   const double ymin = 0.0;
   const double ymax = 2.0*M_PI;
   const int    ny   = 101;
@@ -173,7 +173,7 @@ void example_make_2D_spline(){
   //=================================================================
   Vector x_data = Utils::linspace(xmin, xmax, 1e3);
   for (int i = 0; i < 1e3; i++){
-    std::cout << z_spline(x_data[i], M_PI) << std::endl;
+    std::cout << z_spline(x_data[i], 3.14) << std::endl;
   }
 
 }
