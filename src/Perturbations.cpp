@@ -110,7 +110,7 @@ void Perturbations::integrate_perturbations(){
     ODESolver ode_tc;
 
     // Solving ODE and extracting solution array from ODEsolver
-    ode_tc.solve(dydx_tight_coupling, x_tc, y_tight_coupling_ini, gsl_odeiv2_step_rkf45);
+    ode_tc.solve(dydx_tight_coupling, x_tc, y_tight_coupling_ini);
     auto all_data_tc = ode_tc.get_data();
 
     for (int jx = 0; jx < len_tc; jx++){
@@ -162,7 +162,7 @@ void Perturbations::integrate_perturbations(){
     ODESolver ode_full;
 
     // Solving ODE and extracting solution array from ODEsolver
-    ode_full.solve(dydx_full, x_full, y_full_ini, gsl_odeiv2_step_rkf45);
+    ode_full.solve(dydx_full, x_full, y_full_ini);
     auto all_data_full = ode_full.get_data();
     
     x_full_index = 0;
@@ -329,6 +329,7 @@ Vector Perturbations::set_ic_after_tight_coupling(
   double Hp     = cosmo -> Hp_of_x(x);
   double dtaudx = rec   -> dtaudx_of_x(x);
   double c      = Constants.c;
+  double ckHp   = c * k / Hp;
   // SET: Scalar quantities (Gravitational potental, baryons and CDM)
   // ...
   // ...
@@ -342,11 +343,11 @@ Vector Perturbations::set_ic_after_tight_coupling(
   // ...
   Theta[0] = Theta_tc[0];
   Theta[1] = Theta_tc[1];
-  Theta[2] = - 20.0 * c * k / (45.0 * Hp * dtaudx) * Theta[1];
+  Theta[2] = - 20.0 * ckHp / (45.0 * dtaudx) * Theta[1];
   
   
   for (int ell = 3; ell < Constants.n_ell_theta; ell++){
-    Theta[ell] = - ell / (2.0 * ell + 1.0) * c * k / (Hp * dtaudx) * Theta[ell - 1];
+    Theta[ell] = - ell / (2.0 * ell + 1.0) * ckHp /  dtaudx * Theta[ell - 1];
   }
   return y;
 }
@@ -368,6 +369,7 @@ double Perturbations::get_tight_coupling_time(const double k) const{
   double dtaudx;
   double Hp;
   double c   = Constants.c;
+  double ckHp;
   int points = 5e3;
   Vector x   = Utils::linspace(x_start, x_end, points);
 
@@ -375,15 +377,15 @@ double Perturbations::get_tight_coupling_time(const double k) const{
     Xe      = rec   -> Xe_of_x(x[i]);
     dtaudx  = rec   -> dtaudx_of_x(x[i]);
     Hp      = cosmo -> Hp_of_x(x[i]);
-
+    ckHp    = c * k / Hp;
+    
+    if (std::fabs(dtaudx) < 10 * std::min(1.0, ckHp)){
+      x_tight_coupling_end = x[i];
+      break;
+    }
     if (Xe < 0.999){
       x_tight_coupling_end = x[i];
       break; 
-    }
-
-    if (std::fabs(dtaudx) < 10 * std::min(1.0, c * k / Hp)){
-      x_tight_coupling_end = x[i];
-      break;
     }
   }
   return x_tight_coupling_end;
