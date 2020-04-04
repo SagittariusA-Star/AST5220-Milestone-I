@@ -10,7 +10,7 @@ fonts = {
     "font.family": "serif",
     "axes.labelsize": 18,
     "font.size": 12,
-    "legend.fontsize": 18,
+    "legend.fontsize": 12,
     "xtick.labelsize": 12,
     "ytick.labelsize": 12,
 }
@@ -21,6 +21,7 @@ plt.rcParams.update(fonts)
 # color corresponding to domination era
 cosmo_data = np.loadtxt("cosmology.txt")
 
+x_cosmo      = cosmo_data[:, 0]
 OmegaB      = cosmo_data[:, 3]
 OmegaCDM    = cosmo_data[:, 4]
 OmegaLambda = cosmo_data[:, 5]
@@ -30,7 +31,7 @@ Omega_m     = OmegaCDM + OmegaB
 
 # Loading data from file
 recombo_data = np.loadtxt("recombination.txt")
-x               = recombo_data[:, 0]
+x_recombo       = recombo_data[:, 0]
 Xe              = recombo_data[:, 1]
 ne              = recombo_data[:, 2] * u.m ** (- 3)
 tau             = recombo_data[:, 3]
@@ -41,151 +42,289 @@ dg_tildedx      = recombo_data[:, 7]
 ddg_tildeddx    = recombo_data[:, 8]
 Saha_Xe         = recombo_data[:, 9]
 
+recombo_index = np.where(g_tilde >= 1.5e-1)
+Xe_half_index = np.argmin(np.abs(Xe - 0.5))
+
 # Loading data from file
-pertub_data = np.loadtxt("perturbations_k0.01.txt")
-k      = 0.01 / u.Mpc
-x      = pertub_data[:, 0]
-Theta0 = pertub_data[:, 1]
-Theta1 = pertub_data[:, 2]
-Theta2 = pertub_data[:, 3]
-Phi    = pertub_data[:, 4]
-Psi    = pertub_data[:, 5]
-delta_cdm = pertub_data[:, 6]
-delta_b   = pertub_data[:, 7]
-v_cdm     = pertub_data[:, 8] 
-v_b       = pertub_data[:, 9] 
+pertub_data_001 = np.loadtxt("perturbations_k0.01.txt")
+pertub_data_0001 = np.loadtxt("perturbations_k0.001.txt")
+pertub_data_01 = np.loadtxt("perturbations_k0.1.txt")
+
+k_001      = 0.01 / u.Mpc
+x_001      = pertub_data_001[:, 0]
+Theta0_001 = pertub_data_001[:, 1]
+Theta1_001 = pertub_data_001[:, 2]
+Theta2_001 = pertub_data_001[:, 3]
+Phi_001    = pertub_data_001[:, 4]
+Psi_001    = pertub_data_001[:, 5]
+delta_cdm_001 = pertub_data_001[:, 6]
+delta_b_001   = pertub_data_001[:, 7]
+v_cdm_001     = pertub_data_001[:, 8] 
+v_b_001       = pertub_data_001[:, 9] 
+
+k_0001      = 0.001 / u.Mpc
+x_0001      = pertub_data_0001[:, 0]
+Theta0_0001 = pertub_data_0001[:, 1]
+Theta1_0001 = pertub_data_0001[:, 2]
+Theta2_0001 = pertub_data_0001[:, 3]
+Phi_0001    = pertub_data_0001[:, 4]
+Psi_0001    = pertub_data_0001[:, 5]
+delta_cdm_0001 = pertub_data_0001[:, 6]
+delta_b_0001   = pertub_data_0001[:, 7]
+v_cdm_0001     = pertub_data_0001[:, 8] 
+v_b_0001       = pertub_data_0001[:, 9] 
+
+k_01      = 0.1 / u.Mpc
+x_01      = pertub_data_01[:, 0]
+Theta0_01 = pertub_data_01[:, 1]
+Theta1_01 = pertub_data_01[:, 2]
+Theta2_01 = pertub_data_01[:, 3]
+Phi_01    = pertub_data_01[:, 4]
+Psi_01    = pertub_data_01[:, 5]
+delta_cdm_01 = pertub_data_01[:, 6]
+delta_b_01   = pertub_data_01[:, 7]
+v_cdm_01     = pertub_data_01[:, 8] 
+v_b_01       = pertub_data_01[:, 9] 
+
 
 # Plotting visibility function, derivative and second derivative thereof
 fig, ax = plt.subplots(2, 2 , figsize=[1.5 * 7.1014, 1.5 * 7.1014 / 1.618])
 fig.suptitle(r"$k = 0.01 \rm{Mpc}^{-1}$")
 
-ax[0, 0].plot(x, Theta0, label=r"$\Theta_0$")
-ax[0, 0].set_xlim(-17.5, 0)
+ax[0, 0].plot(x_001, Theta0_001, label=rf"$\Theta_0(k = {k_001.value}/\mathrm{{Mpc}})$")
+ax[0, 0].plot(x_0001, Theta0_0001, label=rf"$\Theta_0(k = {k_0001.value}/\mathrm{{Mpc}})$")
+ax[0, 0].plot(x_01, Theta0_01, label=rf"$\Theta_0(k = {k_01.value}/\mathrm{{Mpc}})$")
+ax[0, 0].set_xlim(-12, 0)
 ax[0, 0].legend()
 ax[0, 0].set_ylabel(r"$\Theta_0$")
 ax[0, 0].set_xlabel(r"$x = \log (a)$")
 """
 ax[0, 0].axvspan(
-    np.min(x),
-    x[np.where(OmegaB + OmegaCDM >= OmegaLambda + OmegaR)][0],
+    np.min(x_cosmo),
+    x_cosmo[np.where(OmegaB + OmegaCDM >= OmegaLambda + OmegaR)][0],
     alpha=0.3,
     color="orange",
 )
 ax[0, 0].axvspan(
-    x[np.where(OmegaB + OmegaCDM >= OmegaLambda + OmegaR)][0],
-    x[np.where(OmegaLambda >= Omega_sum - OmegaLambda)][0],
+    x_cosmo[np.where(OmegaB + OmegaCDM >= OmegaLambda + OmegaR)][0],
+    x_cosmo[np.where(OmegaLambda >= Omega_sum - OmegaLambda)][0],
     alpha=0.3,
     color="cyan",
 )
 ax[0, 0].axvspan(
-    x[np.where(OmegaLambda >= Omega_sum - OmegaLambda)][0],
-    np.max(x),
+    x_cosmo[np.where(OmegaLambda >= Omega_sum - OmegaLambda)][0],
+    np.max(x_cosmo),
     alpha=0.3,
     color="purple",
 )
+
+ax[0, 0].axvspan(
+    x_cosmo[recombo_index][0],
+    x_cosmo[recombo_index][-1],
+    alpha=0.4,
+    color="red",
+)
+
+ax[0, 0].axvline(x = x_cosmo[Xe_half_index], ymin = -1e5, ymax = 1e5, color = "orangered", linestyle = ":")
 """
-ax[0, 1].plot(x, Theta1, label=r"$\Theta_1$")
+ax[0, 1].plot(x_001, Theta1_001, label=rf"$\Theta_1(k = {k_001.value}/\mathrm{{Mpc}})$")
+ax[0, 1].plot(x_0001, Theta1_0001, label=rf"$\Theta_1(k = {k_0001.value}/\mathrm{{Mpc}})$")
+ax[0, 1].plot(x_01, Theta1_01, label=rf"$\Theta_1(k = {k_01.value}/\mathrm{{Mpc}})$")
 ax[0, 1].set_ylabel(r"$\Theta_1$")
 ax[0, 1].set_xlabel(r"$x = \log (a)$")
-ax[0, 1].set_xlim(-17.5, 0)
+ax[0, 1].set_xlim(-12, 0)
 ax[0, 1].legend()
 """
 ax[0, 1].axvspan(
-    np.min(x),
-    x[np.where(OmegaB + OmegaCDM >= OmegaLambda + OmegaR)][0],
+    np.min(x_cosmo),
+    x_cosmo[np.where(OmegaB + OmegaCDM >= OmegaLambda + OmegaR)][0],
     alpha=0.3,
     color="orange",
 )
 ax[0, 1].axvspan(
-    x[np.where(OmegaB + OmegaCDM >= OmegaLambda + OmegaR)][0],
-    x[np.where(OmegaLambda >= Omega_sum - OmegaLambda)][0],
+    x_cosmo[np.where(OmegaB + OmegaCDM >= OmegaLambda + OmegaR)][0],
+    x_cosmo[np.where(OmegaLambda >= Omega_sum - OmegaLambda)][0],
     alpha=0.3,
     color="cyan",
 )
 ax[0, 1].axvspan(
-    x[np.where(OmegaLambda >= Omega_sum - OmegaLambda)][0],
-    np.max(x),
+    x_cosmo[np.where(OmegaLambda >= Omega_sum - OmegaLambda)][0],
+    np.max(x_cosmo),
     alpha=0.3,
     color="purple",
 )
-"""
+ax[0, 1].axvspan(
+    x_cosmo[recombo_index][0],
+    x_cosmo[recombo_index][-1],
+    alpha=0.4,
+    color="red",
+)
 
-ax[1, 0].plot(x, Theta2, label=r"$\Theta_2$")
+ax[0, 1].axvline(x = x_cosmo[Xe_half_index], ymin = -1e5, ymax = 1e5, color = "orangered", linestyle = ":")
+"""
+ax[1, 0].plot(x_001, Theta2_001, label=rf"$\Theta_2(k = {k_001.value}/\mathrm{{Mpc}})$")
+ax[1, 0].plot(x_0001, Theta2_0001, label=rf"$\Theta_2(k = {k_0001.value}/\mathrm{{Mpc}})$")
+ax[1, 0].plot(x_01, Theta2_01, label=rf"$\Theta_2(k = {k_01.value}/\mathrm{{Mpc}})$")
 ax[1, 0].legend()
-ax[1, 0].set_xlim(-17.5, 0)
+ax[1, 0].set_xlim(-12, 0)
 ax[1, 0].set_ylabel(r"$\Theta_2$")
 ax[1, 0].set_xlabel(r"$x = \log (a)$")
 """
 ax[1, 0].axvspan(
-    np.min(x),
-    x[np.where(OmegaB + OmegaCDM >= OmegaLambda + OmegaR)][0],
+    np.min(x_cosmo),
+    x_cosmo[np.where(OmegaB + OmegaCDM >= OmegaLambda + OmegaR)][0],
     alpha=0.3,
     color="orange",
 )
 ax[1, 0].axvspan(
-    x[np.where(OmegaB + OmegaCDM >= OmegaLambda + OmegaR)][0],
-    x[np.where(OmegaLambda >= Omega_sum - OmegaLambda)][0],
+    x_cosmo[np.where(OmegaB + OmegaCDM >= OmegaLambda + OmegaR)][0],
+    x_cosmo[np.where(OmegaLambda >= Omega_sum - OmegaLambda)][0],
     alpha=0.3,
     color="cyan",
 )
 ax[1, 0].axvspan(
-    x[np.where(OmegaLambda >= Omega_sum - OmegaLambda)][0],
-    np.max(x),
+    x_cosmo[np.where(OmegaLambda >= Omega_sum - OmegaLambda)][0],
+    np.max(x_cosmo),
     alpha=0.3,
     color="purple",
 )
+ax[1, 0].axvspan(
+    x_cosmo[recombo_index][0],
+    x_cosmo[recombo_index][-1],
+    alpha=0.4,
+    color="red",
+)
+
+ax[1, 0].axvline(x = x_cosmo[Xe_half_index], ymin = -1e5, ymax = 1e5, color = "orangered", linestyle = ":")
 """
 # Peak normalized visibility function and its derivatives
-ax[1, 1].plot(x, Phi, label=r"$\Phi$")
-ax[1, 1].plot(x, Psi, label=r"$\Psi$")
+ax[1, 1].plot(x_001, Phi_001, label=rf"$\Phi(k = {k_001.value}/\mathrm{{Mpc}})$")
+ax[1, 1].plot(x_0001, Phi_0001, label=rf"$\Phi(k = {k_0001.value}/\mathrm{{Mpc}})$")
+ax[1, 1].plot(x_01, Phi_01, label=rf"$\Phi(k = {k_01.value}/\mathrm{{Mpc}})$")
+
+#ax[1, 1].plot(x_001, Psi_001, label=rf"$\Psi(k = {k_001.value}/\mathrm{{Mpc}})$")
+#ax[1, 1].plot(x_0001, Psi_0001, label=rf"$\Psi(k = {k_0001.value}/\mathrm{{Mpc}})$")
+#ax[1, 1].plot(x_01, Psi_01, label=rf"$\Psi(k = {k_01.value}/\mathrm{{Mpc}})$")
 ax[1, 1].legend()
-ax[1, 1].set_xlim(-17.5, 0)
+#ax[1, 1].set_xlim(-12, 0)
 ax[1, 1].set_ylabel(r"$\Phi$")
 ax[1, 1].set_xlabel(r"$x = \log (a)$")
 """
 ax[1, 1].axvspan(
-    np.min(x),
-    x[np.where(OmegaB + OmegaCDM >= OmegaLambda + OmegaR)][0],
+    np.min(x_cosmo),
+    x_cosmo[np.where(OmegaB + OmegaCDM >= OmegaLambda + OmegaR)][0],
     alpha=0.3,
     color="orange",
 )
 ax[1, 1].axvspan(
-    x[np.where(OmegaB + OmegaCDM >= OmegaLambda + OmegaR)][0],
-    x[np.where(OmegaLambda >= Omega_sum - OmegaLambda)][0],
+    x_cosmo[np.where(OmegaB + OmegaCDM >= OmegaLambda + OmegaR)][0],
+    x_cosmo[np.where(OmegaLambda >= Omega_sum - OmegaLambda)][0],
     alpha=0.3,
     color="cyan",
 )
 ax[1, 1].axvspan(
-    x[np.where(OmegaLambda >= Omega_sum - OmegaLambda)][0],
-    np.max(x),
+    x_cosmo[np.where(OmegaLambda >= Omega_sum - OmegaLambda)][0],
+    np.max(x_cosmo),
     alpha=0.3,
     color="purple",
 )
+
+ax[1, 1].axvspan(
+    x_cosmo[recombo_index][0],
+    x_cosmo[recombo_index][-1],
+    alpha=0.4,
+    color="red",
+)
+
+ax[1, 1].axvline(x = x_cosmo[Xe_half_index], ymin = -1e5, ymax = 1e5, color = "orangered", linestyle = ":")
 """
 fig.tight_layout()
 fig.savefig("../doc/Figures/fig1.pdf", dpi=1000)
 
 
 fig1, ax1 = plt.subplots(1, 2 , figsize=[1.5 * 7.1014, 1.5 * 7.1014 / 1.618])
-fig1.suptitle(r"$k = 0.01 \rm{Mpc}^{-1}$")
+fig1.suptitle(r"$k = 0.01 \rm{\mathrm{{Mpc}}}^{-1}$")
 
-ax1[0].plot(x, delta_cdm, label = r"$\delta_{cdm}$")
-ax1[0].plot(x, delta_b, label = r"$\delta_{b}$", linestyle = "--")
-ax1[0].set_xlim(-17.5, 0)
+ax1[0].plot(x_001, delta_cdm_001, label = fr"$\delta_{{cdm}}(k = {k_001.value}/\mathrm{{Mpc}})$")
+ax1[0].plot(x_0001, delta_cdm_0001, label = fr"$\delta_{{cdm}}(k = {k_0001.value}/\mathrm{{Mpc}})$")
+ax1[0].plot(x_01, delta_cdm_01, label = fr"$\delta_{{cdm}}(k = {k_01.value}/\mathrm{{Mpc}})$")
+
+ax1[0].plot(x_001, delta_b_001, label = rf"$\delta_{{b}}(k = {k_001.value}/\mathrm{{Mpc}})$", linestyle = "--")
+ax1[0].plot(x_0001, delta_b_0001, label = rf"$\delta_{{b}}(k = {k_0001.value}/\mathrm{{Mpc}})$", linestyle = "--")
+ax1[0].plot(x_01, delta_b_01, label = rf"$\delta_{{b}}(k = {k_01.value}/\mathrm{{Mpc}})$", linestyle = "--")
+#ax1[0].set_xlim(-12, 0)
 ax1[0].legend()
 ax1[0].set_ylabel(r"$\delta$")
 ax1[0].set_xlabel(r"$x = \log (a)$")
 ax1[0].set_yscale("log")
+"""
+ax1[0].axvspan(
+    np.min(x_cosmo),
+    x_cosmo[np.where(OmegaB + OmegaCDM >= OmegaLambda + OmegaR)][0],
+    alpha=0.3,
+    color="orange",
+)
+ax1[0].axvspan(
+    x_cosmo[np.where(OmegaB + OmegaCDM >= OmegaLambda + OmegaR)][0],
+    x_cosmo[np.where(OmegaLambda >= Omega_sum - OmegaLambda)][0],
+    alpha=0.3,
+    color="cyan",
+)
+ax1[0].axvspan(
+    x_cosmo[np.where(OmegaLambda >= Omega_sum - OmegaLambda)][0],
+    np.max(x_cosmo),
+    alpha=0.3,
+    color="purple",
+)
 
-ax1[1].plot(x, v_cdm, label = r"$v_{cdm}$")
-ax1[1].plot(x, v_b, label = r"$v_{b}$", linestyle = "--")
-ax1[1].set_xlim(-17.5, 0)
+ax1[0].axvspan(
+    x_cosmo[recombo_index][0],
+    x_cosmo[recombo_index][-1],
+    alpha=0.4,
+    color="red",
+)
+ax1[0].axvline(x = x_cosmo[Xe_half_index], ymin = 1e-5, ymax = 1e5, color = "orangered", linestyle = ":")
+"""
+ax1[1].plot(x_001, v_cdm_001, label = rf"$v_{{cdm}}(k = {k_001.value}/\mathrm{{Mpc}})$")
+ax1[1].plot(x_0001, v_cdm_0001, label = rf"$v_{{cdm}}(k = {k_0001.value}/\mathrm{{Mpc}})$")
+ax1[1].plot(x_01, v_cdm_01, label = rf"$v_{{cdm}}(k = {k_01.value}/\mathrm{{Mpc}})$")
+
+ax1[1].plot(x_001, v_b_001, label = rf"$v_{{b}}(k = {k_001.value}/\mathrm{{Mpc}})$", linestyle = "--")
+ax1[1].plot(x_0001, v_b_0001, label = rf"$v_{{b}}(k = {k_0001.value}/\mathrm{{Mpc}})$", linestyle = "--")
+ax1[1].plot(x_01, v_b_01, label = rf"$v_{{b}}(k = {k_01.value}/\mathrm{{Mpc}})$", linestyle = "--")
+#ax1[1].set_xlim(-12, 0)
 ax1[1].legend()
 ax1[1].set_ylabel(r"$v$")
 ax1[1].set_xlabel(r"$x = \log (a)$")
 ax1[1].set_yscale("log")
 fig1.savefig("../doc/Figures/fig2.pdf", dpi=1000)
-
+"""
+ax1[1].axvspan(
+    np.min(x_cosmo),
+    x_cosmo[np.where(OmegaB + OmegaCDM >= OmegaLambda + OmegaR)][0],
+    alpha=0.3,
+    color="orange",
+)
+ax1[1].axvspan(
+    x_cosmo[np.where(OmegaB + OmegaCDM >= OmegaLambda + OmegaR)][0],
+    x_cosmo[np.where(OmegaLambda >= Omega_sum - OmegaLambda)][0],
+    alpha=0.3,
+    color="cyan",
+)
+ax1[1].axvspan(
+    x_cosmo[np.where(OmegaLambda >= Omega_sum - OmegaLambda)][0],
+    np.max(x_cosmo),
+    alpha=0.3,
+    color="purple",
+)
+ax1[1].axvspan(
+    x_cosmo[recombo_index][0],
+    x_cosmo[recombo_index][-1],
+    alpha=0.4,
+    color="red",
+)
+ax1[1].axvline(x = x_cosmo[Xe_half_index], ymin = 1e-5, ymax = 1e5, color = "orangered", linestyle = ":")
+"""
 plt.show()
 
 """

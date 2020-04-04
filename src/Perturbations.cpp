@@ -110,7 +110,7 @@ void Perturbations::integrate_perturbations(){
     ODESolver ode_tc;
 
     // Solving ODE and extracting solution array from ODEsolver
-    ode_tc.solve(dydx_tight_coupling, x_tc, y_tight_coupling_ini);
+    ode_tc.solve(dydx_tight_coupling, x_tc, y_tight_coupling_ini, gsl_odeiv2_step_rkf45);
     auto all_data_tc = ode_tc.get_data();
 
     for (int jx = 0; jx < len_tc; jx++){
@@ -162,7 +162,7 @@ void Perturbations::integrate_perturbations(){
     ODESolver ode_full;
 
     // Solving ODE and extracting solution array from ODEsolver
-    ode_full.solve(dydx_full, x_full, y_full_ini);
+    ode_full.solve(dydx_full, x_full, y_full_ini, gsl_odeiv2_step_rkf45);
     auto all_data_full = ode_full.get_data();
     
     x_full_index = 0;
@@ -203,7 +203,7 @@ void Perturbations::integrate_perturbations(){
     //...
   }
   Utils::StartTiming("integrateperturbation");
-
+  
   //=============================================================================
   // TODO: Make all splines needed: Theta0,Theta1,Theta2,Phi,Psi,...
   //=============================================================================
@@ -218,14 +218,7 @@ void Perturbations::integrate_perturbations(){
   Psi_spline.create(x_all, k_array, Psi, "Psi spline");
   for (int ell = 0; ell < Constants.n_ell_theta; ell++){
     Theta_spline[ell].create(x_all, k_array, Thetas[ell], "Theta ell");
-    //Theta_element_spline.create(x_all, k_array, Thetas[ell], "Theta elements");
-    //Theta_spline.push_back(Theta_element_spline);
-  }
-  for (int i = 0; i < n_x; i++){
-      std::cout << Psi_spline(x_all[i], k_array[50]) << " " << Psi[i + n_x * 25] << std::endl;
-    for (int j = 0; j < n_k; j++){
-    }
-  }
+  }  
 }
 
 //====================================================
@@ -267,18 +260,19 @@ Vector Perturbations::set_ic(const double x, const double k) const{
   double Hp       = cosmo -> Hp_of_x(x);
   double dtaudx   = rec   -> dtaudx_of_x(x);
   double c        = Constants.c;
+  double ckHp     = c * k / Hp;
 
   double Psi_init = - 2.0 / 3.0;
   Phi             = - Psi_init;
   delta_cdm       = - 3.0 / 2.0 * Psi_init;
   delta_b         = delta_cdm;
-  v_cdm           = - c * k / (2.0 * Hp) * Psi_init;
+  v_cdm           = - ckHp / 2.0 * Psi_init;
   v_b             = v_cdm;
   // SET: Photon temperature perturbations (Theta_ell)
   // ...
   // ...
   Theta[0] = - 0.5 * Psi_init;
-  Theta[1] = c * k / (6.0 * Hp) * Psi_init;
+  Theta[1] = ckHp / 6.0 * Psi_init;
   return y_tc;
 }
 
@@ -629,7 +623,7 @@ int Perturbations::rhs_full_ode(double x, double k, const double *y, double *dyd
                     - (ell + 1.0) / (2.0 * ell + 1.0) * ckHp * Theta[ell + 1]
                     + dtaudx * Theta[ell]; 
     if (ell == 2){
-      dThetadx[ell] -= 1.0 / 10.0 * Theta[ell] * dtaudx;
+      dThetadx[ell] -= 1.0 / 10.0 * Theta[2] * dtaudx;
     }
   }
   
