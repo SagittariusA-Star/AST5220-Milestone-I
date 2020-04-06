@@ -22,7 +22,7 @@ void Perturbations::solve(){
 
   // Compute source functions and spline the result
   
-  //compute_source_functions();
+  compute_source_functions();
 }
 
 //====================================================
@@ -403,17 +403,40 @@ void Perturbations::compute_source_functions(){
   //=============================================================================
   // ...
   // ...
-  Vector k_array;
-  Vector x_array;
+  Vector k_array(n_k);
+  Vector x_array = Utils::linspace(x_start, x_end, n_x);
+
+  const double dk = (log10(Constants.k_max) - log10(Constants.k_min)) / (n_k - 1.0);
+
+  for(int ik = 0; ik < n_k; ik++){
+    k_array[ik] = log10(Constants.k_min) + ik * dk;
+    k_array[ik] = pow(10, k_array[ik]);
+  }
+
   const double c = Constants.c;
   double Hp;
   double dHpdx;
-  double vb;
-  double dvbdx;
+  double ddHpddx;
   double g_tilde;
   double dg_tildedx;
+  double ddg_tildeddx;
+  double tau;
+  
+  double vb;
+  double dvbdx;
   double Phi;
+  double dPhidx;
   double Psi;
+  double dPsidx;
+  double Theta0;
+  double Theta2;
+  double dTheta2dx;
+  double ddTheta2ddx;
+
+  double term1;
+  double term2;
+  double term3;
+  double term4;
 
   // Make storage for the source functions (in 1D array to be able to pass it to the spline)
   Vector ST_array(k_array.size() * x_array.size());
@@ -421,8 +444,28 @@ void Perturbations::compute_source_functions(){
   // Compute source functions
   for(auto ix = 0; ix < x_array.size(); ix++){
     const double x = x_array[ix];
+    Hp           = cosmo -> Hp_of_x(x);
+    dHpdx        = cosmo -> dHpdx_of_x(x);
+    ddHpddx      = cosmo -> ddHpddx_of_x(x);
+    g_tilde      = rec   -> g_tilde_of_x(x);
+    dg_tildedx   = rec   -> dgdx_tilde_of_x(x);
+    ddg_tildeddx = rec   -> ddgddx_tilde_of_x(x);
+    tau          = rec   -> tau_of_x(x);
+
     for(auto ik = 0; ik < k_array.size(); ik++){
       const double k = k_array[ik];
+      vb = v_b_spline(x, k);
+      dvbdx = v_b_spline.deriv_x(x, k);
+      Phi = Phi_spline(x, k);
+      dPhidx = Phi_spline.deriv_x(x, k);
+      Psi = Psi_spline(x, k);
+      dPsidx = Psi_spline.deriv_x(x, k); 
+      Theta0 = Theta_spline[0](x, k);
+      Theta2 = Theta_spline[2](x, k);
+      dTheta2dx = Theta_spline[2].deriv_x(x, k);
+      ddTheta2ddx = Theta_spline[2].deriv_x(x, k);
+
+
 
       // NB: This is the format the data needs to be stored 
       // in a 1D array for the 2D spline routine source(ix,ik) -> S_array[ix + nx * ik]
@@ -438,13 +481,21 @@ void Perturbations::compute_source_functions(){
       // ...
 
       // Temperatur source
-      ST_array[index] = 0.0;
+      term1 = g_tilde * (Theta0 + Psi + 0.25 * Theta2);
+      term2 = exp(-tau) * (dPsidx - dPhidx);
+      term3 = - 1.0 / (c * k) * ( dHpdx * g_tilde * vb
+                                 + Hp * dg_tildedx * vb
+                                 + Hp * g_tilde * dvbdx);
+      term4 = Theta2 * g_tilde * (dHpdx * dHpdx + Hp * ddHpddx)
+            + 3.0 * Hp * dHpdx * (dg_tildedx * Theta2 + g_tilde * dTheta2dx)
+            + Hp * Hp * (ddg_tildeddx * Theta2 + 2 * dg_tildedx * dTheta2dx + g_tilde * ddTheta2ddx);
+      ST_array[index] = term1 + term2 + term3 + term4;                      
 
     }
   }
-
   // Spline the source functions
   ST_spline.create (x_array, k_array, ST_array, "Source_Temp_x_k");
+  std::cout << "hei" << std::endl;
 
   Utils::EndTiming("source");
 }
@@ -754,6 +805,7 @@ void Perturbations::output(const double k, const std::string filename) const{
     fp << get_delta_b(x, k)       << " ";
     fp << get_v_cdm(x, k)       << " ";
     fp << get_v_b(x, k)       << " ";
+    fp << get_Source_T(x, k)       << " ";
     //fp << get_Pi(x, k)        << " ";
     //fp << get_Source_T(x,k)  << " ";
     //fp << get_Source_T(x,k) * Utils::j_ell(5,   arg)           << " ";
