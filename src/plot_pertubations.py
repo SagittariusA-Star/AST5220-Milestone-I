@@ -46,10 +46,17 @@ recombo_index = np.where(g_tilde >= 1.5e-1)
 Xe_half_index = np.argmin(np.abs(Xe - 0.5))
 
 # Loading data from file
-pertub_data_001 = np.loadtxt("perturbations_k0.01.txt")
-pertub_data_0001 = np.loadtxt("perturbations_k0.001.txt")
-pertub_data_01 = np.loadtxt("perturbations_k0.1.txt")
+#pertub_data_001 = np.loadtxt("perturbations_k0.01.txt")
+#pertub_data_0001 = np.loadtxt("perturbations_k0.001.txt")
+#pertub_data_01 = np.loadtxt("perturbations_k0.1.txt")
+pertub_data_0 = np.loadtxt("perturbations_k5e-5.txt")
+pertub_data_1 = np.loadtxt("perturbations_k2.85e-4.txt")
+pertub_data_2 = np.loadtxt("perturbations_k1.623e-3.txt")
+pertub_data_3 = np.loadtxt("perturbations_k9.244e-3.txt")
+pertub_data_4 = np.loadtxt("perturbations_k5.266e-2.txt")
+pertub_data_5 = np.loadtxt("perturbations_k3e-1.txt")
 
+"""
 k_001      = 0.01 / u.Mpc
 x_001      = pertub_data_001[:, 0]
 Theta0_001 = pertub_data_001[:, 1]
@@ -61,43 +68,93 @@ delta_cdm_001 = pertub_data_001[:, 6]
 delta_b_001   = pertub_data_001[:, 7]
 v_cdm_001     = pertub_data_001[:, 8] 
 v_b_001       = pertub_data_001[:, 9] 
+"""
+k_0      = 5e-5 / u.Mpc
+x_0      = pertub_data_0[:, 0]
+Theta0_0 = pertub_data_0[:, 1]
+Theta1_0 = pertub_data_0[:, 2]
+Theta2_0 = pertub_data_0[:, 3]
+Phi_0    = pertub_data_0[:, 4]
+Psi_0    = pertub_data_0[:, 5]
+delta_cdm_0 = pertub_data_0[:, 6]
+delta_b_0   = pertub_data_0[:, 7]
+v_cdm_0     = pertub_data_0[:, 8] 
+v_b_0       = pertub_data_0[:, 9] 
 
-k_0001      = 0.001 / u.Mpc
-x_0001      = pertub_data_0001[:, 0]
-Theta0_0001 = pertub_data_0001[:, 1]
-Theta1_0001 = pertub_data_0001[:, 2]
-Theta2_0001 = pertub_data_0001[:, 3]
-Phi_0001    = pertub_data_0001[:, 4]
-Psi_0001    = pertub_data_0001[:, 5]
-delta_cdm_0001 = pertub_data_0001[:, 6]
-delta_b_0001   = pertub_data_0001[:, 7]
-v_cdm_0001     = pertub_data_0001[:, 8] 
-v_b_0001       = pertub_data_0001[:, 9] 
+k_1      = 2.85e-4 / u.Mpc
+x_1      = pertub_data_1[:, 0]
+Theta0_1 = pertub_data_1[:, 1]
+Theta1_1 = pertub_data_1[:, 2]
+Theta2_1 = pertub_data_1[:, 3]
+Phi_1    = pertub_data_1[:, 4]
+Psi_1    = pertub_data_1[:, 5]
+delta_cdm_1 = pertub_data_1[:, 6]
+delta_b_1   = pertub_data_1[:, 7]
+v_cdm_1     = pertub_data_1[:, 8] 
+v_b_1       = pertub_data_1[:, 9] 
 
-k_01      = 0.1 / u.Mpc
-x_01      = pertub_data_01[:, 0]
-Theta0_01 = pertub_data_01[:, 1]
-Theta1_01 = pertub_data_01[:, 2]
-Theta2_01 = pertub_data_01[:, 3]
-Phi_01    = pertub_data_01[:, 4]
-Psi_01    = pertub_data_01[:, 5]
-delta_cdm_01 = pertub_data_01[:, 6]
-delta_b_01   = pertub_data_01[:, 7]
-v_cdm_01     = pertub_data_01[:, 8] 
-v_b_01       = pertub_data_01[:, 9] 
+k_2      = 1.623e-3 / u.Mpc
+x_2      = pertub_data_2[:, 0]
+Theta0_2 = pertub_data_2[:, 1]
+Theta1_2 = pertub_data_2[:, 2]
+Theta2_2 = pertub_data_2[:, 3]
+Phi_2    = pertub_data_2[:, 4]
+Psi_2    = pertub_data_2[:, 5]
+delta_cdm_2 = pertub_data_2[:, 6]
+delta_b_2   = pertub_data_2[:, 7]
+v_cdm_2     = pertub_data_2[:, 8] 
+v_b_2       = pertub_data_2[:, 9] 
 
+k_3      = 9.244e-3 / u.Mpc
+x_3      = pertub_data_3[:, 0]
+Theta0_3 = pertub_data_3[:, 1]
+Theta1_3 = pertub_data_3[:, 2]
+Theta2_3 = pertub_data_3[:, 3]
+Phi_3    = pertub_data_3[:, 4]
+Psi_3    = pertub_data_3[:, 5]
+delta_cdm_3 = pertub_data_3[:, 6]
+delta_b_3   = pertub_data_3[:, 7]
+v_cdm_3     = pertub_data_3[:, 8] 
+v_b_3       = pertub_data_3[:, 9] 
+
+k_4      = 5.266e-2 / u.Mpc
+x_4      = pertub_data_4[:, 0]
+Theta0_4 = pertub_data_4[:, 1]
+Theta1_4 = pertub_data_4[:, 2]
+Theta2_4 = pertub_data_4[:, 3]
+Phi_4    = pertub_data_4[:, 4]
+Psi_4    = pertub_data_4[:, 5]
+delta_cdm_4 = pertub_data_4[:, 6]
+delta_b_4   = pertub_data_4[:, 7]
+v_cdm_4     = pertub_data_4[:, 8] 
+v_b_4       = pertub_data_4[:, 9] 
+
+k_5      = 3e-1 / u.Mpc
+x_5      = pertub_data_5[:, 0]
+Theta0_5 = pertub_data_5[:, 1]
+Theta1_5 = pertub_data_5[:, 2]
+Theta2_5 = pertub_data_5[:, 3]
+Phi_5    = pertub_data_5[:, 4]
+Psi_5    = pertub_data_5[:, 5]
+delta_cdm_5 = pertub_data_5[:, 6]
+delta_b_5   = pertub_data_5[:, 7]
+v_cdm_5     = pertub_data_5[:, 8] 
+v_b_5       = pertub_data_5[:, 9] 
 
 # Plotting visibility function, derivative and second derivative thereof
 fig, ax = plt.subplots(2, 2 , figsize=[1.5 * 7.1014, 1.5 * 7.1014 / 1.618])
-fig.suptitle(r"$k = 0.01 \rm{Mpc}^{-1}$")
 
-ax[0, 0].plot(x_001, Theta0_001, label=rf"$\Theta_0(k = {k_001.value}/\mathrm{{Mpc}})$")
-ax[0, 0].plot(x_0001, Theta0_0001, label=rf"$\Theta_0(k = {k_0001.value}/\mathrm{{Mpc}})$")
-ax[0, 0].plot(x_01, Theta0_01, label=rf"$\Theta_0(k = {k_01.value}/\mathrm{{Mpc}})$")
+ax[0, 0].plot(x_5, Theta0_5, label=rf"$k = {k_5.value:.2e}/\mathrm{{Mpc}}$", color = "orange")
+ax[0, 0].plot(x_4, Theta0_4, label=rf"$k = {k_4.value:.2e}/\mathrm{{Mpc}}$", color = "k")
+ax[0, 0].plot(x_3, Theta0_3, label=rf"$k = {k_3.value:.2e}/\mathrm{{Mpc}}$", color = "m")
+ax[0, 0].plot(x_2, Theta0_2, label=rf"$k = {k_2.value:.2e}/\mathrm{{Mpc}}$", color = "b")
+ax[0, 0].plot(x_1, Theta0_1, label=rf"$k = {k_1.value:.2e}/\mathrm{{Mpc}}$", color = "r")
+ax[0, 0].plot(x_0, Theta0_0, label=rf"$k = {k_0.value:.2e}/\mathrm{{Mpc}}$", color = "g")
 ax[0, 0].set_xlim(-12, 0)
-ax[0, 0].legend()
+#ax[0, 0].legend()
 ax[0, 0].set_ylabel(r"$\Theta_0$")
 ax[0, 0].set_xlabel(r"$x = \log (a)$")
+fig.legend(loc='center', bbox_to_anchor=(0.3, 0.3), fontsize = 14)
 """
 ax[0, 0].axvspan(
     np.min(x_cosmo),
@@ -127,13 +184,16 @@ ax[0, 0].axvspan(
 
 ax[0, 0].axvline(x = x_cosmo[Xe_half_index], ymin = -1e5, ymax = 1e5, color = "orangered", linestyle = ":")
 """
-ax[0, 1].plot(x_001, Theta1_001, label=rf"$\Theta_1(k = {k_001.value}/\mathrm{{Mpc}})$")
-ax[0, 1].plot(x_0001, Theta1_0001, label=rf"$\Theta_1(k = {k_0001.value}/\mathrm{{Mpc}})$")
-ax[0, 1].plot(x_01, Theta1_01, label=rf"$\Theta_1(k = {k_01.value}/\mathrm{{Mpc}})$")
+ax[0, 1].plot(x_5, Theta1_5, label=rf"$k = {k_5.value:.2e}/\mathrm{{Mpc}}$", color = "orange")
+ax[0, 1].plot(x_4, Theta1_4, label=rf"$k = {k_4.value:.2e}/\mathrm{{Mpc}}$", color = "k")
+ax[0, 1].plot(x_3, Theta1_3, label=rf"$k = {k_3.value:.2e}/\mathrm{{Mpc}}$", color = "m")
+ax[0, 1].plot(x_2, Theta1_2, label=rf"$k = {k_2.value:.2e}/\mathrm{{Mpc}}$", color = "b")
+ax[0, 1].plot(x_1, Theta1_1, label=rf"$k = {k_1.value:.2e}/\mathrm{{Mpc}}$", color = "r")
+ax[0, 1].plot(x_0, Theta1_0, label=rf"$k = {k_0.value:.2e}/\mathrm{{Mpc}}$", color = "g")
 ax[0, 1].set_ylabel(r"$\Theta_1$")
 ax[0, 1].set_xlabel(r"$x = \log (a)$")
 ax[0, 1].set_xlim(-12, 0)
-ax[0, 1].legend()
+#ax[0, 1].legend()
 """
 ax[0, 1].axvspan(
     np.min(x_cosmo),
@@ -162,13 +222,21 @@ ax[0, 1].axvspan(
 
 ax[0, 1].axvline(x = x_cosmo[Xe_half_index], ymin = -1e5, ymax = 1e5, color = "orangered", linestyle = ":")
 """
-ax[1, 0].plot(x_001, Theta2_001, label=rf"$\Theta_2(k = {k_001.value}/\mathrm{{Mpc}})$")
-ax[1, 0].plot(x_0001, Theta2_0001, label=rf"$\Theta_2(k = {k_0001.value}/\mathrm{{Mpc}})$")
-ax[1, 0].plot(x_01, Theta2_01, label=rf"$\Theta_2(k = {k_01.value}/\mathrm{{Mpc}})$")
-ax[1, 0].legend()
+ax[1, 0].set_frame_on(False)
+ax[1, 0].get_xaxis().set_visible(False)
+ax[1, 0].get_yaxis().set_visible(False)
+"""
+ax[1, 0].plot(x_5, Theta2_5, label=rf"$(k = {k_5.value:.2e}/\mathrm{{Mpc}}$", color = "orange")
+ax[1, 0].plot(x_4, Theta2_4, label=rf"$(k = {k_4.value:.2e}/\mathrm{{Mpc}}$", color = "k")
+ax[1, 0].plot(x_3, Theta2_3, label=rf"$(k = {k_3.value:.2e}/\mathrm{{Mpc}}$", color = "m")
+ax[1, 0].plot(x_2, Theta2_2, label=rf"$(k = {k_2.value:.2e}/\mathrm{{Mpc}}$", color = "b")
+ax[1, 0].plot(x_1, Theta2_1, label=rf"$(k = {k_1.value:.2e}/\mathrm{{Mpc}}$", color = "r")
+ax[1, 0].plot(x_0, Theta2_0, label=rf"$(k = {k_0.value:.2e}/\mathrm{{Mpc}}$", color = "g")
+#ax[1, 0].legend()
 ax[1, 0].set_xlim(-12, 0)
 ax[1, 0].set_ylabel(r"$\Theta_2$")
 ax[1, 0].set_xlabel(r"$x = \log (a)$")
+"""
 """
 ax[1, 0].axvspan(
     np.min(x_cosmo),
@@ -198,16 +266,22 @@ ax[1, 0].axvspan(
 ax[1, 0].axvline(x = x_cosmo[Xe_half_index], ymin = -1e5, ymax = 1e5, color = "orangered", linestyle = ":")
 """
 # Peak normalized visibility function and its derivatives
-ax[1, 1].plot(x_001, Phi_001, label=rf"$\Phi(k = {k_001.value}/\mathrm{{Mpc}})$")
-ax[1, 1].plot(x_0001, Phi_0001, label=rf"$\Phi(k = {k_0001.value}/\mathrm{{Mpc}})$")
-ax[1, 1].plot(x_01, Phi_01, label=rf"$\Phi(k = {k_01.value}/\mathrm{{Mpc}})$")
+ax[1, 1].plot(x_5, Phi_5, label=rf"$k = {k_5.value:.2e}/\mathrm{{Mpc}}$", color = "orange")
+ax[1, 1].plot(x_4, Phi_4, label=rf"$k = {k_4.value:.2e}/\mathrm{{Mpc}}$", color = "k")
+ax[1, 1].plot(x_3, Phi_3, label=rf"$k = {k_3.value:.2e}/\mathrm{{Mpc}}$", color = "m")
+ax[1, 1].plot(x_2, Phi_2, label=rf"$k = {k_2.value:.2e}/\mathrm{{Mpc}}$", color = "b")
+ax[1, 1].plot(x_1, Phi_1, label=rf"$k = {k_1.value:.2e}/\mathrm{{Mpc}}$", color = "r")
+ax[1, 1].plot(x_0, Phi_0, label=rf"$k = {k_0.value:.2e}/\mathrm{{Mpc}}$", color = "g")
 
-#ax[1, 1].plot(x_001, Psi_001, label=rf"$\Psi(k = {k_001.value}/\mathrm{{Mpc}})$")
-#ax[1, 1].plot(x_0001, Psi_0001, label=rf"$\Psi(k = {k_0001.value}/\mathrm{{Mpc}})$")
-#ax[1, 1].plot(x_01, Psi_01, label=rf"$\Psi(k = {k_01.value}/\mathrm{{Mpc}})$")
-ax[1, 1].legend()
+ax[1, 1].plot(x_5, Psi_5, linestyle = "--", color = "orange")
+ax[1, 1].plot(x_4, Psi_4, linestyle = "--", color = "k")
+ax[1, 1].plot(x_3, Psi_3, linestyle = "--", color = "m")
+ax[1, 1].plot(x_2, Psi_2, linestyle = "--", color = "b")
+ax[1, 1].plot(x_1, Psi_1, linestyle = "--", color = "r")
+ax[1, 1].plot(x_0, Psi_0, linestyle = "--", color = "g")
+#ax[1, 1].legend()
 #ax[1, 1].set_xlim(-12, 0)
-ax[1, 1].set_ylabel(r"$\Phi$")
+ax[1, 1].set_ylabel(r"$\Phi$  $(\Psi)$")
 ax[1, 1].set_xlabel(r"$x = \log (a)$")
 """
 ax[1, 1].axvspan(
@@ -243,20 +317,26 @@ fig.savefig("../doc/Figures/fig1.pdf", dpi=1000)
 
 
 fig1, ax1 = plt.subplots(1, 2 , figsize=[1.5 * 7.1014, 1.5 * 7.1014 / 1.618])
-fig1.suptitle(r"$k = 0.01 \rm{\mathrm{{Mpc}}}^{-1}$")
 
-ax1[0].plot(x_001, np.abs(delta_cdm_001), label = fr"$\delta_{{cdm}}(k = {k_001.value}/\mathrm{{Mpc}})$")
-ax1[0].plot(x_0001, np.abs(delta_cdm_0001), label = fr"$\delta_{{cdm}}(k = {k_0001.value}/\mathrm{{Mpc}})$")
-ax1[0].plot(x_01, np.abs(delta_cdm_01), label = fr"$\delta_{{cdm}}(k = {k_01.value}/\mathrm{{Mpc}})$")
+ax1[0].plot(x_5, np.abs(delta_cdm_5), label = fr"$k = {k_5.value:.2e}/\mathrm{{Mpc}}$", color = "orange")
+ax1[0].plot(x_4, np.abs(delta_cdm_4), label = fr"$k = {k_4.value:.2e}/\mathrm{{Mpc}}$", color = "k")
+ax1[0].plot(x_3, np.abs(delta_cdm_3), label = fr"$k = {k_3.value:.2e}/\mathrm{{Mpc}}$", color = "m")
+ax1[0].plot(x_2, np.abs(delta_cdm_2), label = fr"$k = {k_2.value:.2e}/\mathrm{{Mpc}}$", color = "b")
+ax1[0].plot(x_1, np.abs(delta_cdm_1), label = fr"$k = {k_1.value:.2e}/\mathrm{{Mpc}}$", color = "r")
+ax1[0].plot(x_0, np.abs(delta_cdm_0), label = fr"$k = {k_0.value:.2e}/\mathrm{{Mpc}}$", color = "g")
 
-ax1[0].plot(x_001, np.abs(delta_b_001), label = rf"$\delta_{{b}}(k = {k_001.value}/\mathrm{{Mpc}})$", linestyle = "--")
-ax1[0].plot(x_0001, np.abs(delta_b_0001), label = rf"$\delta_{{b}}(k = {k_0001.value}/\mathrm{{Mpc}})$", linestyle = "--")
-ax1[0].plot(x_01, np.abs(delta_b_01), label = rf"$\delta_{{b}}(k = {k_01.value}/\mathrm{{Mpc}})$", linestyle = "--")
+ax1[0].plot(x_5, np.abs(delta_b_5), linestyle = "--", color = "orange")
+ax1[0].plot(x_4, np.abs(delta_b_4), linestyle = "--", color = "k")
+ax1[0].plot(x_3, np.abs(delta_b_3), linestyle = "--", color = "m")
+ax1[0].plot(x_2, np.abs(delta_b_2), linestyle = "--", color = "b")
+ax1[0].plot(x_1, np.abs(delta_b_1), linestyle = "--", color = "r")
+ax1[0].plot(x_0, np.abs(delta_b_0), linestyle = "--", color = "g")
 #ax1[0].set_xlim(-12, 0)
 ax1[0].legend()
 ax1[0].set_ylabel(r"$\delta$")
 ax1[0].set_xlabel(r"$x = \log (a)$")
 ax1[0].set_yscale("log")
+
 """
 ax1[0].axvspan(
     np.min(x_cosmo),
@@ -285,13 +365,19 @@ ax1[0].axvspan(
 )
 ax1[0].axvline(x = x_cosmo[Xe_half_index], ymin = 1e-5, ymax = 1e5, color = "orangered", linestyle = ":")
 """
-ax1[1].plot(x_001, np.abs(v_cdm_001), label = rf"$v_{{cdm}}(k = {k_001.value}/\mathrm{{Mpc}})$")
-ax1[1].plot(x_0001, np.abs(v_cdm_0001), label = rf"$v_{{cdm}}(k = {k_0001.value}/\mathrm{{Mpc}})$")
-ax1[1].plot(x_01, np.abs(v_cdm_01), label = rf"$v_{{cdm}}(k = {k_01.value}/\mathrm{{Mpc}})$")
+ax1[1].plot(x_5, np.abs(v_cdm_5), label = rf"$k = {k_5.value:.2e}/\mathrm{{Mpc}}$", color = "orange")
+ax1[1].plot(x_4, np.abs(v_cdm_4), label = rf"$k = {k_4.value:.2e}/\mathrm{{Mpc}}$", color = "k")
+ax1[1].plot(x_3, np.abs(v_cdm_3), label = rf"$k = {k_3.value:.2e}/\mathrm{{Mpc}}$", color = "m")
+ax1[1].plot(x_2, np.abs(v_cdm_2), label = rf"$k = {k_2.value:.2e}/\mathrm{{Mpc}}$", color = "b")
+ax1[1].plot(x_1, np.abs(v_cdm_1), label = rf"$k = {k_1.value:.2e}/\mathrm{{Mpc}}$", color = "r")
+ax1[1].plot(x_0, np.abs(v_cdm_0), label = rf"$k = {k_0.value:.2e}/\mathrm{{Mpc}}$", color = "g")
 
-ax1[1].plot(x_001, np.abs(v_b_001), label = rf"$v_{{b}}(k = {k_001.value}/\mathrm{{Mpc}})$", linestyle = "--")
-ax1[1].plot(x_0001, np.abs(v_b_0001), label = rf"$v_{{b}}(k = {k_0001.value}/\mathrm{{Mpc}})$", linestyle = "--")
-ax1[1].plot(x_01, np.abs(v_b_01), label = rf"$v_{{b}}(k = {k_01.value}/\mathrm{{Mpc}})$", linestyle = "--")
+ax1[1].plot(x_5, np.abs(v_b_5), linestyle = "--", color = "orange")
+ax1[1].plot(x_4, np.abs(v_b_4), linestyle = "--", color = "k")
+ax1[1].plot(x_3, np.abs(v_b_3), linestyle = "--", color = "m")
+ax1[1].plot(x_2, np.abs(v_b_2), linestyle = "--", color = "b")
+ax1[1].plot(x_1, np.abs(v_b_1), linestyle = "--", color = "r")
+ax1[1].plot(x_0, np.abs(v_b_0), linestyle = "--", color = "g")
 #ax1[1].set_xlim(-12, 0)
 ax1[1].legend()
 ax1[1].set_ylabel(r"$v$")
