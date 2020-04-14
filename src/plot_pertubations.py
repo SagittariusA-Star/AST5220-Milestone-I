@@ -155,7 +155,7 @@ ax[0, 0].set_xlim(-12, 0)
 ax[0, 0].set_ylabel(r"$\Theta_0$")
 ax[0, 0].set_xlabel(r"$x = \log (a)$")
 fig.legend(loc='center', bbox_to_anchor=(0.3, 0.3), fontsize = 14)
-"""
+
 ax[0, 0].axvspan(
     np.min(x_cosmo),
     x_cosmo[np.where(OmegaB + OmegaCDM >= OmegaLambda + OmegaR)][0],
@@ -183,7 +183,7 @@ ax[0, 0].axvspan(
 )
 
 ax[0, 0].axvline(x = x_cosmo[Xe_half_index], ymin = -1e5, ymax = 1e5, color = "orangered", linestyle = ":")
-"""
+
 ax[0, 1].plot(x_5, Theta1_5, label=rf"$k = {k_5.value:.2e}/\mathrm{{Mpc}}$", color = "orange")
 ax[0, 1].plot(x_4, Theta1_4, label=rf"$k = {k_4.value:.2e}/\mathrm{{Mpc}}$", color = "k")
 ax[0, 1].plot(x_3, Theta1_3, label=rf"$k = {k_3.value:.2e}/\mathrm{{Mpc}}$", color = "m")
@@ -194,7 +194,7 @@ ax[0, 1].set_ylabel(r"$\Theta_1$")
 ax[0, 1].set_xlabel(r"$x = \log (a)$")
 ax[0, 1].set_xlim(-12, 0)
 #ax[0, 1].legend()
-"""
+
 ax[0, 1].axvspan(
     np.min(x_cosmo),
     x_cosmo[np.where(OmegaB + OmegaCDM >= OmegaLambda + OmegaR)][0],
@@ -221,7 +221,7 @@ ax[0, 1].axvspan(
 )
 
 ax[0, 1].axvline(x = x_cosmo[Xe_half_index], ymin = -1e5, ymax = 1e5, color = "orangered", linestyle = ":")
-"""
+
 ax[1, 0].set_frame_on(False)
 ax[1, 0].get_xaxis().set_visible(False)
 ax[1, 0].get_yaxis().set_visible(False)
@@ -236,8 +236,7 @@ ax[1, 0].plot(x_0, Theta2_0, label=rf"$(k = {k_0.value:.2e}/\mathrm{{Mpc}}$", co
 ax[1, 0].set_xlim(-12, 0)
 ax[1, 0].set_ylabel(r"$\Theta_2$")
 ax[1, 0].set_xlabel(r"$x = \log (a)$")
-"""
-"""
+
 ax[1, 0].axvspan(
     np.min(x_cosmo),
     x_cosmo[np.where(OmegaB + OmegaCDM >= OmegaLambda + OmegaR)][0],
@@ -265,6 +264,7 @@ ax[1, 0].axvspan(
 
 ax[1, 0].axvline(x = x_cosmo[Xe_half_index], ymin = -1e5, ymax = 1e5, color = "orangered", linestyle = ":")
 """
+
 # Peak normalized visibility function and its derivatives
 ax[1, 1].plot(x_5, Phi_5, label=rf"$k = {k_5.value:.2e}/\mathrm{{Mpc}}$", color = "orange")
 ax[1, 1].plot(x_4, Phi_4, label=rf"$k = {k_4.value:.2e}/\mathrm{{Mpc}}$", color = "k")
@@ -283,7 +283,7 @@ ax[1, 1].plot(x_0, Psi_0, linestyle = "--", color = "g")
 #ax[1, 1].set_xlim(-12, 0)
 ax[1, 1].set_ylabel(r"$\Phi$  $(\Psi)$")
 ax[1, 1].set_xlabel(r"$x = \log (a)$")
-"""
+
 ax[1, 1].axvspan(
     np.min(x_cosmo),
     x_cosmo[np.where(OmegaB + OmegaCDM >= OmegaLambda + OmegaR)][0],
@@ -311,7 +311,7 @@ ax[1, 1].axvspan(
 )
 
 ax[1, 1].axvline(x = x_cosmo[Xe_half_index], ymin = -1e5, ymax = 1e5, color = "orangered", linestyle = ":")
-"""
+
 fig.tight_layout()
 fig.savefig("../doc/Figures/fig1.pdf", dpi=1000)
 
@@ -337,7 +337,7 @@ ax1[0].set_ylabel(r"$\delta$")
 ax1[0].set_xlabel(r"$x = \log (a)$")
 ax1[0].set_yscale("log")
 
-"""
+
 ax1[0].axvspan(
     np.min(x_cosmo),
     x_cosmo[np.where(OmegaB + OmegaCDM >= OmegaLambda + OmegaR)][0],
@@ -364,7 +364,7 @@ ax1[0].axvspan(
     color="red",
 )
 ax1[0].axvline(x = x_cosmo[Xe_half_index], ymin = 1e-5, ymax = 1e5, color = "orangered", linestyle = ":")
-"""
+
 ax1[1].plot(x_5, np.abs(v_cdm_5), label = rf"$k = {k_5.value:.2e}/\mathrm{{Mpc}}$", color = "orange")
 ax1[1].plot(x_4, np.abs(v_cdm_4), label = rf"$k = {k_4.value:.2e}/\mathrm{{Mpc}}$", color = "k")
 ax1[1].plot(x_3, np.abs(v_cdm_3), label = rf"$k = {k_3.value:.2e}/\mathrm{{Mpc}}$", color = "m")
@@ -383,8 +383,7 @@ ax1[1].legend()
 ax1[1].set_ylabel(r"$v$")
 ax1[1].set_xlabel(r"$x = \log (a)$")
 ax1[1].set_yscale("log")
-fig1.savefig("../doc/Figures/fig2.pdf", dpi=1000)
-"""
+
 ax1[1].axvspan(
     np.min(x_cosmo),
     x_cosmo[np.where(OmegaB + OmegaCDM >= OmegaLambda + OmegaR)][0],
@@ -410,7 +409,8 @@ ax1[1].axvspan(
     color="red",
 )
 ax1[1].axvline(x = x_cosmo[Xe_half_index], ymin = 1e-5, ymax = 1e5, color = "orangered", linestyle = ":")
-"""
+fig1.savefig("../doc/Figures/fig2.pdf", dpi=1000)
+
 plt.show()
 
 """
