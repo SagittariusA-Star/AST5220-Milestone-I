@@ -26,7 +26,7 @@
 \section{Introduction} \label{sec:Intro}
 Nowadays cosmology is considered a high precision field of science, a status which cosmology gained through high precision measurements of the Cosmic Microwave background (CMB) with several telescopes and probes, Planck \citep[]{planckcollaboration:2018} being the most significant to date. Planck's measurements of the CMB anisotropies have led to a revolution in cosmology, as the accurate measurements can be used to estimate cosmological parameters and subsequently tightly constrain cosmological models of the universe we live in.
 
-In order to estimate cosmological parameters one needs to first model the CMB. This paper is a step towards the final goal of computing the CMB anisotropy power spectrum of temperature. We will continue the work of \cite{stutzer:2020a} and \cite{stutzer:2020b} by further building on the model of the universe by implementing the perturbations that ultimately form the anisotropies of CMB. We will do this by solving the couples set of differential equations (ODEs) of the multipole monments of the radiation (mainly photons), cold dark matter (CDM) and baryonic matter, neglecting neutrinos and the polarization of photons for simplicity. Also we only consider hydrogen to make up the baryons, an approximation which should hold fairly well, as hydrogen is the dominant species of baryons. These can subsequently be used to compute the theoretical CMB power spectrum for a set of cosmological parameters (future work).
+In order to estimate cosmological parameters one needs to first model the CMB. This paper is a step towards the final goal of computing the angular CMB anisotropy power spectrum of temperature perturbations. We will continue the work of \cite{stutzer:2020a} and \cite{stutzer:2020b} by further building on the model of the universe by implementing the perturbations that ultimately form the anisotropies of CMB. We will do this by solving the couples set of differential equations (ODEs) of the multipole monments of the radiation (mainly photons), cold dark matter (CDM) and baryonic matter, neglecting neutrinos and the polarization of photons for simplicity. Also we only consider hydrogen to make up the baryons, an approximation which should hold fairly well, as hydrogen is the dominant species of baryons. These can subsequently be used to compute the theoretical CMB power spectrum for a set of cosmological parameters (future work).
 
 \section{Method} \label{sec:Method}
 After having modeled the large scale evolution of the universe and its recombination history, we can add the small inhomogeneities of matter-energy of photons, CDM and baryonic matter and compute their evolution over time as a function of scale. The evolution of the perturbations for different scales are found by solving the linearized Einstein and Boltzmann equations with the initial conditions set up by inflation, which are derived in detail in \cite{dodelson:2003}. In principle this is merely a system of coupled ODEs which have to be solved for. However, there are some difficulties. Since the universe was hot and dense at early times, an electron would only "see" a short distance, and hence could only be affected by nearby temperature fluctuations. This is seen from the large optical depth at early times as found by \cite{stutzer:2020b}. Since the system was effectively in thermodynamic equilibrium with only small fluctuations, only the first few multipoles are relevant for the evolution of the photon-baryon plasma at early times. The relevant multipoles are the monopole $\Theta_0$ representing the average temperature of the electron, the dipole $\Theta_1$ which is a velocity term due to the doppler effect of the fluid and the quadrupole $\Theta_2$ which is the only relevant source for polarization this early on \citep[]{winther:2020b}. This early regime is called tight coupling, where matter and radiation forms a tightly coupled plasma.
@@ -56,7 +56,7 @@ The perturbations to the CDM and baryonic matter-energy field are given by
     \delta_b^\prime &= \frac{ck}{\mathcal{H}}v_b -3\Phi^\prime \\
     v_b^\prime &= -v_b - \frac{ck}{\mathcal{H}}\Psi + \tau^\prime R(3\Theta_1 + v_b),
 \end{align}
-where the density perturbations for CDM and baryons are given by $\delta_\mathrm{CDM}$ and $\delta_b$ respectively, and the second order multipole of perturbations of the two matter components, i.e. the velocity perturbations are given by $v_\mathrm{CDM}$ and $v_b$.
+where the density perturbations for CDM and baryons are given by $\delta_\mathrm{CDM}$ and $\delta_b$ respectively, and the second order multipole of perturbations of the two matter components, i.e. the velocity perturbations are given by $v_\mathrm{CDM}$ and $v_b$. The factor $R = \frac{3\Omega_{r,0}}{4\Omega_{b,0}a}$, where $a$ is the scale factor.
 
 And finally the perturbations to the time and space components of the metric (in the Newtonian gauge) are given as 
 \begin{align}
@@ -65,9 +65,49 @@ And finally the perturbations to the time and space components of the metric (in
     \bigl[\Omega_{\rm CDM,0} a^{-1} \delta_{\rm CDM}\\
     & + \Omega_{b,0} a^{-1} \delta_b + 4\Omega_{r,0}
     a^{-2}\Theta_0 \bigr] \\
-    \Psi &= -\Phi - \frac{12H_0^2}{c^2k^2a^2}\left[\Omega_{r,0}\Theta_2\right],
+    \Psi &= -\Phi - \frac{12H_0^2}{c^2k^2a^2}\left[\Omega_{r,0}\Theta_2\right].
 \end{align} 
-    
+Note that in fact only one of the two metric perturbations is dynamical, meaning we don't have to solve for $\Psi$ as an ODE as it is determined by $\Phi$ directly.
+Because these metric perturbations are perturbations to the curvature caused by the presence of a matter-energy perturbation, they will define the gravitational potential wells that matter and radiation can fall into or oscillate in. 
+
+As mentioned before there is however a slight complication in that the universe is hot and dense in the beginning, with a tight coupling between matter and radiation. In the tightly coupled regime $\tau'$ is large and $\Theta_1$ and $v_b$ are close to zero. Thus the factor $\tau' (3\Theta_1 + v_b)$ becomes numerically very unstable early on. Therefore one needs to do an approximation, explained in detail by \cite{callin:2006} or \cite{winther:2020b}, where we define the term 
+\begin{align}
+q &= \bigr(-[(1-R)\tau^\prime + (1+R)\tau^{\prime\prime}](3\Theta_1+v_b) \\&-
+            \frac{ck}{\mathcal{H}}\Psi + (1-\frac{\mathcal{H}^\prime}{\mathcal{H}})\frac{ck}{\mathcal{H}}(-\Theta_0 +
+            2\Theta_2) \\ &- \frac{ck}{\mathcal{H}}\Theta_0^\prime\bigr)/\bigl((1+R)\tau^\prime + \frac{\mathcal{H}^\prime}{\mathcal{H}} -
+            1\bigr)
+\end{align}
+which is used to get more numerically stable expressions given as 
+\begin{align}
+    v_b^\prime &= \frac{1}{1+R} \left[-v_b - \frac{ck}{\mathcal{H}}\Psi + R(q +
+    \frac{ck}{\mathcal{H}}(-\Theta_0 + 2\Theta_2) - \frac{ck}{\mathcal{H}}\Psi)\right]\\
+    \Theta^\prime_1 &= \frac{1}{3} (q - v_b^\prime).
+\end{align}
+The ODEs for the monopole $\Theta_0$, as well as for $\delta_\mathrm{CDM}$, $v_\mathrm{CDM}$ and $\delta_b$ in the tightly coupled regime are simply the same as outside tight coupling as defined earlier.
+Apart from the above rewriting for numerical stability sake, the only difference from the full equations valid outside of tight coupling, is that one only needs to solve ODEs for the first two multipole moments $\Theta_0$ and $\Theta_1$ (and the CDM and baryonic quantities) since all other $\Theta_\ell$ are directly determined by the two former. Specifically without considering polarization the multipoles are given by
+
+\begin{align}
+    \Theta_2 &= 
+    -\frac{20ck}{45\mathcal{H}\tau^\prime} \Theta_1, \quad\quad \textrm{(without polarization)}\\ 
+    \Theta_\ell &= -\frac{\ell}{2\ell+1} \frac{ck}{\mathcal{H}\tau'} \Theta_{\ell-1}, \quad\quad \ell > 2.
+\end{align}
+
+Now that all equations for the tightly coupled regime are set up, we only need initial conditions before solving the system of ODEs in this regime. The initial conditions are set up by inflation an are as shown in \cite{winther:2020b} given by 
+
+\begin{align}
+    \Psi &= -\frac{2}{3}\\
+    \Phi &= -\Psi \\
+    \delta_{\rm CDM} &= \delta_b = -\frac{3}{2} \Psi \\
+    v_{\rm CDM} &= v_b = -\frac{ck}{2\mathcal{H}} \Psi\\
+    \Theta_0 &= -\frac{1}{2} \Psi \\
+    \Theta_1 &= +\frac{ck}{6\mathcal{H}}\Psi \\
+    \Theta_2 &= 
+    -\frac{20ck}{45\mathcal{H}\tau^\prime} \Theta_1, \quad\quad \textrm{(without polarization)}\\
+    \Theta_\ell &= -\frac{\ell}{2\ell+1} \frac{ck}{\mathcal{H}\tau^\prime} \Theta_{\ell-1}.
+\end{align}
+
+To integrate the perturbations over the entire history of the universe through today, we must finally determine how to transition from the system of the tightly coupled regime to the full set of equations. The time of transition is essentially when $|\dv{\tau}{x}| < 10 \cdot \mathrm{min}(1, \frac{ck}{\mathcal{H}})$ but no later than the very beginning of recombination at $z\approx 1700$ which corresponds to $X_e\approx 0.999$ from \cite{winther:2020b}. 
+
 \begin{figure*}
     \includegraphics[scale = 0.65]{Figures/fig1.pdf}
     \caption{The figure shows (\textbf{Upper left}) the monopole moment $\Theta_0 = \frac{1}{4}\delta_\gamma$ and (\textbf{upper right}) the dipole moment $\Theta_1 = -\frac{1}{3}v_\gamma$, roughly corresponding to the density and velocity perturbation of radiation energy-density perturbation respectively. Also shown (\textbf{lower right}) are the metric perturbations $\Phi$ and $\Psi$ in the Newtonian gauge. All quantities plotted are functions of the log-scale factor $x = \ln a$ and scale $k$, and are shown for several different wavenumbers. The background color marks the epoch of dominance; yellow, blue and purple represent radiation, matter and dark energy dominated epochs respectively. The red background color corresponds to the epoch of recombination and the vertical red dotted line marks the precise time of recombination.} 
