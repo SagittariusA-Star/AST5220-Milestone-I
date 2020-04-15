@@ -29,6 +29,9 @@ Nowadays cosmology is considered a high precision field of science, a status whi
 In order to estimate cosmological parameters one needs to first model the CMB. This paper is a step towards the final goal of computing the angular CMB anisotropy power spectrum of temperature perturbations. We will continue the work of \cite{stutzer:2020a} and \cite{stutzer:2020b} by further building on the model of the universe by implementing the perturbations that ultimately form the anisotropies of CMB. We will do this by solving the couples set of differential equations (ODEs) of the multipole monments of the radiation (mainly photons), cold dark matter (CDM) and baryonic matter, neglecting neutrinos and the polarization of photons for simplicity. Also we only consider hydrogen to make up the baryons, an approximation which should hold fairly well, as hydrogen is the dominant species of baryons. These can subsequently be used to compute the theoretical CMB power spectrum for a set of cosmological parameters (future work).
 
 \section{Method} \label{sec:Method}
+The equations and relations presented here are, unless otherwise stated, provided by \cite{callin:2006}, \cite{winther:2020b} and or \cite{dodelson:2003}.
+
+\subsection{The System of Equations} \label{subsec:system}
 After having modeled the large scale evolution of the universe and its recombination history, we can add the small inhomogeneities of matter-energy of photons, CDM and baryonic matter and compute their evolution over time as a function of scale. The evolution of the perturbations for different scales are found by solving the linearized Einstein and Boltzmann equations with the initial conditions set up by inflation, which are derived in detail in \cite{dodelson:2003}. In principle this is merely a system of coupled ODEs which have to be solved for. However, there are some difficulties. Since the universe was hot and dense at early times, an electron would only "see" a short distance, and hence could only be affected by nearby temperature fluctuations. This is seen from the large optical depth at early times as found by \cite{stutzer:2020b}. Since the system was effectively in thermodynamic equilibrium with only small fluctuations, only the first few multipoles are relevant for the evolution of the photon-baryon plasma at early times. The relevant multipoles are the monopole $\Theta_0$ representing the average temperature of the electron, the dipole $\Theta_1$ which is a velocity term due to the doppler effect of the fluid and the quadrupole $\Theta_2$ which is the only relevant source for polarization this early on \citep[]{winther:2020b}. This early regime is called tight coupling, where matter and radiation forms a tightly coupled plasma.
 
 Later on the universe became optically thinner and multipoles $\Theta_\ell$ of higher orders became relevant. In principle, since the ODEs for the multipoles of different order are all coupled, one needs to solve for a high number of these coupled equations. As this is highly inefficient, we make use of the line of sight integration developed by Zaldarriaga and Seljak, which only needs a few (six) of the multipoles. 
@@ -56,7 +59,7 @@ The perturbations to the CDM and baryonic matter-energy field are given by
     \delta_b^\prime &= \frac{ck}{\mathcal{H}}v_b -3\Phi^\prime \\
     v_b^\prime &= -v_b - \frac{ck}{\mathcal{H}}\Psi + \tau^\prime R(3\Theta_1 + v_b),
 \end{align}
-where the density perturbations for CDM and baryons are given by $\delta_\mathrm{CDM}$ and $\delta_b$ respectively, and the second order multipole of perturbations of the two matter components, i.e. the velocity perturbations are given by $v_\mathrm{CDM}$ and $v_b$. The factor $R = \frac{3\Omega_{r,0}}{4\Omega_{b,0}a}$, where $a$ is the scale factor.
+where the density perturbations for CDM and baryons are given by $\delta_\mathrm{CDM}$ and $\delta_b$ respectively being the monopole moment of the matter components. The dipole moment of perturbations of the two matter components, i.e. the velocity perturbations are given by $v_\mathrm{CDM}$ and $v_b$. The factor $R = \frac{3\Omega_{r,0}}{4\Omega_{b,0}a}$, where $a$ is the scale factor.
 
 And finally the perturbations to the time and space components of the metric (in the Newtonian gauge) are given as 
 \begin{align}
@@ -67,8 +70,9 @@ And finally the perturbations to the time and space components of the metric (in
     a^{-2}\Theta_0 \bigr] \\
     \Psi &= -\Phi - \frac{12H_0^2}{c^2k^2a^2}\left[\Omega_{r,0}\Theta_2\right].
 \end{align} 
+Through Einsteins field equations one can see that the matter-energy content of the universe and the space-time curvature are determined by each other, and hence the perturbations of the matter-energy components (photons, CDM and baryons) will result in these metric perturbations. 
 Note that in fact only one of the two metric perturbations is dynamical, meaning we don't have to solve for $\Psi$ as an ODE as it is determined by $\Phi$ directly.
-Because these metric perturbations are perturbations to the curvature caused by the presence of a matter-energy perturbation, they will define the gravitational potential wells that matter and radiation can fall into or oscillate in. 
+Because these metric perturbations are perturbations to the curvature of space-time caused by the presence of a matter-energy perturbation, they will define the gravitational potential wells that matter and radiation can fall into or oscillate in. 
 
 As mentioned before there is however a slight complication in that the universe is hot and dense in the beginning, with a tight coupling between matter and radiation. In the tightly coupled regime $\tau'$ is large and $\Theta_1$ and $v_b$ are close to zero. Thus the factor $\tau' (3\Theta_1 + v_b)$ becomes numerically very unstable early on. Therefore one needs to do an approximation, explained in detail by \cite{callin:2006} or \cite{winther:2020b}, where we define the term 
 \begin{align}
@@ -85,13 +89,11 @@ which is used to get more numerically stable expressions given as
 \end{align}
 The ODEs for the monopole $\Theta_0$, as well as for $\delta_\mathrm{CDM}$, $v_\mathrm{CDM}$ and $\delta_b$ in the tightly coupled regime are simply the same as outside tight coupling as defined earlier.
 Apart from the above rewriting for numerical stability sake, the only difference from the full equations valid outside of tight coupling, is that one only needs to solve ODEs for the first two multipole moments $\Theta_0$ and $\Theta_1$ (and the CDM and baryonic quantities) since all other $\Theta_\ell$ are directly determined by the two former. Specifically without considering polarization the multipoles are given by
-
 \begin{align}
     \Theta_2 &= 
     -\frac{20ck}{45\mathcal{H}\tau^\prime} \Theta_1, \quad\quad \textrm{(without polarization)}\\ 
     \Theta_\ell &= -\frac{\ell}{2\ell+1} \frac{ck}{\mathcal{H}\tau'} \Theta_{\ell-1}, \quad\quad \ell > 2.
 \end{align}
-
 Now that all equations for the tightly coupled regime are set up, we only need initial conditions before solving the system of ODEs in this regime. The initial conditions are set up by inflation an are as shown in \cite{winther:2020b} given by 
 
 \begin{align}
@@ -105,8 +107,31 @@ Now that all equations for the tightly coupled regime are set up, we only need i
     -\frac{20ck}{45\mathcal{H}\tau^\prime} \Theta_1, \quad\quad \textrm{(without polarization)}\\
     \Theta_\ell &= -\frac{\ell}{2\ell+1} \frac{ck}{\mathcal{H}\tau^\prime} \Theta_{\ell-1}.
 \end{align}
+In fact due to the system of equations being linear means that one can later pick a different initial condition for $\Psi$, and simply propagate the change through the others if other normalizations are desired. 
 
-To integrate the perturbations over the entire history of the universe through today, we must finally determine how to transition from the system of the tightly coupled regime to the full set of equations. The time of transition is essentially when $|\dv{\tau}{x}| < 10 \cdot \mathrm{min}(1, \frac{ck}{\mathcal{H}})$ but no later than the very beginning of recombination at $z\approx 1700$ which corresponds to $X_e\approx 0.999$ from \cite{winther:2020b}. 
+To integrate the perturbations over the entire history of the universe through today, we must finally determine how to transition from the system of the tightly coupled regime to the full set of equations. The time $x_\text{end of tc}$ of transition is essentially when $|\dv{\tau}{x}| < 10 \cdot \mathrm{min}(1, \frac{ck}{\mathcal{H}})$ but no later than the very beginning of recombination at $z\approx 1700$ which corresponds to $X_e\approx 0.999$ from \cite{winther:2020b}.
+
+After determining the time of transition, initial conditions for the full system are needed in order to solve the ODEs. These initial conditions are simply the values of the quantities at the time right before transition, i.e. the last values in the regime of tight coupling. 
+
+Some of the things we expect to see in the final solutions are the monopole moment of the photon(-baryon plasma) to oscillate in the gravitational potentials before decoupling happens. This is the interplay between the radiation pressure expanding a perturbation and gravity pulling collapsing it, together forming an oscillatory interplay. After matter and radiation decouple, the photons can free-stream, and the perturbations are frozen in on the surface of last scattering as the CMB anisotropies. Further more, due to the presence of baryons in the primordial plasma we expect the oscillations to be asymmetric, as baryons tend to clump more than they ... Generally we also expect different scales to perform differently, as small scales well below the sound horizon (the scale a sound wave can have traveled at a given time) at decoupling $r_* = \int^{\eta_*}_0 c_s d\eta$, for sound speed $c_s$, have the chance to performed more oscillations than scales just barely within the sound horizon. Scales above the sound horizon have not even had the chance to perform a single oscillation within the time of decoupling.
+
+The matter density perturbations $\delta$ should reproduce the known plots of the Meszaros suppression, where the perturbations grow as the scale factor $a$ squared prior to matter-radiation equality $a_\text{eq}$, while being suppressed to grow as $\ln a$ after entering the horizon prior to $a_\text{eq}$. After $a_\text{eq}$ we then expect to see perturbations to grow proportional to the scale factor. Further we expect to see the smaller perturbations to enter the horizon earlier, hence the large scales (i.e. larger k) should be suppressed more.
+
+The scale dependence of the metric perturbations should also be seen. Prior to horizon entry the potentials $\Phi$ and $\Psi$ should start out equally in size bu with opposite signs. They should behave as constants when outside the causally connected horizon defined by the Hubble sphere. When entering the horizon, the whole perturbation is causally connected, and the expanding universe will lead to the potential wells given by $\Phi$ and $\Psi$ to "flatten", reducing the well's "depth". This is sean by $\Phi$ and $\Psi$ decaying, symmetrically, towards zero after entering the horizon. And again the smaller scales are entering the horizon earlier resulting metric perturbations of larger $k$ to decay first, and the super horizon perturbations to decay slowly or not at all. 
+
+These are just some of the expectations to look out for, but there could of course be more interesting things to discover in the final results.
+
+
+
+
+\subsection{The Implementation} \label{subsec:implementation}
+Now that the system of ODEs is set up, we are ready to solve it using C++. The main idea of solving is that we want to loop through different scales $k$ and for each iteration solve the system of ODEs through time $x$. We use logarithmically spaced values for the wavenumbers $k$ to loop through. Inside each iteration of the $k$-loop we fist find the time $x_\text{end of tc}$ when tight coupling ends. This time is used to divide the time line $x$ into two, one for each regime. In the first regime the initial conditions are set at described in \ref{subsec:system} as set up by inflation. The ODEs for tight coupling are solved and the quantities depending on those (i.e. the higher order multipoles) are computed, after which the results are saved in $n_x\times n_k$ matrices for later use.
+
+Similarly the second half of the time axis, after transitioning outside the tight coupling, the full system of ODEs are solved with the initial conditions being the last values of tight coupling. The results are subsequently saved in the $n_x\times n_k$ grid matrices. The system of ODEs in each regime is solved using the \texttt{ODEsolver}-routine provided by \cite{winther:2020b}. The reason for dividing the ODE system in two, instead of solving the whole system in on go, is that the number of dynamical equations (i.e. ODEs) is different in the two regimes. Hence two separate ODE objects are needed for solving. 
+
+Finally, before plotting the final outputs, spline interpolations of the saved $n_x\times n_k$ grid values of the solved quantities are made, so as to make a more continuos representation of each quantity. For that the \texttt{Spline2D}-routine by \cite{winther:2020b} is used. The very final output for plots are solved in data files, and plots are made in Python.
+
+
 
 \begin{figure*}
     \includegraphics[scale = 0.65]{Figures/fig1.pdf}
