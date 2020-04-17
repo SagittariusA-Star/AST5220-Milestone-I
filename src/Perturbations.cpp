@@ -662,7 +662,7 @@ void Perturbations::info() const{
 
 void Perturbations::output(const double k, const std::string filename) const{
   std::ofstream fp(filename.c_str());
-  const int npts = 5000;
+  const int npts = 1e4;
 
   auto x_array = Utils::linspace(x_start, x_end, npts);
   auto print_data = [&] (const double x) {

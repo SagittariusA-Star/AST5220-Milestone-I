@@ -21,13 +21,20 @@ plt.rcParams.update(fonts)
 # color corresponding to domination era
 cosmo_data = np.loadtxt("cosmology.txt")
 
-x_cosmo      = cosmo_data[:, 0]
+x_cosmo     = cosmo_data[:, 0]
+eta_cosmo = (cosmo_data[:, 1] * u.m).to(u.Mpc)
+Hp_cosmo    = (cosmo_data[:, 2] / u.s).to(u.km / (u.s * u.Mpc))
 OmegaB      = cosmo_data[:, 3]
 OmegaCDM    = cosmo_data[:, 4]
 OmegaLambda = cosmo_data[:, 5]
 OmegaR      = cosmo_data[:, 6]
 Omega_sum   = OmegaB + OmegaCDM + OmegaLambda + OmegaR
 Omega_m     = OmegaCDM + OmegaB
+
+eq_index  = np.argmin(np.abs(OmegaR - OmegaCDM + OmegaB))
+k_horizon = (Hp_cosmo / const.c).to(1 / u.Mpc)
+k_eq      = k_horizon[eq_index]
+print("k_eq = : ", k_eq)
 
 # Loading data from file
 recombo_data = np.loadtxt("recombination.txt")
@@ -125,6 +132,7 @@ delta_cdm_5 = pertub_data_5[:, 6]
 delta_b_5   = pertub_data_5[:, 7]
 v_cdm_5     = pertub_data_5[:, 8] 
 v_b_5       = pertub_data_5[:, 9] 
+print(x_cosmo[np.argmin(np.abs(1 / eta_cosmo - k_5))])
 
 # Plotting monopole and dipole moments of radiation perturbation as well as
 # metric perturbations.
@@ -168,6 +176,14 @@ ax[0, 0].axvspan(
     color="red",
 )
 
+ax[0, 0].axvline(x_cosmo[np.argmin(np.abs(k_horizon - k_0))], color = "g", linestyle = ":")
+ax[0, 0].axvline(x_cosmo[np.argmin(np.abs(k_horizon - k_1))], color = "r", linestyle = ":")
+ax[0, 0].axvline(x_cosmo[np.argmin(np.abs(k_horizon - k_2))], color = "b", linestyle = ":")
+ax[0, 0].axvline(x_cosmo[np.argmin(np.abs(k_horizon - k_3))], color = "m", linestyle = ":")
+ax[0, 0].axvline(x_cosmo[np.argmin(np.abs(k_horizon - k_4))], color = "k", linestyle = ":")
+ax[0, 0].axvline(x_cosmo[np.argmin(np.abs(k_horizon - k_5))], color = "orange", linestyle = ":")
+ax[0, 0].axvline(x_cosmo[np.argmin(np.abs(k_horizon - k_eq))], color = "r", linestyle = "-.")
+
 # Dipole moments
 ax[0, 1].plot(x_5, Theta1_5, label=rf"$k = {k_5.value:.2e}/\mathrm{{Mpc}}$", color = "orange")
 ax[0, 1].plot(x_4, Theta1_4, label=rf"$k = {k_4.value:.2e}/\mathrm{{Mpc}}$", color = "k")
@@ -203,6 +219,13 @@ ax[0, 1].axvspan(
     alpha=0.4,
     color="red",
 )
+ax[0, 1].axvline(x_cosmo[np.argmin(np.abs(k_horizon - k_0))], color = "g", linestyle = ":")
+ax[0, 1].axvline(x_cosmo[np.argmin(np.abs(k_horizon - k_1))], color = "r", linestyle = ":")
+ax[0, 1].axvline(x_cosmo[np.argmin(np.abs(k_horizon - k_2))], color = "b", linestyle = ":")
+ax[0, 1].axvline(x_cosmo[np.argmin(np.abs(k_horizon - k_3))], color = "m", linestyle = ":")
+ax[0, 1].axvline(x_cosmo[np.argmin(np.abs(k_horizon - k_4))], color = "k", linestyle = ":")
+ax[0, 1].axvline(x_cosmo[np.argmin(np.abs(k_horizon - k_5))], color = "orange", linestyle = ":")
+ax[0, 1].axvline(x_cosmo[np.argmin(np.abs(k_horizon - k_eq))], color = "r", linestyle = "-.")
 
 # Making space for legend of all plots
 ax[1, 0].set_frame_on(False)
@@ -252,6 +275,13 @@ ax[1, 1].axvspan(
     alpha=0.4,
     color="red",
 )
+ax[1, 1].axvline(x_cosmo[np.argmin(np.abs(k_horizon - k_0))], color = "g", linestyle = ":")
+ax[1, 1].axvline(x_cosmo[np.argmin(np.abs(k_horizon - k_1))], color = "r", linestyle = ":")
+ax[1, 1].axvline(x_cosmo[np.argmin(np.abs(k_horizon - k_2))], color = "b", linestyle = ":")
+ax[1, 1].axvline(x_cosmo[np.argmin(np.abs(k_horizon - k_3))], color = "m", linestyle = ":")
+ax[1, 1].axvline(x_cosmo[np.argmin(np.abs(k_horizon - k_4))], color = "k", linestyle = ":")
+ax[1, 1].axvline(x_cosmo[np.argmin(np.abs(k_horizon - k_5))], color = "orange", linestyle = ":")
+ax[1, 1].axvline(x_cosmo[np.argmin(np.abs(k_horizon - k_eq))], color = "r", linestyle = "-.")
 
 fig.tight_layout()
 fig.savefig("../doc/Figures/fig1.pdf", dpi=1000)
@@ -280,7 +310,6 @@ ax1[0].set_ylabel(r"$\delta_\mathrm{CDM}$, $\delta_\mathrm{b}$")
 ax1[0].set_xlabel(r"$x = \log (a)$")
 ax1[0].set_yscale("log")
 
-
 ax1[0].axvspan(
     np.min(x_cosmo),
     x_cosmo[np.where(OmegaB + OmegaCDM >= OmegaLambda + OmegaR)][0],
@@ -306,6 +335,15 @@ ax1[0].axvspan(
     alpha=0.4,
     color="red",
 )
+
+ax1[0].axvline(x_cosmo[np.argmin(np.abs(k_horizon - k_0))], color = "g", linestyle = ":")
+ax1[0].axvline(x_cosmo[np.argmin(np.abs(k_horizon - k_1))], color = "r", linestyle = ":")
+ax1[0].axvline(x_cosmo[np.argmin(np.abs(k_horizon - k_2))], color = "b", linestyle = ":")
+ax1[0].axvline(x_cosmo[np.argmin(np.abs(k_horizon - k_3))], color = "m", linestyle = ":")
+ax1[0].axvline(x_cosmo[np.argmin(np.abs(k_horizon - k_4))], color = "k", linestyle = ":")
+ax1[0].axvline(x_cosmo[np.argmin(np.abs(k_horizon - k_5))], color = "orange", linestyle = ":")
+ax1[0].axvline(x_cosmo[np.argmin(np.abs(k_horizon - k_eq))], color = "r", linestyle = "-.")
+
 
 # CDM velocity perturbations
 ax1[1].plot(x_5, np.abs(v_cdm_5), label = rf"$k = {k_5.value:.2e}/\mathrm{{Mpc}}$", color = "orange")
@@ -351,7 +389,13 @@ ax1[1].axvspan(
     alpha=0.4,
     color="red",
 )
-
+ax1[1].axvline(x_cosmo[np.argmin(np.abs(k_horizon - k_0))], color = "g", linestyle = ":")
+ax1[1].axvline(x_cosmo[np.argmin(np.abs(k_horizon - k_1))], color = "r", linestyle = ":")
+ax1[1].axvline(x_cosmo[np.argmin(np.abs(k_horizon - k_2))], color = "b", linestyle = ":")
+ax1[1].axvline(x_cosmo[np.argmin(np.abs(k_horizon - k_3))], color = "m", linestyle = ":")
+ax1[1].axvline(x_cosmo[np.argmin(np.abs(k_horizon - k_4))], color = "k", linestyle = ":")
+ax1[1].axvline(x_cosmo[np.argmin(np.abs(k_horizon - k_5))], color = "orange", linestyle = ":")
+ax1[1].axvline(x_cosmo[np.argmin(np.abs(k_horizon - k_eq))], color = "r", linestyle = "-.")
 fig1.savefig("../doc/Figures/fig2.pdf", dpi=1000)
 
 plt.show()
