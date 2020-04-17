@@ -26,7 +26,7 @@
 \section{Introduction} \label{sec:Intro}
 Nowadays cosmology is considered a high precision field of science, a status which cosmology gained through high precision measurements of the Cosmic Microwave background (CMB) with several telescopes and probes, Planck \citep[]{planckcollaboration:2018} being the most significant to date. Planck's measurements of the CMB anisotropies have led to a revolution in cosmology, as the accurate measurements can be used to estimate cosmological parameters and subsequently tightly constrain cosmological models of the universe we live in.
 
-In order to estimate cosmological parameters one needs to first model the CMB. This paper is a step towards the final goal of computing the angular CMB anisotropy power spectrum of temperature perturbations. We will continue the work of \cite{stutzer:2020a} and \cite{stutzer:2020b} by further building on the model of the universe by implementing the perturbations that ultimately form the anisotropies of CMB. We will do this by solving the couples set of differential equations (ODEs) of the multipole monments of the radiation (mainly photons), cold dark matter (CDM) and baryonic matter, neglecting neutrinos and the polarization of photons for simplicity. Also we only consider hydrogen to make up the baryons, an approximation which should hold fairly well, as hydrogen is the dominant species of baryons. These can subsequently be used to compute the theoretical CMB power spectrum for a set of cosmological parameters (future work).
+In order to estimate cosmological parameters one needs to first model the CMB. This paper is a step towards the final goal of computing the angular CMB anisotropy power spectrum of temperature perturbations. We will continue the work of \cite{stutzer:2020a} and \cite{stutzer:2020b} by further building on the model of the universe by implementing the perturbations that ultimately form the anisotropies of CMB. We will do this by solving the couples set of differential equations (ODEs) of the multipole moments of the radiation (mainly photons), cold dark matter (CDM) and baryonic matter, neglecting neutrinos and the polarization of photons for simplicity. Also we only consider hydrogen to make up the baryons, an approximation which should hold fairly well, as hydrogen is the dominant species of baryons. These can subsequently be used to compute the theoretical CMB power spectrum for a set of cosmological parameters (future work).
 
 \section{Method} \label{sec:Method}
 The equations and relations presented here are, unless otherwise stated, provided by \cite{callin:2006}, \cite{winther:2020b} and or \cite{dodelson:2003}.
@@ -147,6 +147,12 @@ Finally, before plotting the final outputs, spline interpolations of the saved $
 
 
 \section{Results/Discussion}\label{sec:Results}
+
+After having run the simulation computing the perturbations evolution throughout time, we end up with the plots seen in Figure \ref{fig:fig1} and Figure \ref{fig:fig2}.
+
+In Figure \ref{fig:fig1} one can see the first two multipole moments $\Theta_0$ and $\Theta_1$ of the photon perturbations in the upper panels, as well as the two metric perturbations in the lower panel, all as functions of the log-scale factor $x$. In the lower panel the time and space components of the metric perturbations are marked with solid and dashed lines respectively. In each plot one can see the evolution of the respective quantity for different scales, given by the wavenumber $k$ in the legend. The color code in the background represent the respective epochs of dominance (i.e. radiation, matter and dark energy eras, see caption for details) as well as the epoch of recombination. The width of the latter one corresponds roughly to the width of the peak of the visibility function computed in \cite{stutzer:2020b}. 
+
+\section{Discussion}\label{sec:Discussion}
 
 \section{Conclusion} \label{sec:Conclusion}
 
