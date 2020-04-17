@@ -175,7 +175,7 @@ ax[0, 1].plot(x_3, Theta1_3, label=rf"$k = {k_3.value:.2e}/\mathrm{{Mpc}}$", col
 ax[0, 1].plot(x_2, Theta1_2, label=rf"$k = {k_2.value:.2e}/\mathrm{{Mpc}}$", color = "b")
 ax[0, 1].plot(x_1, Theta1_1, label=rf"$k = {k_1.value:.2e}/\mathrm{{Mpc}}$", color = "r")
 ax[0, 1].plot(x_0, Theta1_0, label=rf"$k = {k_0.value:.2e}/\mathrm{{Mpc}}$", color = "g")
-ax[0, 1].set_ylabel(r"$\Theta_1$")
+ax[0, 1].set_ylabel(r"$\Theta_1$ [c]")
 ax[0, 1].set_xlabel(r"$x = \log (a)$")
 #ax[0, 1].set_xlim(-12, 0)
 
@@ -323,7 +323,7 @@ ax1[1].plot(x_1, np.abs(v_b_1), linestyle = "--", color = "r")
 ax1[1].plot(x_0, np.abs(v_b_0), linestyle = "--", color = "g")
 #ax1[1].set_xlim(-12, 0)
 ax1[1].legend()
-ax1[1].set_ylabel(r"$v_\mathrm{CDM}$, $v_\mathrm{b}$")
+ax1[1].set_ylabel(r"$v_\mathrm{CDM}$, $v_\mathrm{b}$ [$c$]")
 ax1[1].set_xlabel(r"$x = \log (a)$")
 ax1[1].set_yscale("log")
 
