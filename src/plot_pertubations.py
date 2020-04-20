@@ -17,6 +17,10 @@ fonts = {
 
 plt.rcParams.update(fonts)
 
+def Delta_CDM(delta, v, k, Hp):
+    return delta - 3 * Hp / (const.c * k) * v
+
+
 # Density parameters needed to plot background 
 # color corresponding to domination era
 cosmo_data = np.loadtxt("cosmology.txt")
@@ -398,4 +402,9 @@ ax1[1].axvline(x_cosmo[np.argmin(np.abs(k_horizon - k_5))], color = "orange", li
 ax1[1].axvline(x_cosmo[np.argmin(np.abs(k_horizon - k_eq))], color = "r", linestyle = "-.")
 fig1.savefig("../doc/Figures/fig2.pdf", dpi=1000)
 
+Delta_5 = Delta_CDM(delta_cdm_5, v_cdm_5, k_5, Hp_cosmo) 
+fig2, ax2 = plt.subplots(1, 1)
+
+ax2.plot(x_5, Delta_5)
+ax2.set_yscale("log")
 plt.show()
