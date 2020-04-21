@@ -56,8 +56,8 @@ The perturbations to the CDM and baryonic matter-energy field are given by
 \begin{align}
     \delta_{\rm CDM}^\prime &= \frac{ck}{\mathcal{H}} v_{\rm CDM} - 3\Phi^\prime \\
     v_{\rm CDM}^\prime &= -v_{\rm CDM} -\frac{ck}{\mathcal{H}} \Psi \\
-    \delta_b^\prime &= \frac{ck}{\mathcal{H}}v_b -3\Phi^\prime \\
-    v_b^\prime &= -v_b - \frac{ck}{\mathcal{H}}\Psi + \tau^\prime R(3\Theta_1 + v_b),
+    \delta_b^\prime &= \frac{ck}{\mathcal{H}}v_b -3\Phi^\prime \label{eq:v_cdm}\\
+    v_b^\prime &= -v_b - \frac{ck}{\mathcal{H}}\Psi + \tau^\prime R(3\Theta_1 + v_b), \label{eq:v_b}
 \end{align}
 where the density perturbations for CDM and baryons are given by $\delta_\mathrm{CDM}$ and $\delta_b$ respectively being the monopole moment of the matter components. The dipole moment of perturbations of the two matter components, i.e. the velocity perturbations are given by $v_\mathrm{CDM}$ and $v_b$. The factor $R = \frac{3\Omega_{r,0}}{4\Omega_{b,0}a}$, where $a$ is the scale factor.
 
@@ -187,12 +187,14 @@ Now, for the baryons on the other hand, the plots look somewhat different on the
 
 The series of oscillation in the baryon density means that the baryon density basically almost halts its net growth too. Thus it is also affected by Meszaros suppression. Lastly we note that the baryons start to behave similar to the CDM again after entering the matter epoch. The growth approaches the same linear growth proportional to the scale factor $a$ as for the CDM when deep in the matte epoch. 
 
-The velocity perturbations seem to mirror the behaviour of density quite well. It looks somewhat odd that the perturbations seem to move radially outwards before horizon entry entry, but since all perturbations not having entered do so and all have the same slope, suggests that the blobs are expanding with the universe prior to horizon entry. Also we see that after the Meszaros suppression has set in we see the velocities flattening out or even decreasing a little for the CDM components, mirroring the effective halt in growth. The baryon velocities $v_\text{b}$, meanwhile, show the same phase shift in the velocity oscillations w.r.t. the density $\delta_\text{b}$ as for the case of $\Theta_0$ and $\Theta_1$.  
+The velocity perturbations seem to mirror the behaviour of density quite well. Initially the velocities are very small, which reflects the perturbation being flat hardly moving at all. From eqs. (\ref{eq:v_cdm}) and (\ref{eq:v_b}) one can see that the velocity is suppressed by a term $ck / \mathcal{H}\sim k / k_\text{horizon}$, thus effectively vanishing. The velocities only really become noticeable once the perturbation enters the horizon. The super horizon scales never really pick up speed and remain small essentially the entire history of the universe. We see velocities of the two perturbations that enter the horizon prior to $a_\text{eq}$, i.e. for $k = 0.3 /\mathrm{Mpc}$ and $k = 0.0527/\mathrm{Mpc}$, basically flatten out or even decrease a little once entering. A small decrease in velocity is consistant with the short phase of increase in the $\delta$'s before the Meszaros effect really kicks in. The subsequent flattening is the imprint of the Meszaros effect on the velocity of the dark matter, effectively halting the growth of the perturbation. After entering the horizon and transitioning into the matter epoch, all perturbations grow as the scale factor, resulting in an increas of the velocities. Which is what we indeed see.
 
-Lastly we notice that when dark energy becomes dominant in the late history, the perturbation growth flattens out again as seen by the $v$'s flattening. This again is due to the accelerated exponential expansion of the universe counteracting the growth of perturbations.
-
+The major difference between the baryon's and the CDM's velocities are again that the baryons engage in the oscillations of the photon baryon plasma. We also see the same pattern as we saw for the photon perturbations, where there is a phase shift between the extrema and zeros of $\delta_\text{b}$ and $v_\text{b}$ as we should expect. However, outside the phase of acoustic oscillations the baryon velocities approach those of the CDM, both before entry and after transitioning into the matter era.
 
 \section{Conclusion} \label{sec:Conclusion}
+We have extended the previous work by \cite{stutzer:2020a} and \cite{stutzer:2020b}, by implementing perturbations to the otherwise smooth and flat Robertson-Walker universe. The evolution of the baryonic matter, cold dark matter and photons as well as the metric potential perturbations in the Newtonian gauge where set up as a couples system of ODEs, that was subsequently solved in two regimes of the universe's history; tight coupling where baryons and photons are coupled and the phase after tight coupling. The initial conditions where those set up by inflation. 
+
+The final results behaved according to expectations and where consistent with results obtained by \cite{winther:2020b} and \cite{dodelson:2003}. We can therefore conclude that the results are significant and can be used to further construct the CMB and matter power spectra.
 
 \newpage
 \bibliography{ref}
