@@ -316,7 +316,7 @@ ax10.plot(x_1, np.abs(delta_b_1), linestyle = "--", color = "r")
 ax10.plot(x_0, np.abs(delta_b_0), linestyle = "--", color = "g")
 #ax10.set_xlim(-12, 0)
 #ax10.legend()
-ax10.set_ylabel(r"$\delta_\mathrm{CDM}$, $\delta_\mathrm{b}$")
+ax10.set_ylabel(r"$\delta_\mathrm{CDM}$, $|\delta_\mathrm{b}|$")
 ax10.set_xlabel(r"$x = \log (a)$")
 ax10.set_yscale("log")
 
@@ -354,7 +354,7 @@ ax10.axvline(x_cosmo[np.argmin(np.abs(k_horizon - k_4))], color = "k", linestyle
 ax10.axvline(x_cosmo[np.argmin(np.abs(k_horizon - k_5))], color = "orange", linestyle = ":")
 ax10.axvline(x_cosmo[np.argmin(np.abs(k_horizon - k_eq))], color = "r", linestyle = "-.")
 
-
+print((np.log10(np.abs(v_cdm_0[-1001])) - np.log10(np.abs(v_cdm_0[-1000]))) / (np.log10(np.exp(x_0[-1001])) - np.log10(np.exp(x_0[-1000]))) )
 # CDM velocity perturbations
 ax11 = plt.subplot(222)
 ax11.plot(x_5, np.abs(v_cdm_5), label = rf"$k = {k_5.value:.2e}/\mathrm{{Mpc}}$", color = "orange")
@@ -372,7 +372,7 @@ ax11.plot(x_1, np.abs(v_b_1), linestyle = "--", color = "r")
 ax11.plot(x_0, np.abs(v_b_0), linestyle = "--", color = "g")
 #ax11.set_xlim(-12, 0)
 #ax11.legend()
-ax11.set_ylabel(r"$v_\mathrm{CDM}$, $v_\mathrm{b}$ [$c$]")
+ax11.set_ylabel(r"$|v_\mathrm{CDM}|$, $|v_\mathrm{b}|$ [$c$]")
 ax11.set_xlabel(r"$x = \log (a)$")
 ax11.set_yscale("log")
 
