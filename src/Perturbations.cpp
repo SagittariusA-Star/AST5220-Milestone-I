@@ -571,43 +571,57 @@ int Perturbations::rhs_full_ode(double x, double k, const double *y, double *dyd
 //====================================================
 
 double Perturbations::get_Delta_cdm(const double x, const double k) const{
+  // Computes co-moving CDM density contrast 
   return Delta_cdm_spline(x, k);
 }
 
 double Perturbations::get_delta_cdm(const double x, const double k) const{
+  // Computes CDM density contrast
   return delta_cdm_spline(x, k);
 }
 double Perturbations::get_delta_b(const double x, const double k) const{
+  // Computes baryon density contrast
   return delta_b_spline(x, k);
 }
 double Perturbations::get_v_cdm(const double x, const double k) const{
+  // Computes CDM velocity perturbation
   return v_cdm_spline(x, k);
 }
 double Perturbations::get_v_b(const double x, const double k) const{
+  // Computes baryon density perturbartion
   return v_b_spline(x, k);
 }
 double Perturbations::get_Phi(const double x, const double k) const{
+  // Computes space-space metric perturbation
   return Phi_spline(x, k);
 }
 double Perturbations::get_Psi(const double x, const double k) const{
+  // Computes time-time metric perturbation
   return Psi_spline(x, k);
 }
+
 double Perturbations::get_Pi(const double x, const double k) const{
+  // Computes polarization tensor
   return Pi_spline(x, k);
 }
 double Perturbations::get_Source_T(const double x, const double k) const{
+  // Computes source function
   return ST_spline(x, k);
 }
 double Perturbations::get_Source_E(const double x, const double k) const{
+  // Computes polarization source function
   return SE_spline(x, k);
 }
 double Perturbations::get_Theta(const double x, const double k, const int ell) const{
+  // Computes photon multipole moments
   return Theta_spline[ell](x, k);
 }
 double Perturbations::get_Theta_p(const double x, const double k, const int ell) const{
+  // Computes photon polarization multipole moments 
   return Theta_p_spline[ell](x, k);
 }
 double Perturbations::get_Nu(const double x, const double k, const int ell) const{
+  // Computes neutrino multipole moments
   return Nu_spline[ell](x,k);
 }
 
