@@ -186,7 +186,6 @@ ax[0, 0].axvspan(
     color="red",
 )
 
-ax[0, 0].axvline(x_cosmo[np.argmin(np.abs(k_horizon - k_0))], color = "g", linestyle = ":")
 ax[0, 0].axvline(x_cosmo[np.argmin(np.abs(k_horizon - k_1))], color = "r", linestyle = ":")
 ax[0, 0].axvline(x_cosmo[np.argmin(np.abs(k_horizon - k_2))], color = "b", linestyle = ":")
 ax[0, 0].axvline(x_cosmo[np.argmin(np.abs(k_horizon - k_3))], color = "m", linestyle = ":")
@@ -229,7 +228,6 @@ ax[0, 1].axvspan(
     alpha=0.4,
     color="red",
 )
-ax[0, 1].axvline(x_cosmo[np.argmin(np.abs(k_horizon - k_0))], color = "g", linestyle = ":")
 ax[0, 1].axvline(x_cosmo[np.argmin(np.abs(k_horizon - k_1))], color = "r", linestyle = ":")
 ax[0, 1].axvline(x_cosmo[np.argmin(np.abs(k_horizon - k_2))], color = "b", linestyle = ":")
 ax[0, 1].axvline(x_cosmo[np.argmin(np.abs(k_horizon - k_3))], color = "m", linestyle = ":")
@@ -285,7 +283,6 @@ ax[1, 1].axvspan(
     alpha=0.4,
     color="red",
 )
-ax[1, 1].axvline(x_cosmo[np.argmin(np.abs(k_horizon - k_0))], color = "g", linestyle = ":")
 ax[1, 1].axvline(x_cosmo[np.argmin(np.abs(k_horizon - k_1))], color = "r", linestyle = ":")
 ax[1, 1].axvline(x_cosmo[np.argmin(np.abs(k_horizon - k_2))], color = "b", linestyle = ":")
 ax[1, 1].axvline(x_cosmo[np.argmin(np.abs(k_horizon - k_3))], color = "m", linestyle = ":")
@@ -346,7 +343,6 @@ ax10.axvspan(
     color="red",
 )
 
-ax10.axvline(x_cosmo[np.argmin(np.abs(k_horizon - k_0))], color = "g", linestyle = ":")
 ax10.axvline(x_cosmo[np.argmin(np.abs(k_horizon - k_1))], color = "r", linestyle = ":")
 ax10.axvline(x_cosmo[np.argmin(np.abs(k_horizon - k_2))], color = "b", linestyle = ":")
 ax10.axvline(x_cosmo[np.argmin(np.abs(k_horizon - k_3))], color = "m", linestyle = ":")
@@ -354,7 +350,6 @@ ax10.axvline(x_cosmo[np.argmin(np.abs(k_horizon - k_4))], color = "k", linestyle
 ax10.axvline(x_cosmo[np.argmin(np.abs(k_horizon - k_5))], color = "orange", linestyle = ":")
 ax10.axvline(x_cosmo[np.argmin(np.abs(k_horizon - k_eq))], color = "r", linestyle = "-.")
 
-print((np.log10(np.abs(v_cdm_0[-1001])) - np.log10(np.abs(v_cdm_0[-1000]))) / (np.log10(np.exp(x_0[-1001])) - np.log10(np.exp(x_0[-1000]))) )
 # CDM velocity perturbations
 ax11 = plt.subplot(222)
 ax11.plot(x_5, np.abs(v_cdm_5), label = rf"$k = {k_5.value:.2e}/\mathrm{{Mpc}}$", color = "orange")
@@ -400,7 +395,6 @@ ax11.axvspan(
     alpha=0.4,
     color="red",
 )
-ax11.axvline(x_cosmo[np.argmin(np.abs(k_horizon - k_0))], color = "g", linestyle = ":")
 ax11.axvline(x_cosmo[np.argmin(np.abs(k_horizon - k_1))], color = "r", linestyle = ":")
 ax11.axvline(x_cosmo[np.argmin(np.abs(k_horizon - k_2))], color = "b", linestyle = ":")
 ax11.axvline(x_cosmo[np.argmin(np.abs(k_horizon - k_3))], color = "m", linestyle = ":")
@@ -448,7 +442,6 @@ ax12.axvspan(
     alpha=0.4,
     color="red",
 )
-ax12.axvline(x_cosmo[np.argmin(np.abs(k_horizon - k_0))], color = "g", linestyle = ":")
 ax12.axvline(x_cosmo[np.argmin(np.abs(k_horizon - k_1))], color = "r", linestyle = ":")
 ax12.axvline(x_cosmo[np.argmin(np.abs(k_horizon - k_2))], color = "b", linestyle = ":")
 ax12.axvline(x_cosmo[np.argmin(np.abs(k_horizon - k_3))], color = "m", linestyle = ":")
