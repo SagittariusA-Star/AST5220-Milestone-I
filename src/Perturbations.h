@@ -33,6 +33,7 @@ class Perturbations{
     // but you only need to make the splines you will need
 
     // Splines of scalar perturbations quantities
+    Spline2D Delta_cdm_spline{"Delta_cdm_spline"};
     Spline2D delta_cdm_spline{"delta_cdm_spline"};
     Spline2D delta_b_spline{"delta_b_spline"};
     Spline2D v_cdm_spline{"v_cdm_spline"};
@@ -111,6 +112,7 @@ class Perturbations{
     void output(const double k, const std::string filename) const;
 
     // Get the quantities we have integrated
+    double get_Delta_cdm(const double x, const double k) const;
     double get_delta_cdm(const double x, const double k) const;
     double get_delta_b(const double x, const double k) const;
     double get_v_cdm(const double x, const double k) const;

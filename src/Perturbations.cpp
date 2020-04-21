@@ -44,18 +44,19 @@ void Perturbations::integrate_perturbations(){
   const double H0       = cosmo -> get_H0();
   const double OmegaR0  = cosmo -> get_OmegaR(0);
   double dtaudx;
-  int len_tc;
-  int x_full_index;
+  int len_tc;       // Length of tight coupling
+  int x_full_index; // Index translating current index of x_full to that of x_all.
   Vector y_tight_coupling (Constants.n_ell_tot_tc);
-  Vector x_all = Utils::linspace(x_start, x_end, n_x);
-  Vector x_tc;
-  Vector x_full;
-  Vector Psi (n_x * n_k);
-  Vector Phi (n_x * n_k);
-  Vector delta_cdm (n_x * n_k);
-  Vector delta_b (n_x * n_k);
-  Vector v_cdm (n_x * n_k);
-  Vector v_b (n_x * n_k);
+  Vector x_all = Utils::linspace(x_start, x_end, n_x);  // All times, full + tight coupling.
+  Vector x_tc;                  // Times for tight coupling 
+  Vector x_full;                // Times for full solution
+  Vector Psi (n_x * n_k);       // Time-time metric perturbation
+  Vector Phi (n_x * n_k);       // Space-space metric perturbation
+  Vector delta_cdm (n_x * n_k); // Dark matter density contrast
+  Vector delta_b (n_x * n_k);   // Baryon density contrast
+  Vector v_cdm (n_x * n_k);     // Dark matter velocity perturbation
+  Vector v_b (n_x * n_k);       // Baryon velocity perturbation
+  Vector Delta_cdm (n_x * n_k); // Co-moving dark matter density contrast 
   
   Vector2D Thetas = Vector2D(Constants.n_ell_theta, Vector(n_x * n_k));
   Theta_spline = std::vector<Spline2D>(Constants.n_ell_theta);
@@ -118,6 +119,8 @@ void Perturbations::integrate_perturbations(){
       Psi[jx + n_x * ik] = - Phi[jx + n_x * ik]; 
                            - 12.0 * H0 * H0 / (c * c * k * k * exp(2 * x_tc[jx]))
                            * OmegaR0 * Thetas[2][jx + n_x * ik];
+      Delta_cdm[jx + n_x * ik] = delta_cdm[jx + n_x * ik] - 3 * Hp / (c * k) * v_cdm[jx + n_x * ik];
+      
     }
 
     // Set up initial conditions (y_tight_coupling is the solution at the end of tight coupling)
@@ -136,6 +139,8 @@ void Perturbations::integrate_perturbations(){
     
     x_full_index = 0;
     for (int jx = len_tc - 1; jx < n_x; jx++){
+      Hp                        = cosmo -> Hp_of_x(x_full[x_full_index]);
+
       Phi[jx + n_x * ik]        = all_data_full[x_full_index][Constants.ind_Phi];
       delta_cdm[jx + n_x * ik]  = all_data_full[x_full_index][Constants.ind_deltacdm];
       delta_b[jx + n_x * ik]    = all_data_full[x_full_index][Constants.ind_deltab];
@@ -149,12 +154,14 @@ void Perturbations::integrate_perturbations(){
       Psi[jx + n_x * ik] = - Phi[jx + n_x * ik]; 
                            - 12.0 * H0 * H0 / (c * c * k * k * exp(2 * x_full[x_full_index]))
                            * OmegaR0 * Thetas[2][jx + n_x * ik];
+      Delta_cdm[jx + n_x * ik] = delta_cdm[jx + n_x * ik] - 3 * Hp / (c * k) * v_cdm[jx + n_x * ik];
       x_full_index++;
     }
   }
   Utils::StartTiming("integrateperturbation");
   
   delta_cdm_spline.create(x_all, k_array, delta_cdm, "delta_cdm spline");
+  Delta_cdm_spline.create(x_all, k_array, Delta_cdm, "delta_cdm spline");
   delta_b_spline.create(x_all, k_array, delta_b, "delta_b spline");
   v_cdm_spline.create(x_all, k_array, v_cdm, "v_cdm spline");
   v_b_spline.create(x_all, k_array, v_b, "v_b spline");
@@ -563,6 +570,10 @@ int Perturbations::rhs_full_ode(double x, double k, const double *y, double *dyd
 // Get methods
 //====================================================
 
+double Perturbations::get_Delta_cdm(const double x, const double k) const{
+  return Delta_cdm_spline(x, k);
+}
+
 double Perturbations::get_delta_cdm(const double x, const double k) const{
   return delta_cdm_spline(x, k);
 }
@@ -678,6 +689,8 @@ void Perturbations::output(const double k, const std::string filename) const{
     fp << get_v_cdm(x, k)       << " ";
     fp << get_v_b(x, k)       << " ";
     fp << get_Source_T(x, k)       << " ";
+    fp << get_Delta_cdm(x, k)       << " ";
+
     //fp << get_Source_T(x,k)  << " ";
     //fp << get_Source_T(x,k) * Utils::j_ell(5,   arg)           << " ";
     //fp << get_Source_T(x,k) * Utils::j_ell(50,  arg)           << " ";
