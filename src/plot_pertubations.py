@@ -142,7 +142,6 @@ delta_b_5   = pertub_data_5[:, 7]
 v_cdm_5     = pertub_data_5[:, 8] 
 v_b_5       = pertub_data_5[:, 9] 
 Delta_CDM_5       = pertub_data_5[:, 11] 
-print(x_cosmo[np.argmin(np.abs(1 / eta_cosmo - k_5))])
 
 # Plotting monopole and dipole moments of radiation perturbation as well as
 # metric perturbations.
