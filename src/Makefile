@@ -3,7 +3,7 @@
 SHELL := /bin/bash
 
 # Set compiler
-CC = g++ -std=c++14
+CC = g++ -std=c++17
 
 # Paths to GSL library
 INC  = -I$(HOME)/local/include

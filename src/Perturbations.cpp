@@ -57,7 +57,7 @@ void Perturbations::integrate_perturbations(){
   Vector v_cdm (n_x * n_k);     // Dark matter velocity perturbation
   Vector v_b (n_x * n_k);       // Baryon velocity perturbation
   Vector Delta_cdm (n_x * n_k); // Co-moving dark matter density contrast 
-  
+
   Vector2D Thetas = Vector2D(Constants.n_ell_theta, Vector(n_x * n_k));
   Theta_spline = std::vector<Spline2D>(Constants.n_ell_theta);
 

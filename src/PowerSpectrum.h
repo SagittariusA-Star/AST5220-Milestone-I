@@ -22,6 +22,12 @@ class PowerSpectrum {
     RecombinationHistory *rec  = nullptr;
     Perturbations *pert        = nullptr;
 
+    // Cosmological parameters 
+    double OmegaCDM0 = cosmo -> get_OmegaCDM(0);
+    double OmegaB0   = cosmo -> get_OmegaB(0);
+    double OmegaM0   = OmegaB0 + OmegaCDM0;
+    double H0        = cosmo -> get_H0();
+
     // Parameters defining the primordial power-spectrum
     double A_s        = 2e-9;
     double n_s        = 0.96;
@@ -38,9 +44,9 @@ class PowerSpectrum {
         20,   25,   30,   40,   50,   60,   70,   80,   90,   100,  
         120,  140,  160,  180,  200,  225,  250,  275,  300,  350,  
         400,  450,  500,  550,  600,  650,  700,  750,  800,  850,  
-        900,  950,  1000, 1050, 1100, 1150, 1200, 1250, 1300, 1350, 
+        900,  950,  1000, 1050, 1100, 1150, 1200};/*, 1250, 1300, 1350, 
         1400, 1450, 1500, 1550, 1600, 1650, 1700, 1750, 1800, 1850, 
-        1900, 1950, 2000};
+        1900, 1950, 2000};*/
    
     //=====================================================================
     // [1] Create bessel function splines needed for the LOS integration
@@ -104,6 +110,8 @@ class PowerSpectrum {
     // The dimensionless primordial power-spectrum Delta = 2pi^2/k^3 P(k)
     double primordial_power_spectrum(const double k) const;
 
+    //Get Delta_M comoving matter density contrast
+    double get_Delta_M(const double x, const double k) const;
     // Get P(k,x) for a given x in units of (Mpc)^3
     double get_matter_power_spectrum(const double x, const double k_mpc) const;
 

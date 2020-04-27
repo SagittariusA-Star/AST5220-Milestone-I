@@ -72,6 +72,7 @@ int main(int argc, char **argv){
   kvalue = 0.01 / Constants.Mpc;
   pert.output(kvalue, "perturbations_k0.01.txt");
   */
+  /*
   kvalue = 5e-5 / Constants.Mpc;
   pert.output(kvalue, "perturbations_k5e-5.txt");
   
@@ -89,9 +90,9 @@ int main(int argc, char **argv){
 
   kvalue = 3e-1 / Constants.Mpc;
   pert.output(kvalue, "perturbations_k3e-1.txt");
+  */
   // Remove when module is completed
-  return 0;
-  
+
   //=========================================================================
   // Module IV
   //=========================================================================

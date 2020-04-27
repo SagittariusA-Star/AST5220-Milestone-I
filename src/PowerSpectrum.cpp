@@ -23,7 +23,6 @@ void PowerSpectrum::solve(){
   //=========================================================================
   Vector k_array;
   Vector log_k_array = log(k_array);
-
   //=========================================================================
   // TODO: Make splines for j_ell. 
   // Implement generate_bessel_function_splines
@@ -61,7 +60,10 @@ void PowerSpectrum::generate_bessel_function_splines(){
   
   // Make storage for the splines
   j_ell_splines = std::vector<Spline>(ells.size());
-    
+  int N         = 5e3;
+  Vector x_arr  = Utils::linspace(0, 5e3, N);
+  Vector j_ell_x (N);   
+  
   //=============================================================================
   // TODO: Compute splines for bessel functions j_ell(z)
   // Choose a suitable range for each ell
@@ -71,13 +73,13 @@ void PowerSpectrum::generate_bessel_function_splines(){
 
   for(size_t i = 0; i < ells.size(); i++){
     const int ell = ells[i];
+    for (int k = 0; k < N; k++){      
+      j_ell_x[k] = Utils::j_ell(ell, x_arr[k]);
 
-    // ...
-    // ...
-    // ...
-    // ...
+    }
 
     // Make the j_ell_splines[i] spline
+    j_ell_splines[i].create(x_arr, j_ell_x, "Spline of j_ell(x)");
   }
 
   Utils::EndTiming("besselspline");
@@ -189,12 +191,20 @@ double PowerSpectrum::primordial_power_spectrum(const double k) const{
   return A_s * pow( Constants.Mpc * k / kpivot_mpc , n_s - 1.0);
 }
 
+double PowerSpectrum::get_Delta_M(const double x, const double k) const{
+  double Phi = pert -> get_Phi(x, k);
+  double c = Constants.c;
+  return 2.0 * c * c * k * k * Phi / (3.0 * OmegaM0 * exp(-x) * H0 * H0);
+}
+
 //====================================================
 // P(k) in units of (Mpc)^3
 //====================================================
 
 double PowerSpectrum::get_matter_power_spectrum(const double x, const double k_mpc) const{
-  double pofk = 0.0;
+  double DeltaM = get_Delta_M(x, k_mpc);
+  double P_primordial = primordial_power_spectrum(k_mpc);
+  double pofk = std::fabs(DeltaM) * std::fabs(DeltaM) * P_primordial;
 
   //=============================================================================
   // TODO: Compute the matter power spectrum
