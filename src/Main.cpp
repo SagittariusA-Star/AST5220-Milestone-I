@@ -12,13 +12,14 @@ int main(int argc, char **argv){
   //=========================================================================
 
   // Background parameters
+  /*
   double h           = 0.7;
   double OmegaB      = 0.046;
   double OmegaCDM    = 0.224;
   double OmegaLambda; // = 0.72995;
   double Neff        = 3.046;
   double TCMB        = 2.7255;
-  /*
+  */
   // Debug Background parameters
   double h           = 0.7;
   double OmegaB      = 0.05;
@@ -26,9 +27,7 @@ int main(int argc, char **argv){
   double OmegaLambda; //= 0.5;
   double Neff        = 3.046;
   double TCMB        = 2.7255;
-  */
   
-
   // Recombination parameters
   double Yp          = 0.0;
 
@@ -68,9 +67,9 @@ int main(int argc, char **argv){
   
   // Output perturbation quantities
   double kvalue;
+  kvalue = 0.1 / Constants.Mpc;
+  pert.output(kvalue, "perturbations_k0.1.txt");
   /*
-  kvalue = 0.01 / Constants.Mpc;
-  pert.output(kvalue, "perturbations_k0.01.txt");
   */
   /*
   kvalue = 5e-5 / Constants.Mpc;
@@ -90,9 +89,9 @@ int main(int argc, char **argv){
 
   kvalue = 3e-1 / Constants.Mpc;
   pert.output(kvalue, "perturbations_k3e-1.txt");
-  */
   // Remove when module is completed
-
+  
+  */  
   //=========================================================================
   // Module IV
   //=========================================================================

@@ -153,6 +153,7 @@ namespace Utils{
 
 #if ((defined(_MSVC_LANG) && _MSVC_LANG >= 201703L) || (__cplusplus >= 201703L))
     // If you have a c++17 compiler you can use this
+    if(n > 100 && x < 0.32 * n) return 0.0;
     return std::sph_bessel(n, x);
 #else
     // Otherwise lets use GSL with approximation for x << n to prevent 
