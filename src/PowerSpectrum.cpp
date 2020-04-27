@@ -22,6 +22,11 @@ void PowerSpectrum::solve(){
   // TODO: Choose the range of k's and the resolution to compute Theta_ell(k)
   //=========================================================================
   Vector k_array;
+  const double dk = (log10(Constants.k_max) - log10(Constants.k_min)) / (n_k - 1.0);
+  for(int ik = 0; ik < n_k; ik++){
+    k_array[ik] = log10(Constants.k_min) + ik * dk;
+    k_array[ik] = pow(10, k_array[ik]);
+  }
   Vector log_k_array = log(k_array);
   //=========================================================================
   // TODO: Make splines for j_ell. 
@@ -75,13 +80,10 @@ void PowerSpectrum::generate_bessel_function_splines(){
     const int ell = ells[i];
     for (int k = 0; k < N; k++){      
       j_ell_x[k] = Utils::j_ell(ell, x_arr[k]);
-
     }
-
     // Make the j_ell_splines[i] spline
     j_ell_splines[i].create(x_arr, j_ell_x, "Spline of j_ell(x)");
   }
-
   Utils::EndTiming("besselspline");
 }
 
@@ -97,6 +99,12 @@ Vector2D PowerSpectrum::line_of_sight_integration_single(
 
   // Make storage for the results
   Vector2D result = Vector2D(ells.size(), Vector(k_array.size()));
+  
+  // Set up initial conditions for Theta_ell
+  Vector Theta_ell_ic{0};
+  double k;
+  int N = 5e3;
+  Vector x_array = Utils::linspace(Constants.x_start, Constants.x_end, N);
 
   for(size_t ik = 0; ik < k_array.size(); ik++){
 
@@ -110,6 +118,28 @@ Vector2D PowerSpectrum::line_of_sight_integration_single(
     // ...
 
     // Store the result for Source_ell(k) in results[ell][ik]
+    
+    k = k_array[ik];
+    for (int ell = 0; ell < ells.size(); ell++){
+
+      // The tight coupling ODE system
+      ODEFunction dTheta_elldx = [&](double x, const double *y, double *dydx){      
+        double S      = pert -> get_Source_T(x, k);
+        double eta    = cosmo -> eta_of_x(x);
+        double eta0   = cosmo -> eta_of_x(0);
+        double j_ell  = j_ell_splines[ell](k * (eta0 - eta));
+        return S * j_ell;
+      };
+
+      ODESolver ode;
+
+      // Solving ODE and extracting solution array from ODEsolver
+      double hstart = 1e-3, abserr = 1e-10, relerr = 1e-10;
+      ode.set_accuracy(hstart, abserr, relerr);
+      ode.solve(dTheta_elldx, x_array, Theta_ell_ic, gsl_odeiv2_step_rkf45);
+      auto Theta_ell_today = ode.get_data_by_xindex(N - 1);
+      result[ell][ik] = Theta_ell_today[0];
+    }
   }
 
   Utils::EndTiming("lineofsight");
@@ -133,7 +163,7 @@ void PowerSpectrum::line_of_sight_integration(Vector & k_array){
 
   // Make a function returning the source function
   std::function<double(double,double)> source_function_T = [&](double x, double k){
-    return pert->get_Source_T(x,k);
+    return pert -> get_Source_T(x, k);
   };
 
   // Do the line of sight integration
