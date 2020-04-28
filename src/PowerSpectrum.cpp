@@ -21,16 +21,16 @@ void PowerSpectrum::solve(){
   //=========================================================================
   // TODO: Choose the range of k's and the resolution to compute Theta_ell(k)
   //=========================================================================
+  Vector k_array(n_k);
+  //Vector k_array = Utils::linspace(Constants.k_min, Constants.k_max, n_k);
   
-  Vector k_array = Utils::linspace(Constants.k_min, Constants.k_max, 1e3);
-  Vector log_k_array = log(k_array);
-  /*
   const double dk = (log10(Constants.k_max) - log10(Constants.k_min)) / (n_k - 1.0);
   for(int ik = 0; ik < n_k; ik++){
     k_array[ik] = log10(Constants.k_min) + ik * dk;
     k_array[ik] = pow(10, k_array[ik]);
   }
-  */
+  
+  Vector log_k_array = log(k_array);
  
   //=========================================================================
   // TODO: Make splines for j_ell. 
@@ -109,7 +109,7 @@ Vector2D PowerSpectrum::line_of_sight_integration_single(
   // Set up initial conditions for Theta_ell
   Vector Theta_ell_ic{0};
   double k;
-  int N = 1e2;
+  int N = 2e3;
   Vector x_array = Utils::linspace(Constants.x_start, Constants.x_end, N);
   for(int ik = 0; ik < k_array.size(); ik++){
 
@@ -140,9 +140,9 @@ Vector2D PowerSpectrum::line_of_sight_integration_single(
       ODESolver ode;
 
       // Solving ODE and extracting solution array from ODEsolver
-      //double hstart = 1e-8, abserr = 1e-15, relerr = 1e-15;
+      //double hstart = 1e-5, abserr = 1e-10, relerr = 1e-10;
       //ode.set_accuracy(hstart, abserr, relerr);
-      ode.solve(dTheta_elldx, x_array, Theta_ell_ic);//, gsl_odeiv2_step_rkf45);
+      ode.solve(dTheta_elldx, x_array, Theta_ell_ic, gsl_odeiv2_step_rkf45);
       auto Theta_ell_today = ode.get_data_by_xindex(N - 1);
       result[i][ik] = Theta_ell_today[0];
     }
@@ -157,11 +157,10 @@ Vector2D PowerSpectrum::line_of_sight_integration_single(
 //====================================================
 void PowerSpectrum::line_of_sight_integration(Vector & k_array){
   const int n_k        = k_array.size();
-  const int n          = 100;
   const int nells      = ells.size();
   
   // Make storage for the splines we are to create
-  thetaT_ell_of_k_spline = std::vector<Spline>(nells);
+  //thetaT_ell_of_k_spline = std::vector<Spline>(nells);
 
   //============================================================================
   // TODO: Solve for Theta_ell(k) and spline the result
@@ -180,13 +179,16 @@ void PowerSpectrum::line_of_sight_integration(Vector & k_array){
   // ...
   // ...
   // ...
+  /*
   Vector Theta_ell_temp(n_k);
   for (int i = 0; i < nells; i++){
     for (int ik = 0; ik < n_k; ik++){
       Theta_ell_temp[ik] = thetaT_ell_of_k[i][ik];
     }
-    thetaT_ell_of_k_spline[i].create(k_array, Theta_ell_temp);
+
   }
+  */
+  thetaT_ell_of_k_spline.create(ells, k_array, thetaT_ell_of_k);
 }
 
 //====================================================
@@ -195,8 +197,8 @@ void PowerSpectrum::line_of_sight_integration(Vector & k_array){
 //====================================================
 Vector PowerSpectrum::solve_for_cell(
   Vector & log_k_array,
-  std::vector<Spline> & f_ell_spline,
-  std::vector<Spline> & g_ell_spline){
+  Spline2D & f_ell_spline,
+  Spline2D & g_ell_spline){
   const int nells      = ells.size();
 
   //============================================================================
@@ -215,19 +217,19 @@ Vector PowerSpectrum::solve_for_cell(
     ODEFunction dCelldlogk = [&](double logk, const double *y, double *dydx){      
           double k = exp(logk);
           double P_primordial = primordial_power_spectrum(k);
-          double Theta_ell_sq = f_ell_spline[i](k) * g_ell_spline[i](k);
+          double Theta_ell_sq = f_ell_spline(ells[i], k) * g_ell_spline(ells[i], k);
           dydx[0] = 4 * M_PI * P_primordial * Theta_ell_sq;
           return GSL_SUCCESS;
         };
 
-        ODESolver ode;
+    ODESolver ode;
 
-        // Solving ODE and extracting solution array from ODEsolver
-        //double hstart = 1e-8, abserr = 1e-15, relerr = 1e-15;
-        //ode.set_accuracy(hstart, abserr, relerr);
-        ode.solve(dCelldlogk, log_k_array, Cell_ic);//, gsl_odeiv2_step_rkf45);
-        auto Cell = ode.get_data_by_xindex(log_k_array.size() - 1);
-        result[i] = Cell[0];
+    // Solving ODE and extracting solution array from ODEsolver
+    //double hstart = 1e-5, abserr = 1e-10, relerr = 1e-10;
+    //ode.set_accuracy(hstart, abserr, relerr);
+    ode.solve(dCelldlogk, log_k_array, Cell_ic, gsl_odeiv2_step_rkf45);
+    auto Cell = ode.get_data_by_xindex(log_k_array.size() - 1);
+    result[i] = Cell[0];
   }
   return result;
 }
@@ -278,7 +280,13 @@ double PowerSpectrum::get_cell_TE(const double ell) const{
 double PowerSpectrum::get_cell_EE(const double ell) const{
   return cell_EE_spline(ell);
 }
-
+double PowerSpectrum::get_Theta_ell_of_k(const double k, const double ell) const{
+  return thetaT_ell_of_k_spline(ell, k);
+}
+double PowerSpectrum::get_Theta_ell_of_k_sq(const double k, const double ell) const{
+  double Theta_ell = thetaT_ell_of_k_spline(ell, k); 
+  return Theta_ell * Theta_ell;
+}
 //====================================================
 // Output the cells to file
 //====================================================
@@ -295,6 +303,12 @@ void PowerSpectrum::output(std::string filename) const{
     double normfactorL = (ell * (ell+1)) * (ell * (ell+1)) / (2.0 * M_PI);
     fp << ell                                 << " ";
     fp << cell_TT_spline(ell) * normfactor  << " ";
+    fp << get_Theta_ell_of_k(0.1 / Constants.Mpc, ell)  << " ";
+    fp << get_Theta_ell_of_k(0.01 / Constants.Mpc, ell)  << " ";
+    fp << get_Theta_ell_of_k(0.001 / Constants.Mpc, ell)  << " ";
+    fp << get_Theta_ell_of_k_sq(0.1 / Constants.Mpc, ell) / (0.1 / Constants.Mpc) << " ";
+    fp << get_Theta_ell_of_k_sq(0.01 / Constants.Mpc, ell) / (0.01 / Constants.Mpc) << " ";
+    fp << get_Theta_ell_of_k_sq(0.001 / Constants.Mpc, ell) / (0.001 / Constants.Mpc) << " ";
     fp << "\n";
   };
   std::for_each(ellvalues.begin(), ellvalues.end(), print_data);

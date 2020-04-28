@@ -34,7 +34,7 @@ class PowerSpectrum {
     double kpivot_mpc = 0.05;
 
     // The k-values we compute Theta_ell(k) etc. for
-    const int n_k      = 5e3;
+    const int n_k      = 1e3;
     const double k_min = Constants.k_min;
     const double k_max = Constants.k_max;
     
@@ -44,7 +44,7 @@ class PowerSpectrum {
         20,   25,   30,   40,   50,   60,   70,   80,   90,   100,  
         120,  140,  160,  180,  200,  225,  250,  275,  300,  350,  
         400,  450,  500,  550,  600,  650,  700,  750,  800,  850,  
-        900,  950,  1000, 1050, 1100, 1150, 1200};/*, 1250, 1300, 1350, 
+        900,  950,  1000, 1050, 1100, 1150, 1200};/*, 1250, 1300, 1350}; //
         1400, 1450, 1500, 1550, 1600, 1650, 1700, 1750, 1800, 1850, 
         1900, 1950, 2000};*/
    
@@ -75,7 +75,8 @@ class PowerSpectrum {
     
     // Splines of the reusult of the LOS integration
     // Theta_ell(k) and ThetaE_ell(k) for polarization
-    std::vector<Spline> thetaT_ell_of_k_spline;
+    //std::vector<Spline2D> thetaT_ell_of_k_spline;
+    Spline2D thetaT_ell_of_k_spline;
     std::vector<Spline> thetaE_ell_of_k_spline;
     
     //=====================================================================
@@ -87,8 +88,8 @@ class PowerSpectrum {
     // For polarization C_TE call with f_ell = theta_ell and g_ell = thetaE_ell
     Vector solve_for_cell(
         Vector & logk_array,
-        std::vector<Spline> & f_ell, 
-        std::vector<Spline> & g_ell);
+        Spline2D & f_ell, 
+        Spline2D & g_ell);
 
     // Splines with the power-spectra
     Spline cell_TT_spline{"cell_TT_spline"};
@@ -119,6 +120,8 @@ class PowerSpectrum {
     double get_cell_TT(const double ell) const;
     double get_cell_TE(const double ell) const;
     double get_cell_EE(const double ell) const;
+    double get_Theta_ell_of_k(const double k, const double ell) const;
+    double get_Theta_ell_of_k_sq(const double k, const double ell) const;
 
     // Output Cells in units of l(l+1)/2pi (muK)^2
     void output(std::string filename) const;
