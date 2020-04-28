@@ -109,7 +109,7 @@ Vector2D PowerSpectrum::line_of_sight_integration_single(
   // Set up initial conditions for Theta_ell
   Vector Theta_ell_ic{0};
   double k;
-  int N = 2e3;
+  int N = 5e2;
   Vector x_array = Utils::linspace(Constants.x_start, Constants.x_end, N);
   for(int ik = 0; ik < k_array.size(); ik++){
 
@@ -140,7 +140,7 @@ Vector2D PowerSpectrum::line_of_sight_integration_single(
       ODESolver ode;
 
       // Solving ODE and extracting solution array from ODEsolver
-      //double hstart = 1e-5, abserr = 1e-10, relerr = 1e-10;
+      //double hstart = 1e-3, abserr = 1e-10, relerr = 1e-10;
       //ode.set_accuracy(hstart, abserr, relerr);
       ode.solve(dTheta_elldx, x_array, Theta_ell_ic, gsl_odeiv2_step_rkf45);
       auto Theta_ell_today = ode.get_data_by_xindex(N - 1);
@@ -225,7 +225,7 @@ Vector PowerSpectrum::solve_for_cell(
     ODESolver ode;
 
     // Solving ODE and extracting solution array from ODEsolver
-    //double hstart = 1e-5, abserr = 1e-10, relerr = 1e-10;
+    //double hstart = 1e-3, abserr = 1e-10, relerr = 1e-10;
     //ode.set_accuracy(hstart, abserr, relerr);
     ode.solve(dCelldlogk, log_k_array, Cell_ic, gsl_odeiv2_step_rkf45);
     auto Cell = ode.get_data_by_xindex(log_k_array.size() - 1);
@@ -303,12 +303,6 @@ void PowerSpectrum::output(std::string filename) const{
     double normfactorL = (ell * (ell+1)) * (ell * (ell+1)) / (2.0 * M_PI);
     fp << ell                                 << " ";
     fp << cell_TT_spline(ell) * normfactor  << " ";
-    fp << get_Theta_ell_of_k(0.1 / Constants.Mpc, ell)  << " ";
-    fp << get_Theta_ell_of_k(0.01 / Constants.Mpc, ell)  << " ";
-    fp << get_Theta_ell_of_k(0.001 / Constants.Mpc, ell)  << " ";
-    fp << get_Theta_ell_of_k_sq(0.1 / Constants.Mpc, ell) / (0.1 / Constants.Mpc) << " ";
-    fp << get_Theta_ell_of_k_sq(0.01 / Constants.Mpc, ell) / (0.01 / Constants.Mpc) << " ";
-    fp << get_Theta_ell_of_k_sq(0.001 / Constants.Mpc, ell) / (0.001 / Constants.Mpc) << " ";
     fp << "\n";
   };
   std::for_each(ellvalues.begin(), ellvalues.end(), print_data);
@@ -321,6 +315,25 @@ void PowerSpectrum::output(std::string filename) const{
     factor = (2 * M_PI * M_PI) / (k * k * k);
     fp2 << k                                         << " ";
     fp2 << get_matter_power_spectrum(0, k) * factor  << " ";
+    fp2 << get_Theta_ell_of_k(k, 200)  << " ";
+    fp2 << get_Theta_ell_of_k(k, 480)  << " ";
+    fp2 << get_Theta_ell_of_k(k, 725)  << " ";
+    fp2 << get_Theta_ell_of_k(k, 1000)  << " ";
+    
+    fp2 << get_Theta_ell_of_k(k, 8)  << " ";
+    fp2 << get_Theta_ell_of_k(k, 370)  << " ";
+    fp2 << get_Theta_ell_of_k(k, 590)  << " ";
+    fp2 << get_Theta_ell_of_k(k, 896)  << " ";
+
+    fp2 << get_Theta_ell_of_k_sq(k, 200) / k << " ";
+    fp2 << get_Theta_ell_of_k_sq(k, 480) / k << " ";
+    fp2 << get_Theta_ell_of_k_sq(k, 725) / k << " ";
+    fp2 << get_Theta_ell_of_k_sq(k, 1000) / k << " ";
+    
+    fp2 << get_Theta_ell_of_k_sq(k, 8) / k << " ";
+    fp2 << get_Theta_ell_of_k_sq(k, 370) / k << " ";
+    fp2 << get_Theta_ell_of_k_sq(k, 590) / k << " ";
+    fp2 << get_Theta_ell_of_k_sq(k, 896) / k << " ";
     fp2 << "\n";
   };
   std::for_each(k_arr.begin(), k_arr.end(), print_data2);

@@ -35,6 +35,7 @@ ax = plt.subplot(111)
 ax.plot(ells, Cells)
 ax.set_yscale("log")
 ax.set_xscale("log")
+plt.savefig("../doc/Figures/Cell.pdf")
 
 fig2 = plt.figure(figsize=[1.5 * 7.1014, 1.5 * 7.1014 / 1.618])
 ax2 = plt.subplot(111)
@@ -43,7 +44,6 @@ ax2.plot(ells, Theta_ell001, label = r"$k = 0.01/\mathrm{Mpc}$")
 ax2.plot(ells, Theta_ell0001, label = r"$k = 0.00/1\mathrm{Mpc}$")
 ax2.set_yscale("symlog")
 ax2.set_xscale("log")
-
 
 fig1 = plt.figure(figsize=[1.5 * 7.1014, 1.5 * 7.1014 / 1.618])
 ax1 = plt.subplot(111)
