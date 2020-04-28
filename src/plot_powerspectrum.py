@@ -26,11 +26,12 @@ Cells = data[:, 1]
 data1 = np.loadtxt("matter_power_spec.txt")
 k = (data1[:, 0] / u.m).to(1 / u.Mpc)
 P = (data1[:, 1] * u.m ** 3).to(u.Mpc ** 3)
-print(k)
+
 fig = plt.figure(figsize=[1.5 * 7.1014, 1.5 * 7.1014 / 1.618])
 ax = plt.subplot(111)
 ax.plot(ells, Cells)
-ax.set_yscale("symlog")
+ax.set_yscale("log")
+ax.set_xscale("log")
 
 
 fig1 = plt.figure(figsize=[1.5 * 7.1014, 1.5 * 7.1014 / 1.618])

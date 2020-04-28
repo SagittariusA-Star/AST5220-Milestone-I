@@ -22,13 +22,16 @@ void PowerSpectrum::solve(){
   // TODO: Choose the range of k's and the resolution to compute Theta_ell(k)
   //=========================================================================
   
-  Vector k_array(n_k);
+  Vector k_array = Utils::linspace(Constants.k_min, Constants.k_max, 1e3);
+  Vector log_k_array = log(k_array);
+  /*
   const double dk = (log10(Constants.k_max) - log10(Constants.k_min)) / (n_k - 1.0);
   for(int ik = 0; ik < n_k; ik++){
     k_array[ik] = log10(Constants.k_min) + ik * dk;
     k_array[ik] = pow(10, k_array[ik]);
   }
-  Vector log_k_array = log(k_array);
+  */
+ 
   //=========================================================================
   // TODO: Make splines for j_ell. 
   // Implement generate_bessel_function_splines
@@ -106,10 +109,9 @@ Vector2D PowerSpectrum::line_of_sight_integration_single(
   // Set up initial conditions for Theta_ell
   Vector Theta_ell_ic{0};
   double k;
-  int N = 1e3;
+  int N = 1e2;
   Vector x_array = Utils::linspace(Constants.x_start, Constants.x_end, N);
-
-  for(size_t ik = 0; ik < k_array.size(); ik++){
+  for(int ik = 0; ik < k_array.size(); ik++){
 
     //=============================================================================
     // TODO: Implement to solve for the general line of sight integral 
@@ -138,9 +140,9 @@ Vector2D PowerSpectrum::line_of_sight_integration_single(
       ODESolver ode;
 
       // Solving ODE and extracting solution array from ODEsolver
-      double hstart = 1e-3, abserr = 1e-10, relerr = 1e-10;
-      ode.set_accuracy(hstart, abserr, relerr);
-      ode.solve(dTheta_elldx, x_array, Theta_ell_ic, gsl_odeiv2_step_rkf45);
+      //double hstart = 1e-8, abserr = 1e-15, relerr = 1e-15;
+      //ode.set_accuracy(hstart, abserr, relerr);
+      ode.solve(dTheta_elldx, x_array, Theta_ell_ic);//, gsl_odeiv2_step_rkf45);
       auto Theta_ell_today = ode.get_data_by_xindex(N - 1);
       result[i][ik] = Theta_ell_today[0];
     }
@@ -221,10 +223,10 @@ Vector PowerSpectrum::solve_for_cell(
         ODESolver ode;
 
         // Solving ODE and extracting solution array from ODEsolver
-        double hstart = 1e-3, abserr = 1e-10, relerr = 1e-10;
-        ode.set_accuracy(hstart, abserr, relerr);
-        ode.solve(dCelldlogk, log_k_array, Cell_ic, gsl_odeiv2_step_rkf45);
-        auto Cell = ode.get_data_by_xindex(nells - 1);
+        //double hstart = 1e-8, abserr = 1e-15, relerr = 1e-15;
+        //ode.set_accuracy(hstart, abserr, relerr);
+        ode.solve(dCelldlogk, log_k_array, Cell_ic);//, gsl_odeiv2_step_rkf45);
+        auto Cell = ode.get_data_by_xindex(log_k_array.size() - 1);
         result[i] = Cell[0];
   }
   return result;
@@ -292,14 +294,14 @@ void PowerSpectrum::output(std::string filename) const{
       * pow(1e6 * cosmo->get_TCMB() *  pow(4.0/11.0, 1.0/3.0), 2);
     double normfactorL = (ell * (ell+1)) * (ell * (ell+1)) / (2.0 * M_PI);
     fp << ell                                 << " ";
-    fp << cell_TT_spline( ell ) * normfactor  << " ";
+    fp << cell_TT_spline(ell) * normfactor  << " ";
     fp << "\n";
   };
   std::for_each(ellvalues.begin(), ellvalues.end(), print_data);
  
   std::string filename2 = "matter_power_spec.txt";
   std::ofstream fp2(filename2.c_str());
-  Vector k_arr = Utils::linspace(Constants.k_min, k_max, 1e3);
+  Vector k_arr = Utils::linspace(Constants.k_min, Constants.k_max, 1e3);
   double factor;
   auto print_data2 = [&] (const double k) {
     factor = (2 * M_PI * M_PI) / (k * k * k);

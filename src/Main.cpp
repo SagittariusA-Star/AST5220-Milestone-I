@@ -67,7 +67,7 @@ int main(int argc, char **argv){
   
   // Output perturbation quantities
   double kvalue;
-  kvalue = 0.1 / Constants.Mpc;
+  kvalue = 0.3 / Constants.Mpc;
   pert.output(kvalue, "perturbations_k0.1.txt");
   /*
   */

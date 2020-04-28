@@ -323,17 +323,18 @@ double Perturbations::get_tight_coupling_time(const double k) const{
 void Perturbations::compute_source_functions(){
   Utils::StartTiming("source");
   // Sourse functionfor later use when computing the CMB angular power spectrum.
-  Vector k_array(n_k);
+  Vector k_array = Utils::linspace(Constants.k_min, Constants.k_max, n_k);
   Vector x_array = Utils::linspace(x_start, x_end, n_x); // Linearly spaced x values
 
   // Log-spaced wave numbers
+  /*
   const double dk = (log10(Constants.k_max) - log10(Constants.k_min)) / (n_k - 1.0);
 
   for(int ik = 0; ik < n_k; ik++){
     k_array[ik] = log10(Constants.k_min) + ik * dk;
     k_array[ik] = pow(10, k_array[ik]);
   }
-  
+  */
   const double c = Constants.c; // Light speed
 
   // Defining quantities needed from cosmo and rec object
@@ -709,7 +710,7 @@ void Perturbations::output(const double k, const std::string filename) const{
     //fp << get_Source_T(x, k) * Utils::j_ell(5,   arg)           << " ";
     //fp << get_Source_T(x,k) * Utils::j_ell(50,  arg)           << " ";
     //fp << get_Source_T(x,k) * Utils::j_ell(500, arg)           << " ";
-    fp << Utils::j_ell(225, arg)           << " ";
+    fp << get_Source_T(x, k) * Utils::j_ell(1, arg)           << " ";
     fp << "\n";
   };
   std::for_each(x_array.begin(), x_array.end(), print_data);
