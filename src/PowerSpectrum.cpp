@@ -140,8 +140,8 @@ Vector2D PowerSpectrum::line_of_sight_integration_single(
       ODESolver ode;
 
       // Solving ODE and extracting solution array from ODEsolver
-      //double hstart = 1e-3, abserr = 1e-10, relerr = 1e-10;
-      //ode.set_accuracy(hstart, abserr, relerr);
+      double hstart = 1e-3, abserr = 1e-10, relerr = 1e-10;
+      ode.set_accuracy(hstart, abserr, relerr);
       ode.solve(dTheta_elldx, x_array, Theta_ell_ic, gsl_odeiv2_step_rkf45);
       auto Theta_ell_today = ode.get_data_by_xindex(N - 1);
       result[i][ik] = Theta_ell_today[0];
@@ -225,8 +225,8 @@ Vector PowerSpectrum::solve_for_cell(
     ODESolver ode;
 
     // Solving ODE and extracting solution array from ODEsolver
-    //double hstart = 1e-3, abserr = 1e-10, relerr = 1e-10;
-    //ode.set_accuracy(hstart, abserr, relerr);
+    double hstart = 1e-3, abserr = 1e-10, relerr = 1e-10;
+    ode.set_accuracy(hstart, abserr, relerr);
     ode.solve(dCelldlogk, log_k_array, Cell_ic, gsl_odeiv2_step_rkf45);
     auto Cell = ode.get_data_by_xindex(log_k_array.size() - 1);
     result[i] = Cell[0];
@@ -311,6 +311,8 @@ void PowerSpectrum::output(std::string filename) const{
   std::ofstream fp2(filename2.c_str());
   Vector k_arr = Utils::linspace(Constants.k_min, Constants.k_max, 1e3);
   double factor;
+  double TCMB_factor = 1e6 * cosmo->get_TCMB();
+  double TCMB_factor_sq = TCMB_factor * TCMB_factor;
   auto print_data2 = [&] (const double k) {
     factor = (2 * M_PI * M_PI) / (k * k * k);
     fp2 << k                                         << " ";
