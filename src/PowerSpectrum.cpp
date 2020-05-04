@@ -327,15 +327,15 @@ void PowerSpectrum::output(std::string filename) const{
     fp2 << get_Theta_ell_of_k(k, 590)  << " ";
     fp2 << get_Theta_ell_of_k(k, 896)  << " ";
 
-    fp2 << get_Theta_ell_of_k_sq(k, 200) / k << " ";
-    fp2 << get_Theta_ell_of_k_sq(k, 480) / k << " ";
-    fp2 << get_Theta_ell_of_k_sq(k, 725) / k << " ";
-    fp2 << get_Theta_ell_of_k_sq(k, 1000) / k << " ";
+    fp2 << get_Theta_ell_of_k_sq(k, 200) / (k * Constants.Mpc / cosmo -> get_h()) << " ";
+    fp2 << get_Theta_ell_of_k_sq(k, 480) / (k * Constants.Mpc / cosmo -> get_h()) << " ";
+    fp2 << get_Theta_ell_of_k_sq(k, 725) / (k * Constants.Mpc / cosmo -> get_h()) << " ";
+    fp2 << get_Theta_ell_of_k_sq(k, 1000) / (k * Constants.Mpc / cosmo -> get_h()) << " ";
     
-    fp2 << get_Theta_ell_of_k_sq(k, 8) / k << " ";
-    fp2 << get_Theta_ell_of_k_sq(k, 370) / k << " ";
-    fp2 << get_Theta_ell_of_k_sq(k, 590) / k << " ";
-    fp2 << get_Theta_ell_of_k_sq(k, 896) / k << " ";
+    fp2 << get_Theta_ell_of_k_sq(k, 8) / (k * Constants.Mpc / cosmo -> get_h()) << " ";
+    fp2 << get_Theta_ell_of_k_sq(k, 370) / (k * Constants.Mpc / cosmo -> get_h()) << " ";
+    fp2 << get_Theta_ell_of_k_sq(k, 590) / (k * Constants.Mpc / cosmo -> get_h()) << " ";
+    fp2 << get_Theta_ell_of_k_sq(k, 896) / (k * Constants.Mpc / cosmo -> get_h()) << " ";
     fp2 << "\n";
   };
   std::for_each(k_arr.begin(), k_arr.end(), print_data2);
