@@ -76,9 +76,24 @@ The primordial amplitude parameter $A_s \sim 2\cdot 10^{-9}$ at a pivot scale $k
 This simple rescaling we can simply do since all equations are linear. The final power spectrum is then simply found by integrating up all the squared multipoles weighted by $P_\text{primordial}(k)$ over all of $\vec{k}$-space
 \begin{align}
     C_\ell &= C_\ell = \frac{2}{\pi}\int k^2P_{\rm primordial}(k) \Theta_\ell^2(k)dk\\
-    & = = 4\pi \int_0^{\infty} A_s \left(\frac{k}{k_{\rm pivot}}\right)^{n_s-1} \Theta_\ell^2(k) \frac{dk}{k},
+    & =  4\pi \int_0^{\infty} A_s \left(\frac{k}{k_{\rm pivot}}\right)^{n_s-1} \Theta_\ell^2(k) \frac{dk}{k},
 \end{align}
 where we could simply transform the 3D integral to a 1D integral because of isotropy.
+It is common to present the CMB angular power spectrum $\frac{\ell(\ell + 1)}{2\pi}C_\ell$ in units $\mathrm{\mu K^2}$, which is obtained by multiplying it with $(10^6T_\mathrm{CMB})^2$. The prefactor $\frac{\ell(\ell + 1)}{2\pi}$ is used for cosmetic purpose, to eliminate some of the tilt of the spectrum.
+
+The next thing to compute is the matter (both dark and baryonic) power spectrum. This turns out, is the easiest part of the work in this paper, as it is simply found by things we already know from \cite{stutzer:2020c}.
+\begin{align}
+    P_M(k,x) = |\Delta_M(k,x)|^2P_{\rm primordial}(k),
+\end{align} 
+where the comoving density contrast $\Delta_M(k, x)$ (which is gauge invariant) is given by 
+\begin{align}
+    \Delta_M(k,x) \equiv \frac{c^2k^2\Phi(k,x)}{\frac{3}{2}\Omega_{M 0} a^{-1} H_0^2}\label{eq:DeltaM}
+\end{align}
+\citep[]{winther:2020c}. This we can simply compute at the present time $x = 0$ by using the splined quantities from \cite{stutzer:2020c} that go into \ref{eq:DeltaM}. 
+
+The power spectra for the CMB $C_\ell$ and for matter $P_M(k)$ are then plotted versus multipole index $\ell$ and (comoving) wavenumber $k$.
+
+
 
 \subsection{The Implementation} \label{subsec:implementation}
 
