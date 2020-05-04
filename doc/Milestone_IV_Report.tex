@@ -1,0 +1,92 @@
+\documentclass[twocolumn]{aastex62}
+
+\newcommand{\vdag}{(v)^\dagger}
+\newcommand\aastex{AAS\TeX}
+\newcommand\latex{La\TeX}
+\usepackage{amsmath}
+\usepackage{physics}
+\usepackage{hyperref}
+\usepackage{natbib}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{wasysym}
+
+\begin{document}
+
+\title{\Large AST5220-Milestone IV: The CMB and Matter Power-Spectra}
+
+\author{Nils-Ole Stutzer}
+
+\begin{abstract}
+    
+    \textit{The codes for this paper can be found at:} \newline \url{https://github.com/SagittariusA-Star/AST5220-Milestones}
+\end{abstract}
+
+\section{Introduction} \label{sec:Intro}
+The aim of cosmology as a science has always been to unearth the secretes of how the Universe was formed and how it has evolved since. As modern high precision
+measurements by probes like Planck have shown is how successful the cosmological standard model with dark energy and cold dark matter ($\Lambda$CDM) is in describing the observed data of the CMB and its anisotropies \citep[]{planckcollaboration:2018}. One of the most common ways to estimate the parameter values of the $\Lambda$CDM model infered from the data, is to compare the observed and the theoretical CMB and matter power spectra and find the best-fit by means of a statistical treatment. 
+
+In this paper we will focus on computing the CMB and matter power spectra, by building upon the foundation by \cite{stutzer:2020a}, \cite{stutzer:2020b} and \cite{stutzer:2020c} which computed the background evolution, recombination history and formation of structure from primordial perturbations of the Universe. The ultimate goal of computing the power spectra will be achieved using the same cosmological parameters as \cite{callin:2006}, also previously used in \cite{stutzer:2020a}, \cite{stutzer:2020b} and \cite{stutzer:2020c}. Further more, we will for simplicity neglect the spatial curvature, neutrinos and polarization of photons. 
+
+
+\section{Method} \label{sec:Method}
+When solving for the CMB and matter power spectra in this paper we will mainly use the equations and relations that are provided by \cite{winther:2020c}, \cite{callin:2006} and \cite{dodelson:2003}. Unless otherwise stated the equations presented here are thus provided by these authors and refere the interested reader to them for detailed derivations, and only present the main outline towards computing the power spectra.  
+
+
+\subsection{The Power Spectra} \label{subsec:spectra}
+Before going on to actually computing the power spectra, a few words on what a power spectrum actually is. To find out this we consider the CMB as an example. The CMB as we see it today is build up of an average temperature of $T_\mathrm{CMB} = 2.7255\mathrm{K}$ upon which there are small perturbations of the order $\delta T / T_\mathrm{CMB} \sim 10^{-5}$ seen as anisotropies in the CMB. One can think of the CMB of a function on the celestial sphere that can be expanded in term of its anisotropies of different scales as basis functions. This is done using spherical harmonics as 
+\begin{align}
+    T(\hat{n}) = \sum_{\ell m} a_{\ell m} Y_{\ell m}(\hat{n}),
+\end{align}
+where the temperature $T$ in the direction $\hat{n}$ on the sky is given by the sum over the spherical harmonics $Y_{\ell m}$ times the corresponding expansion coefficient $a_{\ell m}$. The indices $\ell$ and $m$ quantify the scale and orientation of the perturbations. For instance $\ell = 0$, $\ell = 1$ and $\ell = 2$ represent the monopole (average temperature), dipole (hot and cold blobs separated by $180^\circ$ on the sky) and the quadrupole (alternating hot and cold separated by $90^\circ$ on the sky).
+
+The angular power spectrum of the CMB anisotropies is simply related to this expansion and corresponds to the expected value of the expansion coefficient squared for each scale $\ell$
+\begin{align}
+    C_\ell = \langle |a_{\ell m}|^2 \rangle = \langle a_{\ell m}a_{\ell m}^* \rangle.
+\end{align}
+In principle, though, there should be a dependence on the orientation $m$, however, since the CMB according to the underlying cosmological principle must be isotropic on large scales we can simply average out the directional dependence without large errors. The angular power spectrum $C_\ell$ hence quantifies how much contribution to the CMB there is on each angular scale, i.e. the amplitude, and can be understood as a correlation function between to points of a given angular separation. 
+
+In order to compute the power spectrum $C_\ell$ we need the coefficients $a_{\ell m}$ which are given by the temperature field at time $x = \ln a(t)$ $T(\hat{n}, x)$. The temperature fields evolution through time $x$ and for different scales $k$ were found in \cite{stutzer:2020c} in the form of the photon perturbation multipole moments $\Theta_\ell(k, x)$. These multipole moments were however found in fourier $\vec{k}$-space, but we want to have them in real ($\vec{n}$-) space at the present time. To get the perturbations $\Theta_\ell(\hat{n}, x)$ today, we simply inverse fourier transform and evaluate the result at the present time $x = 0$. 
+
+There is only one caveat to this idea. In order to compute all the coefficients $a_{\ell m}$ we would need the infinite series of multipole monents $\Theta_\ell$, however, \cite{stutzer:2020c} only computed around 8 of them, but we would need around $\ell_text{max} \sim 1200$ to get a decent power spectrum \citep[]{winther:2020c}. Solving for all the multipole moments up to $\ell = 1200$ using the approach of \cite{stutzer:2020c} would take a long time and be very inefficient. 
+
+Fortunately Zaldarriaga and Seljak solved this problem for us by inventing the \textit{line-of-sight} integration. To obtain the coupled equations for the$ \Theta_\ell$'s in the first place one used the photon perturbation $\Theta(k, \mu, x)$, being a function of angle $\mu = \cos \theta$. Thus one can, instead expanding the perturbation equation into multipoles and then solving the long coupled system of differential equations as in \cite{stutzer:2020c} (but with $\ell_\text{max} = 1200$), integrate up the equation for the underlying $\dot{\Theta}$ subsequently find the multipoles. This is shown in detail by \cite{callin:2006} and \cite{dodelson:2003} and yields the following integral for the multipoles 
+\begin{align}
+    \Theta_\ell(k, x=0) = \int_{-\infty}^{0} \tilde{S}(k,x)
+              j_\ell[k(\eta_0-\eta)] dx,
+\end{align} 
+where $j_ll$ are the spherical Bessel functions being highly oscillatory functions function as an orthogonal basis here and $\eta$ (subscript 0) is the conformal time (today). 
+
+The quantity $\tilde{S}(k,x)$ is called the source function and is given by
+\begin{align}
+    \tilde{S}(k,x) &= \tilde{g}\left[ \Theta_0 + \Psi + \frac{1}{4}\Pi\right] + e^{-\tau} \left[\Psi^\prime-\Phi^\prime\right] \nonumber\\
+    &- \frac{1}{ck}\frac{d}{dx}(\mathcal{H}\tilde{g}v_b) + \frac{3}{4c^2k^2} \frac{d}{dx} \left[\mathcal{H}\frac{d}{dx} (\mathcal{H}\tilde{g}\Pi)\right],
+    \label{eq:source}
+\end{align}
+where the metric potential perturbations $\Psi$ and $\Phi$, the baryon velocity $v_b$ and the photon mono- and quadrupole $\Theta_0$ and $Theta_2$ ($\Pi = \Theta_2$ if polarization is neglected) are all computed by \cite{stutzer:2020c}. The optical depth $\tau$ and visibility function $\tilde{g}$, and the reduced Hubble parameter $\mathcal{H}$ are found by \cite{stutzer:2020b} and \cite{stutzer:2020a} respectively. The source function quantifies how light is affected (both extinction and emission) when traveling through a medium, which in our case is the universe.
+
+\subsection{The Implementation} \label{subsec:implementation}
+
+\begin{figure*}
+    \includegraphics[scale = 0.65]{Figures/fig1.pdf}
+    \caption{} 
+    \label{fig:fig1}
+\end{figure*}
+
+\begin{figure*}
+    \includegraphics[scale = 0.65]{Figures/fig2.pdf}
+    \caption{}
+    \label{fig:fig2}
+\end{figure*}
+
+\section{Results}\label{sec:Results}
+
+\section{Discussion}\label{sec:Discussion}
+
+\section{Conclusion} \label{sec:Conclusion}
+
+\newpage
+\bibliography{ref}
+\bibliographystyle{aasjournal}
+\end{document}

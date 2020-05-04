@@ -315,8 +315,8 @@ void PowerSpectrum::output(std::string filename) const{
   double TCMB_factor_sq = TCMB_factor * TCMB_factor;
   auto print_data2 = [&] (const double k) {
     factor = (2 * M_PI * M_PI) / (k * k * k);
-    fp2 << k                                         << " ";
-    fp2 << get_matter_power_spectrum(0, k) * factor  << " ";
+    fp2 << k * Constants.Mpc / cosmo -> get_h()  << " ";
+    fp2 << get_matter_power_spectrum(0, k) * factor * pow(cosmo -> get_h() / Constants.Mpc, 3) << " ";
     fp2 << get_Theta_ell_of_k(k, 200)  << " ";
     fp2 << get_Theta_ell_of_k(k, 480)  << " ";
     fp2 << get_Theta_ell_of_k(k, 725)  << " ";

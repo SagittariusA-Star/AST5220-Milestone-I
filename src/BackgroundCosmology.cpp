@@ -200,7 +200,7 @@ void BackgroundCosmology::output(const std::string filename) const{
   std::ofstream fp(filename.c_str());
   auto print_data = [&] (const double x) {
     fp << x                  << " ";
-    fp << eta_of_x(x)        << " ";
+    fp << eta_of_x(x) * h       << " ";
     fp << Hp_of_x(x)         << " ";
     fp << get_OmegaB(x)      << " ";
     fp << get_OmegaCDM(x)    << " ";
