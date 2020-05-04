@@ -55,16 +55,17 @@ Fortunately Zaldarriaga and Seljak solved this problem for us by inventing the \
 \begin{align}
     \Theta_\ell(k, x=0) = \int_{-\infty}^{0} \tilde{S}(k,x)
               j_\ell[k(\eta_0-\eta)] dx,
+    \label{eq:transfer}
 \end{align} 
-where $j_ll$ are the spherical Bessel functions being highly oscillatory functions function as an orthogonal basis here that basically project the project the 3D spatial temperature field onto the 2D celestial sphere (as we observe it) and $\eta$ (subscript 0) is the conformal time (today). 
+where $j_ll$ are the spherical Bessel functions being highly oscillatory functions function as an orthogonal basis here that basically project the project the 3D spatial temperature field onto the 2D celestial sphere (as we observe it) and $\eta$ (subscript 0) is the conformal time (today). The $Theta_\ell(k, x = 0)$ is also called the transfer function and quantifies the multipole moments of the photons for each scale.
 
 The quantity $\tilde{S}(k,x)$ is called the source function and is given by
 \begin{align}
-    \tilde{S}(k,x) &= \tilde{g}\left[ \Theta_0 + \Psi + \frac{1}{4}\Pi\right] + e^{-\tau} \left[\Psi^\prime-\Phi^\prime\right] \nonumber\\
+    \tilde{S}(x, k) &= \tilde{g}\left[ \Theta_0 + \Psi + \frac{1}{4}\Pi\right] + e^{-\tau} \left[\Psi^\prime-\Phi^\prime\right] \nonumber\\
     &- \frac{1}{ck}\frac{d}{dx}(\mathcal{H}\tilde{g}v_b) + \frac{3}{4c^2k^2} \frac{d}{dx} \left[\mathcal{H}\frac{d}{dx} (\mathcal{H}\tilde{g}\Pi)\right],
     \label{eq:source}
 \end{align}
-where the metric potential perturbations $\Psi$ and $\Phi$, the baryon velocity $v_b$ and the photon mono- and quadrupole $\Theta_0$ and $Theta_2$ ($\Pi = \Theta_2$ if polarization is neglected) are all computed by \cite{stutzer:2020c}. The optical depth $\tau$ and visibility function $\tilde{g}$, and the reduced Hubble parameter $\mathcal{H}$ are found by \cite{stutzer:2020b} and \cite{stutzer:2020a} respectively. The source function quantifies how light is affected (both extinction and emission) when traveling through a medium, which in our case is the universe.
+where the metric potential perturbations $\Psi$ and $\Phi$, the baryon velocity $v_b$ and the photon mono- and quadrupole $\Theta_0$ and $\Theta_2$ ($\Pi = \Theta_2$ if polarization is neglected) are all computed by \cite{stutzer:2020c}. The optical depth $\tau$ and visibility function $\tilde{g}$, and the reduced Hubble parameter $\mathcal{H}$ are found by \cite{stutzer:2020b} and \cite{stutzer:2020a} respectively. The source function quantifies how light is affected (both extinction and emission) when traveling through a medium, which in our case is the universe.
 
 This approach of finding the multipoles $Theta_\ell$ is much faster as we only need $Theta_0$ and $\Theta_2$ from the coupled set of ODEs and it has the advantage of being easier to understand. Intuitively one can interpret the line-of-sight integration as integrating up a local radiation monopole through the universes history, which is represented by the term $\tilde{g}\Theta_0$. The terms $tilde{g}\Psi$ and $\tilde{g}\frac{1}{4}\Pi$ are corrections from the photons loosing energy through the potential wells and the correction of the local quadrupole (polarization if included) respectively. Secondly one can spot how the radiation field is affected by the change of the gravitational potentials, seen in the second part of $\tilde{S}$, and represents the gain in energy through the so-called Integrated Sachs-Wolf (ISW) effect. Basically the ISW is that photons that fall into a potential well will gain energy, but lose less than they gained when exiting, since the gravitational wells have decayed due to spatial expansion while the photon traveled through it. The third part of $\tilde{S}$ is simply a doppler effect term.
 
@@ -96,22 +97,38 @@ The power spectra for the CMB $C_\ell$ and for matter $P_M(k)$ are then plotted 
 
 
 \subsection{The Implementation} \label{subsec:implementation}
+When it comes to the implementation of the above mentioned methodology most things are fairly strait forward. All the perturbation multipole moments as well as the background and recombination quantities are found by \cite{stutzer:2020c}, \cite{stutzer:2020b} and \cite{stutzer:2020a} respectively. These are then used to evaluate and save $\tilde{S}(x, k)$ over a $x,k$-grid, which subsequently is splined using the \texttt{Spline2D}-routine by \cite{winther:2020b} to make a more continuous callable representation. 
+
+Next to solve the first integral for the transfer function, i.e. eq. (\ref{eq:transfer}), we can choose several approaches; either one could use some numerical integration routine or one could solve the integral as an ODE
+\begin{align}
+    \dv{\Theta_ell}{x}(k, x = 0) = \tilde{S}(k,x)
+    j_\ell[k(\eta_0-\eta)].\label{eq:ode1}
+\end{align}
+Both have advantages and disadvantages, the first being the safest as the numerical integration minimizes the global error, while solving an ODE one can only really manage the local error. Basically it boils down to extrapolation being "riskier" than interpolation. However, the main advantage with solving the integral as an ODE is that we could use the already sat up infra structure by \cite{stutzer:2020a,stutzer:2020b,stutzer:2020c}. Since we already have the means to solve the integrals this way we chose the ODE approach, which should work just fine as longe as we are careful with the grid resolution and tweak the allowed relative local errors, and since the integrands we consider are fairly well behaved. Hence the main structure of the algorithm is to loop through the different multipole indices $\ell$, and solve integral using the \texttt{ODEsolver}-routine by \cite{winther:2020a}, subsequently saving the result. The initial condition for the ODE (\ref{eq:ode1}) is simply $\Theta_\ell(k, -\infty) = 0$, which we can see from the $Theta_\ell$'s in \cite{stutzer:2020c} as the perturbations stay zero outside the horizon. The next integral is solved the exact same way with the ODE
+\begin{align}
+    \dv{C_\ell}{\ln k} = 4\pi A_s \left(\frac{k}{k_{\rm pivot}}\right)^{n_s-1} \Theta_\ell^2(k),
+\end{align}
+just using the \texttt{ODEsolver}-routine by \cite{winther:2020a} and initial conditions $C_\ell(k = 0) = 0$. Now, using this initial condition might introduce a small error, since $C_\ell(k = 0)$ does not strictly equal zero, but the error is really small and hence negligible. The obtained values for all the $C_\ell$'s are then splined using the \texttt{Spline}-routine by \cite{winther:2020a}. 
+
+When computing the fist integral we used the C++ (17) standard library spherical Bessel functions. However, we run into some problems evaluating these for higher $\ell$, as the standard library Bessel functions returned \texttt{NaN} at some points where the function should be basically zero. Thus when making splines of the $j_\ell$'s we only included indices up to $\ell_\text{max} = 1200$ and we included an approximation ensuring the value of $j_\ell = 0$ (as they should) at the critical points. 
+
+Then when computing the matter power spectrum, we don't need to make any splines since we already have all the needed functions and splines of their components (in particular we have the spline of $\Phi(k, x)$ from \cite{stutzer:2020c}), wo we just make a callable function straight away. 
+
+The power spectra (, the transfer function $\Theta_\ell(k, x = 0)$ and the integrant $\Theta_\ell^2 / k$) are than evaluated and saved to files for plotting in Python.
 
 \begin{figure*}
     \includegraphics[scale = 0.65]{Figures/Cell.pdf}
-    \caption{} 
+    \caption{\textbf{Upper panel}: The figure shows the CMB angular power spectrum for different scales given by the multipole index $\ell$, for $0 < \ell < \ell_\text{max} = 1200$, in units $\mathrm{\mu K}^2$. The peaks and troughs are indicated as solid and dashed lines respectively. \textbf{Lower panel}: The figure shows the matter power spectrum as a function of the comoving wavenumber $k$. The scale $k_\text{eq} = 0.015 \mathrm{h / Mpc}$ of the horizon at matter-radiation equality is marked by a dashed red line.} 
     \label{fig:Cell}
 \end{figure*}
 
 \begin{figure*}
     \includegraphics[scale = 0.65]{Figures/Transfer_func.pdf}
-    \caption{}
+    \caption{\textbf{Upper panel}: The figure shows the radiation transfer functions $\Theta_\ell(k)$ as a function of comoving wavenumber $k$, for the multipoles $\ell = 10, 25, 50$ and $100$. \textbf{Lower panel}: The figure shows the integrand to the power spectrum (expept the primordial power spectrum bit) as a function of comoving wave number, for the multipoles $\ell = 10, 25, 50$ and $100$.}
     \label{fig:Transfer_func}
 \end{figure*}
 
-\section{Results}\label{sec:Results}
-
-\section{Discussion}\label{sec:Discussion}
+\section{Results / Discussion}\label{sec:Results/Discussion}
 
 \section{Conclusion} \label{sec:Conclusion}
 

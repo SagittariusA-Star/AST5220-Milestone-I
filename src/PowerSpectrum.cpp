@@ -70,7 +70,7 @@ void PowerSpectrum::generate_bessel_function_splines(){
   
   // Make storage for the splines
   j_ell_splines = std::vector<Spline>(ells.size());
-  int N         = 5e3;
+  int N         = 1e4;
   Vector x_arr  = Utils::linspace(0, 5e3, N);
   Vector j_ell_x (N);   
   
@@ -317,25 +317,15 @@ void PowerSpectrum::output(std::string filename) const{
     factor = (2 * M_PI * M_PI) / (k * k * k);
     fp2 << k * Constants.Mpc / cosmo -> get_h()  << " ";
     fp2 << get_matter_power_spectrum(0, k) * factor * pow(cosmo -> get_h() / Constants.Mpc, 3) << " ";
-    fp2 << get_Theta_ell_of_k(k, 200)  << " ";
-    fp2 << get_Theta_ell_of_k(k, 480)  << " ";
-    fp2 << get_Theta_ell_of_k(k, 725)  << " ";
-    fp2 << get_Theta_ell_of_k(k, 1000)  << " ";
+    fp2 << get_Theta_ell_of_k(k, 10)  << " ";
+    fp2 << get_Theta_ell_of_k(k, 25)  << " ";
+    fp2 << get_Theta_ell_of_k(k, 50)  << " ";
+    fp2 << get_Theta_ell_of_k(k, 100)  << " ";
     
-    fp2 << get_Theta_ell_of_k(k, 8)  << " ";
-    fp2 << get_Theta_ell_of_k(k, 370)  << " ";
-    fp2 << get_Theta_ell_of_k(k, 590)  << " ";
-    fp2 << get_Theta_ell_of_k(k, 896)  << " ";
-
-    fp2 << get_Theta_ell_of_k_sq(k, 200) / (k * Constants.Mpc / cosmo -> get_h()) << " ";
-    fp2 << get_Theta_ell_of_k_sq(k, 480) / (k * Constants.Mpc / cosmo -> get_h()) << " ";
-    fp2 << get_Theta_ell_of_k_sq(k, 725) / (k * Constants.Mpc / cosmo -> get_h()) << " ";
-    fp2 << get_Theta_ell_of_k_sq(k, 1000) / (k * Constants.Mpc / cosmo -> get_h()) << " ";
-    
-    fp2 << get_Theta_ell_of_k_sq(k, 8) / (k * Constants.Mpc / cosmo -> get_h()) << " ";
-    fp2 << get_Theta_ell_of_k_sq(k, 370) / (k * Constants.Mpc / cosmo -> get_h()) << " ";
-    fp2 << get_Theta_ell_of_k_sq(k, 590) / (k * Constants.Mpc / cosmo -> get_h()) << " ";
-    fp2 << get_Theta_ell_of_k_sq(k, 896) / (k * Constants.Mpc / cosmo -> get_h()) << " ";
+    fp2 << get_Theta_ell_of_k_sq(k, 10) / (k * Constants.Mpc / cosmo -> get_h()) << " ";
+    fp2 << get_Theta_ell_of_k_sq(k, 25) / (k * Constants.Mpc / cosmo -> get_h()) << " ";
+    fp2 << get_Theta_ell_of_k_sq(k, 50) / (k * Constants.Mpc / cosmo -> get_h()) << " ";
+    fp2 << get_Theta_ell_of_k_sq(k, 100) / (k * Constants.Mpc / cosmo -> get_h()) << " ";
     fp2 << "\n";
   };
   std::for_each(k_arr.begin(), k_arr.end(), print_data2);

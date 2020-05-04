@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import matplotlib
 from astropy import constants as const
 from astropy import units as u
+from scipy.signal import argrelextrema as extrema
 
 plt.style.use("bmh")
 
@@ -43,54 +44,68 @@ Theta_ell_peak_1 = data1[:, 2]
 Theta_ell_peak_2 = data1[:, 3]
 Theta_ell_peak_3 = data1[:, 4]
 Theta_ell_peak_4 = data1[:, 5]
-
+"""
 Theta_ell_trough_1 = data1[:, 5]
 Theta_ell_trough_2 = data1[:, 6]
 Theta_ell_trough_3 = data1[:, 7]
 Theta_ell_trough_4 = data1[:, 8]
+"""
 
-
-Theta_ell_sq_peak_1 = data1[:, 9] * u.Mpc
-Theta_ell_sq_peak_2 = data1[:, 10] * u.Mpc
-Theta_ell_sq_peak_3 = data1[:, 11] * u.Mpc
-Theta_ell_sq_peak_4 = data1[:, 12] * u.Mpc
-
+Theta_ell_sq_peak_1 = data1[:, 6] * u.Mpc
+Theta_ell_sq_peak_2 = data1[:, 7] * u.Mpc
+Theta_ell_sq_peak_3 = data1[:, 8] * u.Mpc
+Theta_ell_sq_peak_4 = data1[:, 9] * u.Mpc
+"""
 Theta_ell_sq_trough_1 = data1[:, 13] * u.Mpc
 Theta_ell_sq_trough_2 = data1[:, 14] * u.Mpc
 Theta_ell_sq_trough_3 = data1[:, 15] * u.Mpc
 Theta_ell_sq_trough_4 = data1[:, 16] * u.Mpc
+"""
 
+Cell_peaks = extrema(Cells, np.greater)[0]
+Cell_troughs = extrema(Cells, np.less)[0]
 fig, ax = plt.subplots(2, 1, figsize=[1.5 * 7.1014, 1.5 * 7.1014 / 1.618])
 ax[0].plot(ells, Cells)
 ax[0].set_yscale("log")
 ax[0].set_xscale("log")
 ax[0].set_xlabel(r"$\ell$")
 ax[0].set_ylabel(r"$\frac{\ell(\ell + 1)}{2\pi}C_\ell$ $[\mu \mathrm{K}^2]$")
+ax[0].axvline(ells[Cell_peaks[0]], color = "r", label = rf"$\ell = {ells[Cell_peaks[0]]}$")
+ax[0].axvline(ells[Cell_peaks[1]], color = "g", label = rf"$\ell = {ells[Cell_peaks[1]]}$")
+ax[0].axvline(ells[Cell_peaks[2]], color = "b", label = rf"$\ell = {ells[Cell_peaks[2]]}$")
+ax[0].axvline(ells[Cell_peaks[3]], color = "m", label = rf"$\ell = {ells[Cell_peaks[3]]}$")
+ax[0].axvline(ells[Cell_troughs[0]], color = "r", linestyle = "--", label = rf"$\ell = {ells[Cell_troughs[0]]}$")
+ax[0].axvline(ells[Cell_troughs[1]], color = "g", linestyle = "--", label = rf"$\ell = {ells[Cell_troughs[1]]}$")
+ax[0].axvline(ells[Cell_troughs[2]], color = "b", linestyle = "--", label = rf"$\ell = {ells[Cell_troughs[2]]}$")
+ax[0].axvline(ells[Cell_troughs[3]], color = "m", linestyle = "--", label = rf"$\ell = {ells[Cell_troughs[3]]}$")
+ax[0].axvline(ells[Cell_troughs[4]], color = "orange", linestyle = "--", label = rf"$\ell = {ells[Cell_troughs[4]]}$")
+
+ax[0].legend(loc = 0, fontsize = 9.5)
 
 ax[1].plot(k, P , label = r"$P_M(k)$")
 ax[1].axvline(k_eq.value, color = "r", linestyle = "--", label = rf"$k_\mathrm{{eq}} = {k_eq.value:.2g}\mathrm{{h/Mpc}}$")
 ax[1].set_yscale("log")
 ax[1].set_xscale("log")
-ax[1].set_xlabel(r"$k$ $[h/\mathrm{Mpc}]^{-1}$")
+ax[1].set_xlabel(r"$k$ $[h/\mathrm{Mpc}^{-1}]$")
 ax[1].set_ylabel(r"$P_M(k)$ $[(\mathrm{Mpc}/h)^3]$")
 ax[1].legend(loc = 0)
 fig.tight_layout()
 plt.savefig("../doc/Figures/Cell.pdf")
 
 
-fig1, ax1 = plt.subplots(2, 2, figsize=[1.5 * 7.1014, 1.5 * 7.1014 / 1.618])
+fig1, ax1 = plt.subplots(2, 1, figsize=[1.5 * 7.1014, 1.5 * 7.1014 / 1.618])
 
-# Monopole moments
-ax1[0, 0].plot(k, Theta_ell_peak_1, label=rf"$\ell = 200$", color = "m")
-ax1[0, 0].plot(k, Theta_ell_peak_2, label=rf"$\ell = 480$", color = "b")
-ax1[0, 0].plot(k, Theta_ell_peak_3, label=rf"$\ell = 725$", color = "r")
-ax1[0, 0].plot(k, Theta_ell_peak_4, label=rf"$\ell = 1000$", color = "g")
-ax1[0, 0].set_ylabel(r"$\Theta_\ell(k)$")
-ax1[0, 0].set_xlabel(r"$k [h/\mathrm{Mpc}^{-1}]$")
-ax1[0, 0].legend(loc = 0)
-ax1[0, 0].set_xscale("linear")
-ax1[0, 0].set_yscale("linear")
-
+ax1[0].plot(k, Theta_ell_peak_1, label=rf"$\ell = 10$", color = "m")
+ax1[0].plot(k, Theta_ell_peak_2, label=rf"$\ell = 25$", color = "b")
+ax1[0].plot(k, Theta_ell_peak_3, label=rf"$\ell = 50$", color = "r")
+ax1[0].plot(k, Theta_ell_peak_4, label=rf"$\ell = 100$", color = "g")
+ax1[0].set_ylabel(r"$\Theta_\ell(k)$")
+ax1[0].set_xlabel(r"$k$ $[h/\mathrm{Mpc}^{-1}]$")
+ax1[0].legend(loc = 0)
+ax1[0].set_xlim(0, 0.05)
+ax1[0].set_xscale("linear")
+ax1[0].set_yscale("linear")
+"""
 ax1[0, 1].plot(k, Theta_ell_trough_1, label=rf"$\ell = 8$", color = "m")
 ax1[0, 1].plot(k, Theta_ell_trough_2, label=rf"$\ell = 370$", color = "b")
 ax1[0, 1].plot(k, Theta_ell_trough_3, label=rf"$\ell = 590$", color = "r")
@@ -100,17 +115,18 @@ ax1[0, 1].set_xlabel(r"$k [h/\mathrm{Mpc}^{-1}]$")
 ax1[0, 1].legend(loc = 0)
 ax1[0, 1].set_xscale("linear")
 ax1[0, 1].set_yscale("linear")
-
-ax1[1, 0].plot(k, Theta_ell_sq_peak_1, label=rf"$\ell = 200$", color = "m")
-ax1[1, 0].plot(k, Theta_ell_sq_peak_2, label=rf"$\ell = 480$", color = "b")
-ax1[1, 0].plot(k, Theta_ell_sq_peak_3, label=rf"$\ell = 725$", color = "r")
-ax1[1, 0].plot(k, Theta_ell_sq_peak_4, label=rf"$\ell = 1000$", color = "g")
-ax1[1, 0].set_ylabel(r"$\Theta_\ell^2(k)/k$ $[Mpc / h]")
-ax1[1, 0].set_xlabel(r"$k [h/\mathrm{Mpc}^{-1}]$")
-ax1[1, 0].legend(loc = 0)
-ax1[1, 0].set_xscale("linear")
-ax1[1, 0].set_yscale("linear")
-
+"""
+ax1[1].plot(k, Theta_ell_sq_peak_1, label=rf"$\ell = 10$", color = "m")
+ax1[1].plot(k, Theta_ell_sq_peak_2, label=rf"$\ell = 25$", color = "b")
+ax1[1].plot(k, Theta_ell_sq_peak_3, label=rf"$\ell = 50$", color = "r")
+ax1[1].plot(k, Theta_ell_sq_peak_4, label=rf"$\ell = 100$", color = "g")
+ax1[1].set_ylabel(r"$\Theta_\ell^2(k)/k$ $[Mpc / h]$")
+ax1[1].set_xlabel(r"$k$ $[h/\mathrm{Mpc}^{-1}]$")
+ax1[1].legend(loc = 0)
+ax1[1].set_xlim(0, 0.05)
+ax1[1].set_xscale("linear")
+ax1[1].set_yscale("linear")
+"""
 ax1[1, 1].plot(k, Theta_ell_sq_trough_1, label=rf"$\ell = 8$", color = "m")
 ax1[1, 1].plot(k, Theta_ell_sq_trough_2, label=rf"$\ell = 370$", color = "b")
 ax1[1, 1].plot(k, Theta_ell_sq_trough_3, label=rf"$\ell = 590$", color = "r")
@@ -120,7 +136,7 @@ ax1[1, 1].set_xlabel(r"$k [h/\mathrm{Mpc}^{-1}]$")
 ax1[1, 1].legend(loc = 0)
 ax1[1, 1].set_xscale("linear")
 ax1[1, 1].set_yscale("linear")
-
+"""
 fig1.tight_layout()
 plt.savefig("../doc/Figures/Transfer_func.pdf")
 

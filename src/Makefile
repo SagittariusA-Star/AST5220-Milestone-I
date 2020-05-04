@@ -74,3 +74,6 @@ plotrecombo:
 
 plotpertub:
 	python3 plot_pertubations.py
+
+plotpowspec:
+	python3 plot_powerspectrum.py
