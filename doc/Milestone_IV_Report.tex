@@ -56,7 +56,7 @@ Fortunately Zaldarriaga and Seljak solved this problem for us by inventing the \
     \Theta_\ell(k, x=0) = \int_{-\infty}^{0} \tilde{S}(k,x)
               j_\ell[k(\eta_0-\eta)] dx,
 \end{align} 
-where $j_ll$ are the spherical Bessel functions being highly oscillatory functions function as an orthogonal basis here and $\eta$ (subscript 0) is the conformal time (today). 
+where $j_ll$ are the spherical Bessel functions being highly oscillatory functions function as an orthogonal basis here that basically project the project the 3D spatial temperature field onto the 2D celestial sphere (as we observe it) and $\eta$ (subscript 0) is the conformal time (today). 
 
 The quantity $\tilde{S}(k,x)$ is called the source function and is given by
 \begin{align}
@@ -65,6 +65,20 @@ The quantity $\tilde{S}(k,x)$ is called the source function and is given by
     \label{eq:source}
 \end{align}
 where the metric potential perturbations $\Psi$ and $\Phi$, the baryon velocity $v_b$ and the photon mono- and quadrupole $\Theta_0$ and $Theta_2$ ($\Pi = \Theta_2$ if polarization is neglected) are all computed by \cite{stutzer:2020c}. The optical depth $\tau$ and visibility function $\tilde{g}$, and the reduced Hubble parameter $\mathcal{H}$ are found by \cite{stutzer:2020b} and \cite{stutzer:2020a} respectively. The source function quantifies how light is affected (both extinction and emission) when traveling through a medium, which in our case is the universe.
+
+This approach of finding the multipoles $Theta_\ell$ is much faster as we only need $Theta_0$ and $\Theta_2$ from the coupled set of ODEs and it has the advantage of being easier to understand. Intuitively one can interpret the line-of-sight integration as integrating up a local radiation monopole through the universes history, which is represented by the term $\tilde{g}\Theta_0$. The terms $tilde{g}\Psi$ and $\tilde{g}\frac{1}{4}\Pi$ are corrections from the photons loosing energy through the potential wells and the correction of the local quadrupole (polarization if included) respectively. Secondly one can spot how the radiation field is affected by the change of the gravitational potentials, seen in the second part of $\tilde{S}$, and represents the gain in energy through the so-called Integrated Sachs-Wolf (ISW) effect. Basically the ISW is that photons that fall into a potential well will gain energy, but lose less than they gained when exiting, since the gravitational wells have decayed due to spatial expansion while the photon traveled through it. The third part of $\tilde{S}$ is simply a doppler effect term.
+
+Now that we have all the $\Theta_\ell$'s we can finally find the power spectrum $C_\ell$. As computed by \cite{stutzer:2020c} the metric perturbations are initially of order $\Psi \sim 1$ which was the underlying initial condition for the whole set of coupled equations for the perturbations. To get the actual initially condition set up by inflation the multipoles (squared) are simply multiplied by the primordial power spectrum, given by the Harrison-Zel'dovich spectrum $P_\text{primordial}(k)$ given by
+\begin{align}
+    \frac{k^3}{2\pi^2} P_{\rm primordial}(k) = A_s \left(\frac{k}{k_{\rm pivot}}\right)^{n_s-1}.
+\end{align}
+The primordial amplitude parameter $A_s \sim 2\cdot 10^{-9}$ at a pivot scale $k_{\rm pivot} = 0.05/$Mpc and the spectral index of scalar perturbations $n_s \approx 0.96$. The primordial amplitude thus quantifies the overall hight of the spectrum, while the spectral index and the pivot scale quantify the tilt and whether the primordial spectrum is scale invariant (which is not since $n_s \neq 1$). 
+This simple rescaling we can simply do since all equations are linear. The final power spectrum is then simply found by integrating up all the squared multipoles weighted by $P_\text{primordial}(k)$ over all of $\vec{k}$-space
+\begin{align}
+    C_\ell &= C_\ell = \frac{2}{\pi}\int k^2P_{\rm primordial}(k) \Theta_\ell^2(k)dk\\
+    & = = 4\pi \int_0^{\infty} A_s \left(\frac{k}{k_{\rm pivot}}\right)^{n_s-1} \Theta_\ell^2(k) \frac{dk}{k},
+\end{align}
+where we could simply transform the 3D integral to a 1D integral because of isotropy.
 
 \subsection{The Implementation} \label{subsec:implementation}
 
