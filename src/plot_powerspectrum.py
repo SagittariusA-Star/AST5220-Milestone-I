@@ -87,7 +87,7 @@ ax[0].axvline(ells[Cell_troughs[4]], color = "orange", linestyle = "--", label =
 ax[0].plot(ells, Cells)
 ax[0].set_yscale("log")
 ax[0].set_xscale("log")
-ax[0].set_xlabel(r"$\ell$")
+#ax[0].set_xlabel(r"$\ell$")
 ax[0].set_ylabel(r"$\frac{\ell(\ell + 1)}{2\pi}C_\ell$ $[\mu \mathrm{K}^2]$")
 
 ax[0].legend(loc = 0, fontsize = 9.5, ncol = 4)
@@ -103,15 +103,15 @@ ax[1].set_ylabel(r"$\frac{\ell(\ell + 1)}{2\pi}C_\ell$ $[\mu \mathrm{K}^2]$")
 ax[1].legend(loc = 0, fontsize = 9.5)
 
 
-ax[2].plot(k, P , label = r"$P_M(k)$")
-ax[2].plot(k, P_test, color = "cornflowerblue", linestyle = "--")
+ax[2].plot(k, P , label = r"$P_M(k), (\Omega_{CDM0}, \Omega_{B0}) = (0.224, 0.049)$")
+ax[2].plot(k, P_test, color = "cornflowerblue", linestyle = "--", label = r"$P_M(k), (\Omega_{CDM0}, \Omega_{B0}) = (0.173, 0.1)$")
 ax[2].axvline(k_eq.value, color = "r", linestyle = "--", label = rf"$k_\mathrm{{eq}} = {k_eq.value:.2g}\mathrm{{h/Mpc}}$")
 ax[2].set_yscale("log")
 ax[2].set_xscale("log")
 ax[2].set_xlabel(r"$k$ $[h/\mathrm{Mpc}^{-1}]$")
 ax[2].set_ylabel(r"$P_M(k)$ $[(\mathrm{Mpc}/h)^3]$")
 ax[2].legend(loc = 0)
-fig.tight_layout()
+fig.tight_layout(pad = 0.1)
 plt.savefig("../doc/Figures/Cell.pdf")
 
 
