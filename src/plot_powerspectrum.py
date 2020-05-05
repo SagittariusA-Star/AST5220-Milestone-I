@@ -34,12 +34,19 @@ k_horizon = 1 / eta_cosmo
 k_eq      = k_horizon[eq_index]
 
 data = np.loadtxt("cells.txt")
+data_test = np.loadtxt("cells_test.txt")
+data_test2 = np.loadtxt("cells_test2.txt")
 ells = data[:, 0]
 Cells = data[:, 1]
+Cells_test = data_test[:, 1]
+Cells_test2 = data_test2[:, 1]
 
 data1 = np.loadtxt("matter_power_spec.txt")
+data1_test = np.loadtxt("matter_power_spec_test.txt")
 k = data1[:, 0] * 1 / u.Mpc
 P = data1[:, 1] * u.Mpc ** 3
+P_test = data1_test[:, 1] * u.Mpc ** 3
+
 Theta_ell_peak_1 = data1[:, 2]
 Theta_ell_peak_2 = data1[:, 3]
 Theta_ell_peak_3 = data1[:, 4]
@@ -64,31 +71,46 @@ Theta_ell_sq_trough_4 = data1[:, 16] * u.Mpc
 
 Cell_peaks = extrema(Cells, np.greater)[0]
 Cell_troughs = extrema(Cells, np.less)[0]
-fig, ax = plt.subplots(2, 1, figsize=[1.5 * 7.1014, 1.5 * 7.1014 / 1.618])
+
+print(f"k_* = {Cell_peaks[0] / eta_cosmo[-1].value} h/Mpc")
+
+fig, ax = plt.subplots(3, 1, figsize=[1.5 * 7.1014, 1.5 * 7.1014 / 1.618])
+ax[0].axvline(ells[Cell_peaks[0]], color = "r", label = rf"$\ell = {ells[Cell_peaks[0]]}$")
+ax[0].axvline(ells[Cell_peaks[1]], color = "g", label = rf"$\ell = {ells[Cell_peaks[1]]}$")
+ax[0].axvline(ells[Cell_peaks[2]], color = "b", label = rf"$\ell = {ells[Cell_peaks[2]]}$")
+ax[0].axvline(ells[Cell_peaks[3]], color = "m", label = rf"$\ell = {ells[Cell_peaks[3]]}$")
+ax[0].axvline(ells[Cell_troughs[0]], color = "r", linestyle = ":", label = rf"$\ell = {ells[Cell_troughs[0]]}$")
+ax[0].axvline(ells[Cell_troughs[1]], color = "g", linestyle = ":", label = rf"$\ell = {ells[Cell_troughs[1]]}$")
+ax[0].axvline(ells[Cell_troughs[2]], color = "b", linestyle = ":", label = rf"$\ell = {ells[Cell_troughs[2]]}$")
+ax[0].axvline(ells[Cell_troughs[3]], color = "m", linestyle = ":", label = rf"$\ell = {ells[Cell_troughs[3]]}$")
+ax[0].axvline(ells[Cell_troughs[4]], color = "orange", linestyle = "--", label = rf"$\ell = {ells[Cell_troughs[4]]}$")
 ax[0].plot(ells, Cells)
 ax[0].set_yscale("log")
 ax[0].set_xscale("log")
 ax[0].set_xlabel(r"$\ell$")
 ax[0].set_ylabel(r"$\frac{\ell(\ell + 1)}{2\pi}C_\ell$ $[\mu \mathrm{K}^2]$")
-ax[0].axvline(ells[Cell_peaks[0]], color = "r", label = rf"$\ell = {ells[Cell_peaks[0]]}$")
-ax[0].axvline(ells[Cell_peaks[1]], color = "g", label = rf"$\ell = {ells[Cell_peaks[1]]}$")
-ax[0].axvline(ells[Cell_peaks[2]], color = "b", label = rf"$\ell = {ells[Cell_peaks[2]]}$")
-ax[0].axvline(ells[Cell_peaks[3]], color = "m", label = rf"$\ell = {ells[Cell_peaks[3]]}$")
-ax[0].axvline(ells[Cell_troughs[0]], color = "r", linestyle = "--", label = rf"$\ell = {ells[Cell_troughs[0]]}$")
-ax[0].axvline(ells[Cell_troughs[1]], color = "g", linestyle = "--", label = rf"$\ell = {ells[Cell_troughs[1]]}$")
-ax[0].axvline(ells[Cell_troughs[2]], color = "b", linestyle = "--", label = rf"$\ell = {ells[Cell_troughs[2]]}$")
-ax[0].axvline(ells[Cell_troughs[3]], color = "m", linestyle = "--", label = rf"$\ell = {ells[Cell_troughs[3]]}$")
-ax[0].axvline(ells[Cell_troughs[4]], color = "orange", linestyle = "--", label = rf"$\ell = {ells[Cell_troughs[4]]}$")
 
-ax[0].legend(loc = 0, fontsize = 9.5)
+ax[0].legend(loc = 0, fontsize = 9.5, ncol = 4)
 
-ax[1].plot(k, P , label = r"$P_M(k)$")
-ax[1].axvline(k_eq.value, color = "r", linestyle = "--", label = rf"$k_\mathrm{{eq}} = {k_eq.value:.2g}\mathrm{{h/Mpc}}$")
+ax[1].plot(ells, Cells_test, linestyle = "--", label = r"$(\Omega_{CDM0}, \Omega_{B0}) = (0.173, 0.1)$")
+ax[1].plot(ells, Cells_test2, linestyle = "--", label = r"$(\Omega_{CDM0}, \Omega_{B0}) = (0.049, 0.224)$")
+ax[1].plot(ells, Cells, label = r"$(\Omega_{CDM0}, \Omega_{B0}) = (0.224, 0.049)$")
 ax[1].set_yscale("log")
 ax[1].set_xscale("log")
-ax[1].set_xlabel(r"$k$ $[h/\mathrm{Mpc}^{-1}]$")
-ax[1].set_ylabel(r"$P_M(k)$ $[(\mathrm{Mpc}/h)^3]$")
-ax[1].legend(loc = 0)
+ax[1].set_xlabel(r"$\ell$")
+ax[1].set_ylabel(r"$\frac{\ell(\ell + 1)}{2\pi}C_\ell$ $[\mu \mathrm{K}^2]$")
+
+ax[1].legend(loc = 0, fontsize = 9.5)
+
+
+ax[2].plot(k, P , label = r"$P_M(k)$")
+ax[2].plot(k, P_test, color = "cornflowerblue", linestyle = "--")
+ax[2].axvline(k_eq.value, color = "r", linestyle = "--", label = rf"$k_\mathrm{{eq}} = {k_eq.value:.2g}\mathrm{{h/Mpc}}$")
+ax[2].set_yscale("log")
+ax[2].set_xscale("log")
+ax[2].set_xlabel(r"$k$ $[h/\mathrm{Mpc}^{-1}]$")
+ax[2].set_ylabel(r"$P_M(k)$ $[(\mathrm{Mpc}/h)^3]$")
+ax[2].legend(loc = 0)
 fig.tight_layout()
 plt.savefig("../doc/Figures/Cell.pdf")
 
