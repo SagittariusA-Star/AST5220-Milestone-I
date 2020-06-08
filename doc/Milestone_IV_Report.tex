@@ -117,13 +117,13 @@ The power spectra $P(k)$ and $C_\ell$ (, the transfer function $\Theta_\ell(k, x
 
 \begin{figure*}
     \includegraphics[scale = 0.65]{Figures/Cell.pdf}
-    \caption{\textbf{Upper panel}: The figure shows the CMB angular power spectrum for different scales given by the multipole index $\ell$, for $0 < \ell < \ell_\text{max} = 1200$, in units $\mathrm{\mu K}^2$, as seen today for the cosmological parameters also used by \cite{stutzer:2020a,stutzer:2020b,stutzer:2020c}. The peaks and troughs are indicated as solid and dashed lines respectively.\textbf{Middle panel}: The figure is showing two additional power spectra to the one in the upper panel, with different baryon-to-CDM ratios as marked in the legend.  \textbf{Lower panel}: The figure shows the matter power spectrum as a function of the comoving wavenumber $k$, as seen today. The scale $k_\text{eq} = 0.015 \mathrm{h / Mpc}$ of the horizon at matter-radiation equality is marked by a dashed red line.} 
+    \caption{\textbf{Upper panel}: The figure shows the CMB angular power spectrum for different scales given by the multipole index $\ell$, for $0 < \ell < \ell_\text{max} = 1200$, in units $\mathrm{\mu K}^2$, as seen today for the cosmological parameters also used by \cite{stutzer:2020a,stutzer:2020b,stutzer:2020c}. The peaks and troughs are indicated as solid and dashed lines respectively.\textbf{Middle panel}: The figure is showing two additional power spectra to the one in the upper panel, with different baryon-to-CDM ratios as marked in the legend.  \textbf{Lower panel}: The figure shows the matter power spectrum as a function of the comoving wavenumber $k$, as seen today. The scale $k_\text{eq} = 0.015 \mathrm{h / Mpc}$ of the horizon at matter-radiation equality is marked by a dashed red line. Also a matter power spectrum with a higher baryon-to-CDM ratio is seen to illustrate the effect of a higher baryon content in the universe.} 
     \label{fig:Cell}
 \end{figure*}
 
 \begin{figure*}
     \includegraphics[scale = 0.65]{Figures/Transfer_func.pdf}
-    \caption{\textbf{Upper panel}: The figure shows the radiation transfer functions $\Theta_\ell(k)$ as a function of comoving wavenumber $k$, for the multipoles $\ell = 10, 25, 50$ and $100$. \textbf{Lower panel}: The figure shows the integrand to the power spectrum (expept the primordial power spectrum bit) as a function of comoving wave number, for the multipoles $\ell = 10, 25, 50$ and $100$.}
+    \caption{\textbf{Upper panel}: The figure shows the radiation transfer functions $\Theta_\ell(k)$ as a function of comoving wavenumber $k$, for the multipoles $\ell = 10, 25, 50$ and $100$. \textbf{Lower panel}: The figure shows the integrand to the power spectrum (except the primordial power spectrum bit) as a function of comoving wave number, for the multipoles $\ell = 10, 25, 50$ and $100$.}
     \label{fig:Transfer_func}
 \end{figure*}
 
@@ -153,7 +153,6 @@ Finally we consider the plots seen in Figure \ref{fig:Transfer_func}, where one 
 
 The plots in Figure \ref{fig:Transfer_func} seem poorly sampled, and we tried to increase the grid resolution of the ODE when solving. However, this yielded no large improvement. Nevertheless, since the power spectra in Figure \ref{fig:Cell} look nice and are consistent the CMB power spectrum seen by \cite{callin:2006}, in addition to \cite{callin:2006} having a similarly jagged integrand function, we conclude that the seemingly poor sampling is not a large issue.
 
-\newpage
 \section{Conclusion} \label{sec:Conclusion}
 We have computed the angular CMB and matter power spectra for the model universe with background evolution, thermal history and evolution of perturbations as given in \cite{stutzer:2020a, stutzer:2020b, stutzer:2020c}. To do this we used the evolution of the metric potential perturbations $\Phi$ and $\Psi$ as well as the mono- and quadrupoles $\Theta_0$ and $\Theta_2$ from \cite{stutzer:2020c} to compute the remaining multipole moments using the line-of-sight integration by Zaldarriaga and Seljak up to $\ell_\text{max} \sim 1200$. From these, in addition to the primordial power spectrum given as a slight deviation from the scale invariant Harrison Zel'dovich spectrum, we computed the CMB angular power spectrum $C_\ell$. The integrals were simply solved using an ODE solve approach. The matter power spectrum meanwhile, was simply evaluated from existing splined quantities from \cite{stutzer:2020c}. 
 

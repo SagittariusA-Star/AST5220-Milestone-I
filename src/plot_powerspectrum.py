@@ -88,9 +88,9 @@ ax[0].set_ylabel(r"$\frac{\ell(\ell + 1)}{2\pi}C_\ell$ $[\mu \mathrm{K}^2]$")
 ax[0].legend(loc = 0, fontsize = 9.5, ncol = 4)
 
 # Plotting tenmperature power spectrum for different parameter combos
+ax[1].plot(ells, Cells, label = r"$(\Omega_{CDM0}, \Omega_{B0}) = (0.224, 0.049)$")
 ax[1].plot(ells, Cells_test, linestyle = "--", label = r"$(\Omega_{CDM0}, \Omega_{B0}) = (0.173, 0.1)$")
 ax[1].plot(ells, Cells_test2, linestyle = "--", label = r"$(\Omega_{CDM0}, \Omega_{B0}) = (0.049, 0.224)$")
-ax[1].plot(ells, Cells, label = r"$(\Omega_{CDM0}, \Omega_{B0}) = (0.224, 0.049)$")
 ax[1].set_yscale("log")
 ax[1].set_xscale("log")
 ax[1].set_xlabel(r"$\ell$")
